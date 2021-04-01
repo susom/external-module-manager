@@ -7,6 +7,8 @@
 
 	"documentation": "README.md",
 
+    "framework-version": 6,
+
 	"authors": [
 		{
 			"name": "Andrew Martin",
@@ -16,14 +18,20 @@
 	],
 
 	"permissions": [
+        "redcap_module_link_check_display"
 	],
 
 	"enable-every-page-hooks-on-system-pages": false,
 
 	"links": {
 		"project": [
-
-		],
+            {
+                "name": "Project Cost/Fees",
+                "icon": "fas fa-donate",
+                "url": "pages/cost_overview.php",
+                "show-header-and-footer": true
+            }
+        ],
 		"control-center": [
 
 		]
