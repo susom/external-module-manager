@@ -192,9 +192,9 @@ class ExternalModuleManager extends \ExternalModules\AbstractExternalModule
         return $payload;
     }
 
-    public function testGithub($key)
+    public function testGithub($key, $command = '')
     {
-        $response = $this->getGuzzleClient()->get('https://api.github.com/repos/susom/' . $key . '/commits', [
+        $response = $this->getGuzzleClient()->get('https://api.github.com/repos/susom/' . $key . ($command ? '/' . $command : ''), [
             'headers' => [
                 'Authorization' => 'token ' . $this->getAccessToken(),
                 'Accept' => 'application/vnd.github.v3+json'
