@@ -19,6 +19,18 @@ class Repository
     }
 
     /**
+     * @param string $url
+     * @return string|string[]
+     */
+    public static function getGithubKey($url)
+    {
+        $parts = explode('/', $url);
+        $key = end($parts);
+        $key = str_replace('.git', '', $key);
+        return $key;
+    }
+
+    /**
      * @return mixed
      */
     public function getRecord()
