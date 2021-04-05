@@ -54,6 +54,12 @@
             "type": "text"
         },
         {
+            "key": "github-app-private-key",
+            "name": "Add Github App private Key<b>",
+            "required": true,
+            "type": "textarea"
+        },
+        {
             "key": "enable-project-debug-logging",
             "name": "<b>Enable Debug Logging</b><br><i>(optional)</i> Requires installation and configuration of emLogger",
             "required": false,

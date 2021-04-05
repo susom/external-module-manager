@@ -385,7 +385,7 @@ class ExternalModuleManager extends \ExternalModules\AbstractExternalModule
             "iat" => time() - 60,
             "exp" => time() + 360
         );
-        $privateKey = file_get_contents(__DIR__ . '/redcap-em-manager.2021-04-01.private-key.pem');
+        $privateKey = $this->getProjectSetting('github-app-private-key');
         $jwt = JWT::encode($payload, $privateKey, 'RS256');
         $this->jwt = $jwt;
     }
