@@ -13,7 +13,6 @@ use Stanford\ExternalModuleManager\User;
 use Stanford\ExternalModuleManager\Repository;
 use REDCap;
 use Project;
-use Github\Client;
 use \Firebase\JWT\JWT;
 
 /**
@@ -24,7 +23,6 @@ use \Firebase\JWT\JWT;
  * @property Repository $repository
  * @property array $repositories
  * @property Project $project
- * @property Client $client
  * @property string $jwt
  * @property string $accessToken
  * @property \GuzzleHttp\Client $guzzleClient
@@ -44,8 +42,6 @@ class ExternalModuleManager extends \ExternalModules\AbstractExternalModule
     private $repository;
 
     private $project;
-
-    private $client;
 
     private $jwt;
 
@@ -70,10 +66,6 @@ class ExternalModuleManager extends \ExternalModules\AbstractExternalModule
 
             // set repositories
             $this->setRepositories();
-
-            // set github client
-            $this->setClient(new Client());
-
 
             // initiate guzzle client to get access token
             $this->setGuzzleClient(new \GuzzleHttp\Client());
@@ -343,22 +335,6 @@ class ExternalModuleManager extends \ExternalModules\AbstractExternalModule
     public function setProject(\Project $project): void
     {
         $this->project = $project;
-    }
-
-    /**
-     * @return Client
-     */
-    public function getClient(): Client
-    {
-        return $this->client;
-    }
-
-    /**
-     * @param Client $client
-     */
-    public function setClient(Client $client): void
-    {
-        $this->client = $client;
     }
 
     /**
