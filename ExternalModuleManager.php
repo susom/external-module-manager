@@ -94,9 +94,6 @@ class ExternalModuleManager extends \ExternalModules\AbstractExternalModule
                 $response = \REDCap::saveData($this->getProjectId(), 'json', json_encode(array($data)));
                 if (empty($response['errors'])) {
                     $this->emLog("webhook triggered for EM $key last commit hash: " . $payload['after']);
-                    echo '<pre>';
-                    print_r($response);
-                    echo '</pre>';
                     die();
                 } else {
                     throw new \Exception("cant update last commit for EM : " . $repository[$this->getFirstEventId()]['module_name']);
