@@ -5,6 +5,7 @@ namespace Stanford\ExternalModuleManager;
 
 
 try {
+    //test
     list($algo, $hash) = explode('=', $_SERVER['HTTP_X_HUB_SIGNATURE'], 2) + array('', '');
     $rawPost = file_get_contents('php://input');
     $xx = $module->getProjectSetting('github-webhook-secret');
