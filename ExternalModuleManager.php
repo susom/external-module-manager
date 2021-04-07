@@ -59,10 +59,12 @@ class ExternalModuleManager extends \ExternalModules\AbstractExternalModule
         if (isset($_GET['pid'])) {
             $this->setProject(new Project(filter_var($_GET['pid'], FILTER_SANITIZE_STRING)));
 
-            // get user right then set the user.
-            $right = REDCap::getUserRights();
-            $user = $right[USERID];
-            $this->setUser(new User($user));
+            if (!defined('NOAUTH') || NOAUTH == false) {
+                // get user right then set the user.
+                $right = REDCap::getUserRights();
+                $user = $right[USERID];
+                $this->setUser(new User($user));
+            }
 
             // set repositories
             $this->setRepositories();
@@ -76,6 +78,16 @@ class ExternalModuleManager extends \ExternalModules\AbstractExternalModule
 
             // set EM records saved in REDCap
             $this->setRedcapRepositories();
+        }
+    }
+
+    public function findGithubRepoREDCapRecord($name)
+    {
+        foreach ($this->getRedcapRepositories() as $recordId => $repository) {
+            $key = Repository::getGithubKey($repository[$this->getFirstEventId()]['git_url']);
+            if ($key == $name) {
+
+            }
         }
     }
 
