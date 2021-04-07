@@ -97,6 +97,7 @@ class ExternalModuleManager extends \ExternalModules\AbstractExternalModule
                     echo '<pre>';
                     print_r($response);
                     echo '</pre>';
+                    $this->exitAfterHook();
                 } else {
                     throw new \Exception("cant update last commit for EM : " . $repository[$this->getFirstEventId()]['module_name']);
                 }
