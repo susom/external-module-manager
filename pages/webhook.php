@@ -6,13 +6,8 @@ namespace Stanford\ExternalModuleManager;
 
 try {
     //test
-    list($algo, $hash) = explode('=', $_SERVER['HTTP_X_HUB_SIGNATURE'], 2) + array('', '');
-    $rawPost = file_get_contents('php://input');
-    $xx = $module->getProjectSetting('github-webhook-secret');
-    $yourHash = base64_encode(hash_hmac('sha1', $_POST['payload'], $xx));
-    if (!hash_equals($hash, hash_hmac($algo, $rawPost, $xx))) {
-        throw new \Exception('Hook secret does not match.');
-    }
+    $module->verifyWebhookSecret();
+
     # test commit
     if (isset($_POST) && !empty($_POST)) {
         $payload = json_decode($_POST['payload'], true);
