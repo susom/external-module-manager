@@ -135,8 +135,15 @@ class ExternalModuleManager extends \ExternalModules\AbstractExternalModule
     public function verifyWebhookSecret()
     {
         list($algo, $hash) = explode('=', $_SERVER['HTTP_X_HUB_SIGNATURE'], 2) + array('', '');
+        $this->emLog("************************************************************************************************************************************");
+        $this->emLog($algo);
+        $this->emLog($hash);
         $rawPost = file_get_contents('php://input');
+        $this->emLog($rawPost);
         $secret = $this->getProjectSetting('github-webhook-secret');
+        $this->emLog($secret);
+        $this->emLog(hash_hmac($algo, $rawPost, $secret));
+        $this->emLog(hash_equals($hash, hash_hmac($algo, $rawPost, $secret)));
         if (!hash_equals($hash, hash_hmac($algo, $rawPost, $secret))) {
             throw new \Exception('Hook secret does not match.');
         }
