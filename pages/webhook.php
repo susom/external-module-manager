@@ -7,7 +7,8 @@ namespace Stanford\ExternalModuleManager;
 try {
     # test commit
     if (isset($_POST) && !empty($_POST)) {
-        $payload = $_POST['data'];
+        $payload = json_decode($_POST['payload'], true);
+        $module->updateREDCapRepositoryWithLastCommit($payload);
     } else {
         throw new \Exception("something went wrong!");
     }

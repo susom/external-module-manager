@@ -81,12 +81,25 @@ class ExternalModuleManager extends \ExternalModules\AbstractExternalModule
         }
     }
 
-    public function findGithubRepoREDCapRecord($name)
+    public function updateREDCapRepositoryWithLastCommit($payload)
     {
         foreach ($this->getRedcapRepositories() as $recordId => $repository) {
             $key = Repository::getGithubKey($repository[$this->getFirstEventId()]['git_url']);
-            if ($key == $name) {
-
+            // TODO probably we can add another check for before commit and compare it with whatever in redcap
+            if ($key == $payload['repository']['name']) {
+                $data[REDCap::getRecordIdField()] = $recordId;
+                $data['current_git_commit'] = $payload['after'];
+                $data['date_of_latest_commit'] = $payload['commits'][0]['timestamp'];
+                $data['redcap_event_name'] = $this->getProject()->getUniqueEventNames($this->getFirstEventId());
+                $response = \REDCap::saveData($this->getProjectId(), 'json', json_encode(array($data)));
+                if (empty($response['errors'])) {
+                    $this->emLog("webhook triggered for EM $key last commit hash: " . $payload['after']);
+                    echo '<pre>';
+                    print_r($response);
+                    echo '</pre>';
+                } else {
+                    throw new \Exception("cant update last commit for EM : " . $repository[$this->getFirstEventId()]['module_name']);
+                }
             }
         }
     }
