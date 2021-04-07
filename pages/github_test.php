@@ -54,6 +54,7 @@ try {
     // echo 'curl -i -H "Authorization: token ' . $module->getAccessToken() . '" -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/susom/external-module-manager';
 
 
+    echo $module->getUrl('pages/webhook.php', true, true);
     if (isset($_GET['update_commits'])) {
         $module->updateREDCapRepositoriesWithLastCommit();
     }
