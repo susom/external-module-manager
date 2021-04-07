@@ -137,13 +137,13 @@ class ExternalModuleManager extends \ExternalModules\AbstractExternalModule
         list($algo, $hash) = explode('=', $_SERVER['HTTP_X_HUB_SIGNATURE'], 2) + array('', '');
         $this->emLog("************************************************************************************************************************************");
         $this->emLog($algo);
-        $this->emLog($hash);
         $rawPost = trim(file_get_contents('php://input'));
         $secret = $this->getProjectSetting('github-webhook-secret');
-        $this->emLog($secret);
-        $this->emLog(hash_hmac($algo, $rawPost, $secret));
+        $this->emLog("secret    " . $secret);
+        $this->emLog("hash      " . $hash);
+        $this->emLog("hash_hmac " . hash_hmac($algo, $rawPost, $secret));
         $this->emLog(hash_equals($hash, hash_hmac($algo, $rawPost, $secret)));
-        $this->emLog($rawPost);
+        // $this->emLog($rawPost);
         if (!hash_equals($hash, hash_hmac($algo, $rawPost, $secret))) {
             throw new \Exception('Hook secret does not match.');
         }
