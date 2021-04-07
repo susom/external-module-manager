@@ -8,7 +8,7 @@ try {
     // verify webhook secret is valid.
     $module->verifyWebhookSecret();
 
-    # test commit
+    # test commit on prod
     if (isset($_POST) && !empty($_POST)) {
         $payload = json_decode($_POST['payload'], true);
         $module->updateREDCapRepositoryWithLastCommit($payload);
