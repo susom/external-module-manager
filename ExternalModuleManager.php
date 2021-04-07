@@ -130,6 +130,20 @@ class ExternalModuleManager extends \ExternalModules\AbstractExternalModule
         }
     }
 
+    /**
+     * this function will check HMAC header verify the request is valid.
+     * @throws \Exception
+     */
+    public function verifyWebhookSecret()
+    {
+        list($algo, $hash) = explode('=', $_SERVER['HTTP_X_HUB_SIGNATURE'], 2) + array('', '');
+        $rawPost = file_get_contents('php://input');
+        $secret = $this->getProjectSetting('github-webhook-secret');
+        if (!hash_equals($hash, hash_hmac($algo, $rawPost, $secret))) {
+            throw new \Exception('Hook secret does not match.');
+        }
+    }
+
     public function getRepositoryLastCommit($key)
     {
         try {
