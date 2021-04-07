@@ -130,7 +130,7 @@ class ExternalModuleManager extends \ExternalModules\AbstractExternalModule
 
     /**
      * this function will check HMAC header verify the request is valid. test
-     * @throws \Exception
+     * @throws \Exception test
      */
     public function verifyWebhookSecret()
     {
