@@ -138,7 +138,7 @@ class ExternalModuleManager extends \ExternalModules\AbstractExternalModule
         $this->emLog("************************************************************************************************************************************");
         $this->emLog($algo);
         $this->emLog($hash);
-        $rawPost = file_get_contents('php://input');
+        $rawPost = trim(file_get_contents('php://input'));
         $this->emLog($rawPost);
         $secret = $this->getProjectSetting('github-webhook-secret');
         $this->emLog($secret);
