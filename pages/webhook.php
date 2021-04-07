@@ -6,7 +6,7 @@ namespace Stanford\ExternalModuleManager;
 
 try {
     // verify webhook secret is valid.
-    //$module->verifyWebhookSecret();
+    $module->verifyWebhookSecret();
 
     # test commit on prod
     if (isset($_POST) && !empty($_POST)) {
