@@ -67,6 +67,18 @@
             "type": "text"
         },
         {
+            "key": "redcap-build-github-repo",
+            "name": "Add SSH URL for REDCap build Github Repository<b>",
+            "required": true,
+            "type": "text"
+        },
+        {
+            "key": "travis-ci-api-token",
+            "name": "Add Travis CI API token to trigger build with each commit.<b>",
+            "required": true,
+            "type": "text"
+        },
+        {
             "key": "enable-project-debug-logging",
             "name": "<b>Enable Debug Logging</b><br><i>(optional)</i> Requires installation and configuration of emLogger",
             "required": false,

@@ -14,6 +14,8 @@ use Stanford\ExternalModuleManager\Repository;
 use REDCap;
 use Project;
 use \Firebase\JWT\JWT;
+use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Client;
 
 /**
  * Class ExternalModuleManager
@@ -27,6 +29,9 @@ use \Firebase\JWT\JWT;
  * @property string $accessToken
  * @property \GuzzleHttp\Client $guzzleClient
  * @property array $redcapRepositories
+ * @property \stdClass $redcapBuildRepoObject
+ * @property string $defaultREDCapBuildRepoBranch
+ * @property string $ShaForLatestDefaultBranchCommitForREDCapBuild
  */
 class ExternalModuleManager extends \ExternalModules\AbstractExternalModule
 {
@@ -51,6 +56,12 @@ class ExternalModuleManager extends \ExternalModules\AbstractExternalModule
 
     private $redcapRepositories;
 
+    private $redcapBuildRepoObject;
+
+    private $defaultREDCapBuildRepoBranch;
+
+    private $ShaForLatestDefaultBranchCommitForREDCapBuild;
+
     public function __construct()
     {
         parent::__construct();
@@ -70,7 +81,7 @@ class ExternalModuleManager extends \ExternalModules\AbstractExternalModule
             $this->setRepositories();
 
             // initiate guzzle client to get access token
-            $this->setGuzzleClient(new \GuzzleHttp\Client());
+            $this->setGuzzleClient(new Client());
 
             //authenticate github client
             // no longer needed we will do all calls manually package is not fully functional
@@ -484,5 +495,121 @@ class ExternalModuleManager extends \ExternalModules\AbstractExternalModule
         $this->redcapRepositories = $data;
     }
 
+    /**
+     * @return \stdClass
+     */
+    public function getRedcapBuildRepoObject(): \stdClass
+    {
+        if ($this->redcapBuildRepoObject) {
+            return $this->redcapBuildRepoObject;
+        } else {
+            $this->setRedcapBuildRepoObject();
+            return $this->redcapBuildRepoObject;
+        }
+    }
+
+    /**
+     * @param \stdClass $redcapBuildRepoObject
+     */
+    public function setRedcapBuildRepoObject(): void
+    {
+        $key = Repository::getGithubKey($this->getProjectSetting('redcap-build-github-repo'));
+
+        $response = $this->getGuzzleClient()->get('https://api.github.com/repos/susom/' . $key, [
+            'headers' => [
+                'Authorization' => 'token ' . $this->getAccessToken(),
+                'Accept' => 'application/vnd.github.v3+json'
+            ]
+        ]);
+        $body = json_decode($response->getBody());
+        $this->redcapBuildRepoObject = $body;
+    }
+
+
+    /**
+     * this function will call travis CI api
+     */
+    public function triggerTravisCIBuild()
+    {
+        $response = $this->getGuzzleClient()->post('https://api.travis-ci.com/repo/travis-ci%2Ftravis-core/requests', [
+            'headers' => [
+                'Authorization' => 'token ' . $this->getProjectSetting('travis-ci-api-token'),
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/json',
+                'Travis-API-Version' => '3',
+            ],
+            'body' => json_encode(array('request' => array(
+                'branch' => $this->getDefaultREDCapBuildRepoBranch(),
+                'sha' => $this->getShaForLatestDefaultBranchCommitForREDCapBuild()
+            )))
+        ]);
+        $body = json_decode($response->getBody());
+        echo '<pre>';
+        print_r($body);
+        echo '</pre>';
+
+    }
+
+    /**
+     * @return string
+     */
+    public function getDefaultREDCapBuildRepoBranch(): string
+    {
+        if ($this->defaultREDCapBuildRepoBranch) {
+            return $this->defaultREDCapBuildRepoBranch;
+        } else {
+            $this->setDefaultREDCapBuildRepoBranch();
+            return $this->defaultREDCapBuildRepoBranch;
+        }
+    }
+
+    /**
+     * @param string $defaultREDCapBuildRepoBranch
+     */
+    public function setDefaultREDCapBuildRepoBranch(): void
+    {
+        $repo = $this->getRedcapBuildRepoObject();
+        $this->defaultREDCapBuildRepoBranch = $repo->default_branch;
+    }
+
+    /**
+     * @return string
+     */
+    public function getShaForLatestDefaultBranchCommitForREDCapBuild(): string
+    {
+        if ($this->ShaForLatestDefaultBranchCommitForREDCapBuild) {
+            return $this->ShaForLatestDefaultBranchCommitForREDCapBuild;
+
+        } else {
+            $this->setShaForLatestDefaultBranchCommitForREDCapBuild();
+            return $this->ShaForLatestDefaultBranchCommitForREDCapBuild;
+        }
+    }
+
+    /**
+     * @param string $ShaForLatestDefaultBranchCommitForREDCapBuild
+     */
+    public function setShaForLatestDefaultBranchCommitForREDCapBuild(): void
+    {
+        $commit = $this->getLatestCommitForDefaultBranchForREDCapBuild();
+        $this->ShaForLatestDefaultBranchCommitForREDCapBuild = $commit->sha;
+    }
+
+
+    /**
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    public function getLatestCommitForDefaultBranchForREDCapBuild()
+    {
+        $key = Repository::getGithubKey($this->getProjectSetting('redcap-build-github-repo'));
+
+        $response = $this->getGuzzleClient()->get('https://api.github.com/repos/susom/' . $key . '/commits/' . $this->getDefaultREDCapBuildRepoBranch(), [
+            'headers' => [
+                'Authorization' => 'token ' . $this->getAccessToken(),
+                'Accept' => 'application/vnd.github.v3+json'
+            ]
+        ]);
+        return json_decode($response->getBody());
+    }
 
 }
