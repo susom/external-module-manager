@@ -635,6 +635,7 @@ class ExternalModuleManager extends \ExternalModules\AbstractExternalModule
     public function setGitRepositoriesDirectories(): void
     {
         $folders = scandir(__DIR__ . '/../');
+        $this->emLog($folders);
         $gitRepositoriesDirectories = array();
         foreach ($folders as $folder) {
             $path = __DIR__ . '/../' . $folder;
@@ -693,8 +694,9 @@ class ExternalModuleManager extends \ExternalModules\AbstractExternalModule
         foreach ($this->getRedcapRepositories() as $recordId => $repository) {
             $key = Repository::getGithubKey($repository[$this->getFirstEventId()]['git_url']);
 
-
+            $this->emLog($key);
             foreach ($this->getGitRepositoriesDirectories() as $directory => $array) {
+                $this->emLog($directory);
                 if ($array['key'] == $key) {
 
                     if (!$repository[$this->getFirstEventId()]['current_git_commit']) {
