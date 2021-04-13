@@ -640,6 +640,7 @@ class ExternalModuleManager extends \ExternalModules\AbstractExternalModule
         foreach ($folders as $folder) {
             $path = __DIR__ . '/../' . $folder;
             $this->emLog($path);
+            $this->emLog(!is_dir(__DIR__ . '/../' . $folder));
             if ($folder == '.' || $folder == '..' || !is_dir(__DIR__ . '/../' . $folder)) {
                 continue;
             } else {
