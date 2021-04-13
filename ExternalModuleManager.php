@@ -652,8 +652,8 @@ class ExternalModuleManager extends \ExternalModules\AbstractExternalModule
         $gitRepositoriesDirectories = array();
         foreach ($folders as $folder) {
             $path = $this->getFolderPath($folder);
-            $this->emLog($path);
-            $this->emLog(is_dir($path));
+//            $this->emLog($path);
+//            $this->emLog(is_dir($path));
             if ($folder == '.' || $folder == '..' || !$path) {
                 continue;
             } else {
@@ -720,9 +720,8 @@ class ExternalModuleManager extends \ExternalModules\AbstractExternalModule
         foreach ($this->getRedcapRepositories() as $recordId => $repository) {
             $key = Repository::getGithubKey($repository[$this->getFirstEventId()]['git_url']);
 
-            $this->emLog($key);
             foreach ($this->getGitRepositoriesDirectories() as $directory => $array) {
-                $this->emLog($directory);
+                $this->emLog($array);
                 if ($array['key'] == $key) {
 
                     if (!$repository[$this->getFirstEventId()]['current_git_commit']) {
