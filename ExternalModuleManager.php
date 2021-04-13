@@ -672,8 +672,11 @@ class ExternalModuleManager extends \ExternalModules\AbstractExternalModule
                     $branch = preg_replace($regex, "", str_replace('"]', "", $branch));
                     $gitRepositoriesDirectories[$folder] = array('key' => $key, 'branch' => $branch);
                 } elseif (file_exists($path . '/.gitrepo')) {
-                    $content = explode("\n\t", file_get_contents($path . '/.gitrepo'));
+                    $content = file_get_contents($path . '/.gitrepo');
+                    $this->emLog($content);
                     $parts = explode("\n\t", $content);
+
+                    $this->emLog($parts);
                     $matches = preg_grep('/^remote?/m', $parts);
                     $key = Repository::getGithubKey(end($matches));
                     $this->emLog($key);
@@ -721,7 +724,6 @@ class ExternalModuleManager extends \ExternalModules\AbstractExternalModule
             $key = Repository::getGithubKey($repository[$this->getFirstEventId()]['git_url']);
 
             foreach ($this->getGitRepositoriesDirectories() as $directory => $array) {
-                $this->emLog($array);
                 if ($array['key'] == $key) {
 
                     if (!$repository[$this->getFirstEventId()]['current_git_commit']) {
