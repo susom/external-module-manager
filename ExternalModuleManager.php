@@ -657,7 +657,6 @@ class ExternalModuleManager extends \ExternalModules\AbstractExternalModule
             if ($folder == '.' || $folder == '..' || !$path) {
                 continue;
             } else {
-                $this->emLog(is_dir($path . '/.git'));
                 if (is_dir($path . '/.git')) {
                     $content = explode("\n\t", file_get_contents($path . '/.git/config'));
                     // url
@@ -671,6 +670,17 @@ class ExternalModuleManager extends \ExternalModules\AbstractExternalModule
                     $branch = end($branch);
                     $regex = "(\[branch\s\")";
                     $branch = preg_replace($regex, "", str_replace('"]', "", $branch));
+                    $gitRepositoriesDirectories[$folder] = array('key' => $key, 'branch' => $branch);
+                } elseif (file_exists($path . '/.gitrepo')) {
+                    $content = explode("\n\t", file_get_contents($path . '/.gitrepo'));
+                    $parts = explode("\n\t", $content);
+                    $matches = preg_grep('/^remote?/m', $parts);
+                    $key = Repository::getGithubKey(end($matches));
+                    $this->emLog($key);
+                    $matches = preg_grep('/^branch?/m', $parts);
+                    $branch = explode(" ", end($matches));
+                    $branch = end($branch);
+                    $this->emLog($branch);
                     $gitRepositoriesDirectories[$folder] = array('key' => $key, 'branch' => $branch);
                 }
             }

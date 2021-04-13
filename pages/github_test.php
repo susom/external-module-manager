@@ -53,8 +53,27 @@ try {
     echo '<br>';
     // echo 'curl -i -H "Authorization: token ' . $module->getAccessToken() . '" -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/susom/external-module-manager';
 
-    $key = Repository::getGithubKey($module->getProjectSetting('redcap-build-github-repo'));
-    $module->testGithub($key, 'commits/master');
+    $text = '[dev]$ cat modules-lab/external_module_manager_v9.9.9/.gitrepo
+; DO NOT EDIT (unless you know what you are doing)
+;
+; This subdirectory is a git "subrepo", and this file is maintained by the
+; git-subrepo command. See https://github.com/git-commands/git-subrepo#readme
+;
+[subrepo]
+	remote = git@github.com:susom/external-module-manager.git
+	branch = master
+	commit = 1383e18ed8a8e4b05e5a189daa4a7a7e05d23f73
+	parent = e25576715db238a2c33e0c7420eb200e6f6bff19
+	method = merge
+	cmdver = 0.4.0';
+    $parts = explode("\n\t", $text);
+    $matches = preg_grep('/^remote?/m', $parts);
+    $matches = preg_grep('/^branch?/m', $parts);
+    $branch = explode(" ", end($matches));
+    $branch = end($branch);
+    print_r($branch);
+//    $key = Repository::getGithubKey($module->getProjectSetting('redcap-build-github-repo'));
+//    $module->testGithub($key, 'commits/master');
 
     //$module->triggerTravisCIBuild();
 
