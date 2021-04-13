@@ -32,6 +32,7 @@ use GuzzleHttp\Client;
  * @property \stdClass $redcapBuildRepoObject
  * @property string $defaultREDCapBuildRepoBranch
  * @property string $ShaForLatestDefaultBranchCommitForREDCapBuild
+ * @property array $gitRepositoriesDirectories
  */
 class ExternalModuleManager extends \ExternalModules\AbstractExternalModule
 {
@@ -61,6 +62,8 @@ class ExternalModuleManager extends \ExternalModules\AbstractExternalModule
     private $defaultREDCapBuildRepoBranch;
 
     private $ShaForLatestDefaultBranchCommitForREDCapBuild;
+
+    private $gitRepositoriesDirectories;
 
     public function __construct()
     {
@@ -118,22 +121,7 @@ class ExternalModuleManager extends \ExternalModules\AbstractExternalModule
         foreach ($this->getRedcapRepositories() as $recordId => $repository) {
             if ($repository[$this->getFirstEventId()]['git_url']) {
                 $key = Repository::getGithubKey($repository[$this->getFirstEventId()]['git_url']);
-                $commit = $this->getRepositoryLastCommit($key);
-                $data[REDCap::getRecordIdField()] = $recordId;
-                $data['current_git_commit'] = $commit->sha;
-                $data['date_of_latest_commit'] = $commit->commit->author->date;
-                $data['redcap_event_name'] = $this->getProject()->getUniqueEventNames($this->getFirstEventId());
-                $response = \REDCap::saveData($this->getProjectId(), 'json', json_encode(array($data)));
-                if (empty($response['errors'])) {
-
-                    $commit->files = array();
-
-                    echo '<pre>';
-                    print_r($commit);
-                    echo '</pre>';
-                } else {
-                    throw new \Exception("cant update last commit for EM : " . $repository[$this->getFirstEventId()]['module_name']);
-                }
+                $this->updateRepositoryDefaultBranchLatestCommit($key, $recordId);
             }
 
         }
@@ -160,18 +148,33 @@ class ExternalModuleManager extends \ExternalModules\AbstractExternalModule
         }
     }
 
-    public function getRepositoryLastCommit($key)
+    public function getRepositoryDefaultBranchLatestCommit($key, $branch = '')
     {
         try {
-            $response = $this->getGuzzleClient()->get('https://api.github.com/repos/susom/' . $key . '/commits', [
+
+            // get default branch
+            if ($branch == '') {
+                $response = $this->getGuzzleClient()->get('https://api.github.com/repos/susom/' . $key, [
+                    'headers' => [
+                        'Authorization' => 'token ' . $this->getAccessToken(),
+                        'Accept' => 'application/vnd.github.v3+json'
+                    ]
+                ]);
+                $repo = json_decode($response->getBody());
+                $branch = $repo->default_branch;
+            }
+
+
+            // get latest commit for default branch
+            $commits = $this->getGuzzleClient()->get('https://api.github.com/repos/susom/' . $key . '/commits/' . $branch, [
                 'headers' => [
                     'Authorization' => 'token ' . $this->getAccessToken(),
                     'Accept' => 'application/vnd.github.v3+json'
                 ]
             ]);
-            $commits = json_decode($response->getBody());
+            $commit = json_decode($commits->getBody());
             //return first commit in the array which is the last one.
-            return $commits[0];
+            return $commit;
         } catch (\GuzzleHttp\Exception\RequestException $e) {
             $this->emError("Exception pulling last commit for $key: " . $e->getMessage());
         }
@@ -531,7 +534,7 @@ class ExternalModuleManager extends \ExternalModules\AbstractExternalModule
      */
     public function triggerTravisCIBuild()
     {
-        $response = $this->getGuzzleClient()->post('https://api.travis-ci.com/repo/travis-ci%2Ftravis-core/requests', [
+        $response = $this->getGuzzleClient()->post('https://api.travis-ci.com/repo/susom%2Fredcap-build/requests', [
             'headers' => [
                 'Authorization' => 'token ' . $this->getProjectSetting('travis-ci-api-token'),
                 'Accept' => 'application/json',
@@ -612,4 +615,98 @@ class ExternalModuleManager extends \ExternalModules\AbstractExternalModule
         return json_decode($response->getBody());
     }
 
+    /**
+     * @return array
+     */
+    public function getGitRepositoriesDirectories(): array
+    {
+        if ($this->gitRepositoriesDirectories) {
+            return $this->gitRepositoriesDirectories;
+        } else {
+            $this->setGitRepositoriesDirectories();
+            return $this->gitRepositoriesDirectories;
+        }
+
+    }
+
+    /**
+     * @param array $gitRepositoriesDirectories
+     */
+    public function setGitRepositoriesDirectories(): void
+    {
+        $folders = scandir(__DIR__ . '/../');
+        $gitRepositoriesDirectories = array();
+        foreach ($folders as $folder) {
+            $path = __DIR__ . '/../' . $folder;
+            if ($folder == '.' || $folder == '..' || $folder == '.DS_STORE' || !is_dir(__DIR__ . '/../' . $folder)) {
+                continue;
+            } else {
+                if (is_dir(__DIR__ . '/../' . $folder . '/.git')) {
+                    $content = explode("\n\t", file_get_contents(__DIR__ . '/../' . $folder . '/.git/config'));
+                    // url
+                    $matches = preg_grep('/^url/m', $content);
+                    $key = Repository::getGithubKey(end($matches));
+
+                    // branch
+                    $matches = preg_grep('/\[branch\s\"/m', $content);
+                    $branch = end($matches);
+                    $branch = explode("\n", $branch);
+                    $branch = end($branch);
+                    $regex = "(\[branch\s\")";
+                    $branch = preg_replace($regex, "", str_replace('"]', "", $branch));
+                    $gitRepositoriesDirectories[$folder] = array('key' => $key, 'branch' => $branch);
+                }
+            }
+        }
+        $this->gitRepositoriesDirectories = $gitRepositoriesDirectories;
+    }
+
+
+    /**
+     * @param string $key
+     * @param string $recordId
+     * @param string $branch
+     * @return string
+     * @throws \Exception
+     */
+    public function updateRepositoryDefaultBranchLatestCommit($key, $recordId, $branch = '')
+    {
+        $commit = $this->getRepositoryDefaultBranchLatestCommit($key, $branch);
+        $data[REDCap::getRecordIdField()] = $recordId;
+        $data['current_git_commit'] = $commit->sha;
+        $data['date_of_latest_commit'] = $commit->commit->author->date;
+        $data['redcap_event_name'] = $this->getProject()->getUniqueEventNames($this->getFirstEventId());
+        $response = \REDCap::saveData($this->getProjectId(), 'json', json_encode(array($data)));
+        if (empty($response['errors'])) {
+            return $commit->sha;
+        } else {
+            throw new \Exception("cant update last commit for EM : " . $key);
+        }
+    }
+
+    /**
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    public function generateREDCapBuildConfigCSV()
+    {
+        echo "HTTP_URL,DEST,BRANCH,COMMIT\n";
+        foreach ($this->getRedcapRepositories() as $recordId => $repository) {
+            $key = Repository::getGithubKey($repository[$this->getFirstEventId()]['git_url']);
+
+
+            foreach ($this->getGitRepositoriesDirectories() as $directory => $array) {
+                if ($array['key'] == $key) {
+
+                    if (!$repository[$this->getFirstEventId()]['current_git_commit']) {
+                        $commit = $this->updateRepositoryDefaultBranchLatestCommit($key, $recordId, $array['branch']);
+                    } else {
+                        $commit = $repository[$this->getFirstEventId()]['current_git_commit'];
+                    }
+                    echo $repository[$this->getFirstEventId()]['git_url'] . ',' . $directory . "," . $array['branch'] . "," . $commit . "\n";
+                    break;
+                }
+            }
+
+        }
+    }
 }

@@ -53,13 +53,14 @@ try {
     echo '<br>';
     // echo 'curl -i -H "Authorization: token ' . $module->getAccessToken() . '" -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/susom/external-module-manager';
 
+    $key = Repository::getGithubKey($module->getProjectSetting('redcap-build-github-repo'));
+    $module->testGithub($key, 'commits/master');
 
-    //$module->testGithub($key, 'commits/master');
+    //$module->triggerTravisCIBuild();
 
-    $module->triggerTravisCIBuild();
-
+    //$module->getGitRepositoriesDirectories();
     # test secret
-    //echo $module->getUrl('pages/webhook.php', true, true);
+    echo $module->getUrl('pages/generate_config.php', true, true);
     if (isset($_GET['update_commits'])) {
         $module->updateREDCapRepositoriesWithLastCommit();
     }

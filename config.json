@@ -39,7 +39,8 @@
         ]
     },
     "no-auth-pages": [
-       "pages/webhook"
+        "pages/webhook",
+        "pages/generate_config"
     ],
     "project-settings": [
         {
@@ -75,6 +76,12 @@
         {
             "key": "travis-ci-api-token",
             "name": "Add Travis CI API token to trigger build with each commit.<b>",
+            "required": true,
+            "type": "text"
+        },
+        {
+            "key": "travis-config-secret",
+            "name": "generate random secret to verify Travis CI requests to generate config.csv.<b>",
             "required": true,
             "type": "text"
         },
