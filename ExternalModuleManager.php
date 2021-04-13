@@ -635,13 +635,15 @@ class ExternalModuleManager extends \ExternalModules\AbstractExternalModule
     public function setGitRepositoriesDirectories(): void
     {
         $folders = scandir(__DIR__ . '/../');
-        $this->emLog($folders);
+
         $gitRepositoriesDirectories = array();
         foreach ($folders as $folder) {
             $path = __DIR__ . '/../' . $folder;
-            if ($folder == '.' || $folder == '..' || $folder == '.DS_STORE' || !is_dir(__DIR__ . '/../' . $folder)) {
+            $this->emLog($path);
+            if ($folder == '.' || $folder == '..' || !is_dir(__DIR__ . '/../' . $folder)) {
                 continue;
             } else {
+
                 if (is_dir(__DIR__ . '/../' . $folder . '/.git')) {
                     $content = explode("\n\t", file_get_contents(__DIR__ . '/../' . $folder . '/.git/config'));
                     // url
