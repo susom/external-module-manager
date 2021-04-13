@@ -638,15 +638,15 @@ class ExternalModuleManager extends \ExternalModules\AbstractExternalModule
 
         $gitRepositoriesDirectories = array();
         foreach ($folders as $folder) {
-            $path = __DIR__ . '/../' . $folder;
+            $path = '/../' . $folder;
             $this->emLog($path);
-            $this->emLog(!is_dir(__DIR__ . '/../' . $folder));
-            if ($folder == '.' || $folder == '..' || !is_dir(__DIR__ . '/../' . $folder)) {
+            $this->emLog(is_dir('/../' . $folder));
+            if ($folder == '.' || $folder == '..' || !is_dir('/../' . $folder)) {
                 continue;
             } else {
 
-                if (is_dir(__DIR__ . '/../' . $folder . '/.git')) {
-                    $content = explode("\n\t", file_get_contents(__DIR__ . '/../' . $folder . '/.git/config'));
+                if (is_dir('/../' . $folder . '/.git')) {
+                    $content = explode("\n\t", file_get_contents('/../' . $folder . '/.git/config'));
                     // url
                     $matches = preg_grep('/^url/m', $content);
                     $key = Repository::getGithubKey(end($matches));
