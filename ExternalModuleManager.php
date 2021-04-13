@@ -629,19 +629,32 @@ class ExternalModuleManager extends \ExternalModules\AbstractExternalModule
 
     }
 
+    public function getFolderPath($folder)
+    {
+        $arr = explode("/", __DIR__);
+        $parts = array_slice($arr, -2, 2, true);
+        if (is_dir(implode("/", $parts) . '/../' . $folder)) {
+            return implode("/", $parts) . '/../' . $folder;
+        } elseif (is_dir('../' . $folder)) {
+            return '../' . $folder;
+        } elseif (is_dir(__DIR__ . '/../' . $folder)) {
+            return __DIR__ . '/../' . $folder;
+        }
+        return false;
+    }
+
     /**
      * @param array $gitRepositoriesDirectories
      */
     public function setGitRepositoriesDirectories(): void
     {
         $folders = scandir(__DIR__ . '/../');
-
         $gitRepositoriesDirectories = array();
         foreach ($folders as $folder) {
-            $path = getcwd() . '/../' . $folder;
+            $path = $this->getFolderPath($folder);
             $this->emLog($path);
             $this->emLog(is_dir($path));
-            if ($folder == '.' || $folder == '..' || !is_dir($path)) {
+            if ($folder == '.' || $folder == '..' || !$path) {
                 continue;
             } else {
                 $this->emLog(is_dir($path . '/.git'));
