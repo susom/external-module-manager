@@ -673,17 +673,12 @@ class ExternalModuleManager extends \ExternalModules\AbstractExternalModule
                     $gitRepositoriesDirectories[$folder] = array('key' => $key, 'branch' => $branch);
                 } elseif (file_exists($path . '/.gitrepo')) {
                     $content = file_get_contents($path . '/.gitrepo');
-                    $this->emLog($content);
                     $parts = explode("\n\t", $content);
-
-                    $this->emLog($parts);
                     $matches = preg_grep('/^remote?/m', $parts);
                     $key = Repository::getGithubKey(end($matches));
-                    $this->emLog($key);
                     $matches = preg_grep('/^branch?/m', $parts);
                     $branch = explode(" ", end($matches));
                     $branch = end($branch);
-                    $this->emLog($branch);
                     $gitRepositoriesDirectories[$folder] = array('key' => $key, 'branch' => $branch);
                 }
             }
