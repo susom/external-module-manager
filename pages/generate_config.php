@@ -6,10 +6,10 @@ namespace Stanford\ExternalModuleManager;
 
 try {
     //test
-    if (!isset($_GET['key'])) {
+    if (!isset($_POST['key'])) {
         throw new \Exception("key does not exist");
     }
-    if (md5($_GET['key']) != md5($module->getProjectSetting('travis-config-secret'))) {
+    if (md5($_POST['key']) != md5($module->getProjectSetting('travis-config-secret'))) {
         throw new \Exception("key does not match");
     }
 
