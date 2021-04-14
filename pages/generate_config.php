@@ -5,7 +5,7 @@ namespace Stanford\ExternalModuleManager;
 
 
 try {
-    //test
+    //
     if (!isset($_POST['key'])) {
         throw new \Exception("key does not exist");
     }
