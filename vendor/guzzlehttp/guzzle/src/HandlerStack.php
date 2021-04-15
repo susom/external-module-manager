@@ -40,8 +40,9 @@ class HandlerStack
      * The returned handler stack can be passed to a client in the "handler"
      * option.
      *
-     * @param null|callable(RequestInterface, array): PromiseInterface $handler HTTP handler function to use with the
-     *     stack. If no handler is provided, the best handler for your system will be utilized.
+     * @param null|callable(RequestInterface, array): PromiseInterface $handler HTTP handler function to use with the stack. If no
+     *                                                                          handler is provided, the best handler for your
+     *                                                                          system will be utilized.
      */
     public static function create(?callable $handler = null): self
     {

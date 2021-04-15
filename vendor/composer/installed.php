@@ -5,7 +5,7 @@
             'version' => 'dev-master',
             'aliases' =>
                 array(),
-            'reference' => 'f5dafc72bb995999d3ec5a96404f2d85a60e062b',
+            'reference' => '380d66a3e0e6bf8fa9316394f683db7d9478c257',
             'name' => '__root__',
         ),
     'versions' =>
@@ -16,7 +16,7 @@
                     'version' => 'dev-master',
                     'aliases' =>
                         array(),
-                    'reference' => 'f5dafc72bb995999d3ec5a96404f2d85a60e062b',
+                    'reference' => '380d66a3e0e6bf8fa9316394f683db7d9478c257',
                 ),
             'firebase/php-jwt' =>
                 array(

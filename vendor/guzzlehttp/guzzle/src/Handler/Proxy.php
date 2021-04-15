@@ -19,8 +19,8 @@ class Proxy
      *
      * @param callable(\Psr\Http\Message\RequestInterface, array): \GuzzleHttp\Promise\PromiseInterface $default
      *     Handler used for normal responses
-     * @param callable(\Psr\Http\Message\RequestInterface, array): \GuzzleHttp\Promise\PromiseInterface $sync
-     *     Handler used for synchronous responses.
+     * @param callable(\Psr\Http\Message\RequestInterface, array): \GuzzleHttp\Promise\PromiseInterface $sync Handler
+     *     used for synchronous responses.
      *
      * @return callable(\Psr\Http\Message\RequestInterface, array): \GuzzleHttp\Promise\PromiseInterface Returns the
      *     composed handler.

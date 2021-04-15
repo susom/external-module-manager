@@ -35,8 +35,9 @@ class RetryMiddleware
      *                                                                         a request, [response], and [exception]
      *     and returns true if the request is to be retried.
      * @param callable(RequestInterface, array): PromiseInterface $nextHandler Next handler to invoke.
-     * @param null|callable(int): int                             $delay       Function that accepts the number of
-     *     retries and returns the number of milliseconds to delay.
+     * @param null|callable(int): int $delay Function that accepts the number of retries
+     *                                                                         and returns the number of
+     *                                                                         milliseconds to delay.
      */
     public function __construct(callable $decider, callable $nextHandler, callable $delay = null)
     {
