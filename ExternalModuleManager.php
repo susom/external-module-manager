@@ -26,6 +26,7 @@ define('ANaLYSIS_STATUS', 2);
  * @property \Project $project
  * @property \Stanford\ExternalModuleDeployment\ExternalModuleDeployment $deploymentEm
  * @property \REDCapEntity\EntityFactory $entityFactory
+ * @property  array $projectEMUsage
  */
 class ExternalModuleManager extends \ExternalModules\AbstractExternalModule
 {
@@ -41,6 +42,8 @@ class ExternalModuleManager extends \ExternalModules\AbstractExternalModule
     private $deploymentEm;
 
     private $entityFactory;
+
+    private $projectEMUsage;
 
     public function __construct()
     {
@@ -117,7 +120,70 @@ class ExternalModuleManager extends \ExternalModules\AbstractExternalModule
             ],
         ];
 
+        $types['project_external_modules_usage'] = [
+            'label' => 'Project External Module Usage',
+            'label_plural' => 'Projects External Module Usage',
+            'icon' => 'codebook',
+            'properties' => [
+                'module_prefix' => [
+                    'name' => 'Module Prefix',
+                    'type' => 'text',
+                    'required' => true,
+                ],
+                'project_id' => [
+                    'name' => 'Project',
+                    'type' => 'project',
+                    'required' => true,
+                ],
+                'project_title' => [
+                    'name' => 'Project Title',
+                    'type' => 'text',
+                    'required' => true,
+                ],
+                'status' => [
+                    'name' => 'Status',
+                    'type' => 'text',
+                    'default' => '0',
+                    'choices' => [
+                        '0' => 'Development',
+                        '1' => 'Production',
+                        '2' => 'Analysis',
+                    ],
+                    'required' => true,
+                ],
+                'record_count' => [
+                    'name' => 'Number of Records',
+                    'type' => 'integer',
+                    'required' => true,
+                ],
+                'is_em_enabled' => [
+                    'name' => 'Is EM Enabled?',
+                    'type' => 'boolean',
+                    'required' => true,
+                ],
+                'number_of_settings_rows' => [
+                    'name' => 'Number of Settings Rows',
+                    'type' => 'integer',
+                    'required' => true,
+                ],
+            ],
+            'special_keys' => [
+                'label' => 'number', // "number" represents the entity label.
+                #'project' => 'project_id', // "project_id" represents the project which the entity belongs to.
+            ],
+        ];
+
+
         return $types;
+    }
+
+
+    public function getEMTotalNumberOfProjects($externalModuleId, $status)
+    {
+        $q = $this->query("select count(*) as count from redcap_projects where project_id IN (select project_id from redcap_external_module_settings where external_module_id = ?) and status = ?", [$externalModuleId, $status]);
+
+        $row = db_fetch_assoc($q);
+        return $row['count'];
     }
 
     /**
@@ -131,14 +197,6 @@ class ExternalModuleManager extends \ExternalModules\AbstractExternalModule
             $this->setExternalModulesDBRecords();
             return $this->externalModulesDBRecords;
         }
-    }
-
-    public function getEMTotalNumberOfProjects($externalModuleId, $status)
-    {
-        $q = $this->query("select count(*) as count from redcap_projects where project_id IN (select project_id from redcap_external_module_settings where external_module_id = ?) and status = ?", [$externalModuleId, $status]);
-
-        $row = db_fetch_assoc($q);
-        return $row['count'];
     }
 
     /**
@@ -300,6 +358,20 @@ GROUP BY rems.external_module_id ", []);
         }
     }
 
+    public function createProjectsExternalModuleUsageLogs()
+    {
+        try {
+            if ($this->getProjectEMUsage()) {
+                foreach ($this->getProjectEMUsage() as $record) {
+                    $entity = $this->getEntityFactory()->create('project_external_modules_usage', $record['entity']);
+                    echo $entity->getId() . '<br>';
+                }
+            }
+        } catch (\Exception $e) {
+            echo $e->getMessage();
+        }
+    }
+
 
     public function createExternalModuleUtilizationLogs()
     {
@@ -307,7 +379,7 @@ GROUP BY rems.external_module_id ", []);
             if ($this->getExternalModulesDBRecords()) {
                 foreach ($this->getExternalModulesDBRecords() as $record) {
                     $entity = $this->getEntityFactory()->create('external_modules_utilization', $record['entity']);
-                    echo $entity->getData() . '<br>';
+                    echo $entity->getId() . '<br>';
                 }
             }
         } catch (\Exception $e) {
@@ -388,6 +460,61 @@ GROUP BY rems.external_module_id ", []);
     public function setEntityFactory(\REDCapEntity\EntityFactory $entityFactory): void
     {
         $this->entityFactory = $entityFactory;
+    }
+
+    /**
+     * @return array
+     */
+    public function getProjectEMUsage(): array
+    {
+        if (!$this->projectEMUsage) {
+            $this->setProjectEMUsage();
+        }
+        return $this->projectEMUsage;
+    }
+
+    /**
+     * @param array $projectEMUsage
+     */
+    public function setProjectEMUsage(): void
+    {
+        try {
+            $projectEMUsage = array();
+            $q = $this->query("select
+                       rems.external_module_id,
+                       rem.directory_prefix as module_prefix,
+                       rems.project_id,
+                       rp.app_title as project_title,
+                       rp.status,
+                       rrc.record_count,
+                       sum(case when rems.`key` = 'enabled' and rems.value = 'true' then 1 else 0 end) as is_em_enabled,
+                       count(*) as number_of_settings_rows
+                    from redcap_external_module_settings rems
+                    join redcap_external_modules rem on rems.external_module_id = rem.external_module_id
+                    join redcap_projects rp on rems.project_id = rp.project_id
+                    join redcap_record_counts rrc on rp.project_id = rrc.project_id
+                    where rems.project_id is not null
+                    group by rems.external_module_id, rems.project_id, rem.directory_prefix, rp.app_title, rp.status, rrc.record_count ", []);
+
+            while ($row = db_fetch_assoc($q)) {
+                $em = $row;
+
+                $em['entity'] = array(
+                    'module_prefix' => $row['module_prefix'],
+                    'project_id' => $row['project_id'],
+                    'project_title' => $row['project_title'],
+                    'status' => $row['status'],
+                    'record_count' => $row['record_count'],
+                    'is_em_enabled' => $row['is_em_enabled'],
+                    'number_of_settings_rows' => $row['number_of_settings_rows'],
+                );
+                $projectEMUsage[] = $em;
+            }
+            $this->projectEMUsage = $projectEMUsage;
+        } catch (\Exception $e) {
+            echo $e->getMessage();
+        }
+
     }
 
 
