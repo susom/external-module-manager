@@ -17,11 +17,18 @@
         }
     ],
     "permissions": [
-        "redcap_module_link_check_display"
+        "redcap_module_link_check_display",
+        "redcap_entity_types"
     ],
     "enable-every-page-hooks-on-system-pages": false,
     "links": {
         "project": [
+            {
+                "name": "Test Page",
+                "icon": "fas fa-donate",
+                "url": "pages/test_entities.php",
+                "show-header-and-footer": true
+            }
         ],
         "control-center": [
         ]
@@ -29,6 +36,12 @@
     "no-auth-pages": [
     ],
     "project-settings": [
+        {
+            "key": "external-module-deployment",
+            "name": "<b>Enter EM key for External Module Deployment",
+            "required": true,
+            "type": "text"
+        },
         {
             "key": "enable-project-debug-logging",
             "name": "<b>Enable Debug Logging</b><br><i>(optional)</i> Requires installation and configuration of emLogger",
