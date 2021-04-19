@@ -358,13 +358,40 @@ GROUP BY rems.external_module_id ", []);
         }
     }
 
+
+    /**
+     * @param $record
+     * @return false|mixed|null
+     */
+    public function isProjectEMUsageRecordExist($record)
+    {
+        $entity = $this->getEntityFactory()->query('project_external_modules_usage')
+            ->condition('module_prefix', $record['module_prefix'])
+            ->condition('project_id', $record['project_id'])
+            ->execute();
+        if ($entity) {
+            return array_pop($entity);
+        }
+        return false;
+    }
+
     public function createProjectsExternalModuleUsageLogs()
     {
         try {
             if ($this->getProjectEMUsage()) {
                 foreach ($this->getProjectEMUsage() as $record) {
-                    $entity = $this->getEntityFactory()->create('project_external_modules_usage', $record['entity']);
-                    echo $entity->getId() . '<br>';
+                    if (!$entity = $this->isProjectEMUsageRecordExist($record)) {
+                        $entity = $this->getEntityFactory()->create('project_external_modules_usage', $record['entity']);
+                        echo $entity->getId() . '<br>';
+                    } else {
+                        #$entity = $this->getEntityFactory()->getInstance('project_external_modules_usage', $recordId);
+                        if ($entity->setData($record['entity'])) {
+                            $entity->save();
+                        } else {
+                            // Get a list of properties that failed on update
+                            print_r($entity->getErrors());
+                        }
+                    }
                 }
             }
         } catch (\Exception $e) {

@@ -28,6 +28,24 @@
                 "icon": "fas fa-donate",
                 "url": "pages/test_entities.php",
                 "show-header-and-footer": true
+            },
+            {
+                "name": "Display EM Utilization",
+                "icon": "fas fa-donate",
+                "url": "pages/em_utilization.php",
+                "show-header-and-footer": true
+            },
+            {
+                "name": "Display Project EM Usage",
+                "icon": "fas fa-donate",
+                "url": "pages/project_em_usage.php",
+                "show-header-and-footer": true
+            },
+            {
+                "name": "Manually Trigger Crons",
+                "icon": "fas fa-donate",
+                "url": "pages/trigger_cron.php",
+                "show-header-and-footer": true
             }
         ],
         "control-center": [
