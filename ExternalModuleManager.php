@@ -216,15 +216,23 @@ GROUP BY rems.external_module_id ", []);
                 if (!$this->getExternalModulesREDCapRecords()[$row['module_prefix']]) {
                     $this->createExternalModuleREDCapRecord($row['external_module_id'], $row['module_prefix']);
                 }
+                $total_enabled_dev_projects = $this->getEMTotalNumberOfProjects($row['external_module_id'], DEVELOPMENT_STATUS);
+                $total_enabled_prod_projects = $this->getEMTotalNumberOfProjects($row['external_module_id'], PRODUCTION_STATUS);
                 $em['redcap'] = $this->getExternalModulesREDCapRecords()[$row['module_prefix']];
+
+                // use this to update redcap record.
+                $em['redcap'][$this->getFirstEventId()]['count_active_production'] = $total_enabled_prod_projects;
+                $em['redcap'][$this->getFirstEventId()]['count_active_dev'] = $total_enabled_prod_projects;
+
+
                 $em['entity'] = array(
                     'module_prefix' => $row['module_prefix'],
                     'version' => $this->getExternalModuleDeployedVersion($row['external_module_id']),
                     'date' => time(),
                     'total_enabled_projects' => $row['total_enabled_projects'],
                     'globally_enabled' => $this->isEMGloballyEnabled($row['external_module_id']),
-                    'total_enabled_dev_projects' => $this->getEMTotalNumberOfProjects($row['external_module_id'], DEVELOPMENT_STATUS),
-                    'total_enabled_prod_projects' => $this->getEMTotalNumberOfProjects($row['external_module_id'], PRODUCTION_STATUS),
+                    'total_enabled_dev_projects' => $total_enabled_dev_projects,
+                    'total_enabled_prod_projects' => $total_enabled_prod_projects,
                     'total_using_projects' => '' // TODO,
                 );
                 $externalModulesDBRecords[] = $em;
@@ -399,6 +407,16 @@ GROUP BY rems.external_module_id ", []);
         }
     }
 
+    public function updateEMREDCapRecordUsageNumbers($data)
+    {
+        $data['redcap_event_name'] = $this->getProject()->getUniqueEventNames($this->getFirstEventId());
+        $response = \REDCap::saveData($this->getProjectId(), 'json', json_encode(array($data)));
+        if (empty($response['errors'])) {
+            return true;
+        } else {
+            throw new \Exception("cant save information for EM : " . $data['module_name']);
+        }
+    }
 
     public function createExternalModuleUtilizationLogs()
     {
@@ -406,6 +424,7 @@ GROUP BY rems.external_module_id ", []);
             if ($this->getExternalModulesDBRecords()) {
                 foreach ($this->getExternalModulesDBRecords() as $record) {
                     $entity = $this->getEntityFactory()->create('external_modules_utilization', $record['entity']);
+                    $this->updateEMREDCapRecordUsageNumbers($record['redcap']);
                     echo $entity->getId() . '<br>';
                 }
             }
