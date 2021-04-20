@@ -222,7 +222,7 @@ GROUP BY rems.external_module_id ", []);
 
                 // use this to update redcap record.
                 $em['redcap'][$this->getFirstEventId()]['count_active_production'] = $total_enabled_prod_projects;
-                $em['redcap'][$this->getFirstEventId()]['count_active_dev'] = $total_enabled_prod_projects;
+                $em['redcap'][$this->getFirstEventId()]['count_active_dev'] = $total_enabled_dev_projects;
 
 
                 $em['entity'] = array(
@@ -407,8 +407,11 @@ GROUP BY rems.external_module_id ", []);
         }
     }
 
-    public function updateEMREDCapRecordUsageNumbers($data)
+    public function updateEMREDCapRecordUsageNumbers($record)
     {
+        $data[REDCap::getRecordIdField()] = $record[$this->getFirstEventId()][REDCap::getRecordIdField()];
+        $data['count_active_production'] = $record[$this->getFirstEventId()]['count_active_production'];
+        $data['count_active_dev'] = $record[$this->getFirstEventId()]['count_active_dev'];
         $data['redcap_event_name'] = $this->getProject()->getUniqueEventNames($this->getFirstEventId());
         $response = \REDCap::saveData($this->getProjectId(), 'json', json_encode(array($data)));
         if (empty($response['errors'])) {
