@@ -213,7 +213,9 @@ GROUP BY rems.external_module_id ", []);
             while ($row = db_fetch_assoc($q)) {
                 $em = $row;
                 if (!$this->getExternalModulesREDCapRecords()[$row['module_prefix']]) {
-                    $this->createExternalModuleREDCapRecord($row['external_module_id'], $row['module_prefix']);
+                    if ($row['module_prefix'] != '') {
+                        $this->createExternalModuleREDCapRecord($row['external_module_id'], $row['module_prefix']);
+                    }
                 }
                 $total_enabled_dev_projects = $this->getEMTotalNumberOfProjects($row['external_module_id'], DEVELOPMENT_STATUS);
                 $total_enabled_prod_projects = $this->getEMTotalNumberOfProjects($row['external_module_id'], PRODUCTION_STATUS);
@@ -361,7 +363,8 @@ GROUP BY rems.external_module_id ", []);
             $this->getDeploymentEm()->updateRepositoryDefaultBranchLatestCommit($key, $prefix);
             return true;
         } else {
-            throw new \Exception("cant save information for EM : " . $prefix);
+            $this->emError($response);
+            throw new \Exception("cant save information for EM : " . $prefix . ' em id is: ' . $externalModuleId);
         }
     }
 
