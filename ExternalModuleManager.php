@@ -51,13 +51,10 @@ class ExternalModuleManager extends \ExternalModules\AbstractExternalModule
         // Other code to run when object is instantiated
 
         if (isset($_GET['pid'])) {
-            $this->emLog("construct before init");
-            $this->setProject(new \Project(filter_var($_GET['pid'], FILTER_SANITIZE_NUMBER_INT)));
+             $this->setProject(new \Project(filter_var($_GET['pid'], FILTER_SANITIZE_NUMBER_INT)));
 
             if ($this->getProjectSetting('external-module-deployment')) {
-                $this->emLog("setting EMD");
-                //$this->setDeploymentEm(\ExternalModules\ExternalModules::getModuleInstance($this->getProjectSetting('external-module-deployment')));
-                $this->emLog("setting REDCap entity");
+                $this->setDeploymentEm(\ExternalModules\ExternalModules::getModuleInstance($this->getProjectSetting('external-module-deployment')));
                 $this->setEntityFactory(new \REDCapEntity\EntityFactory());
             }
         }
