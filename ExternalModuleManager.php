@@ -54,7 +54,7 @@ class ExternalModuleManager extends \ExternalModules\AbstractExternalModule
             $this->setProject(new \Project(filter_var($_GET['pid'], FILTER_SANITIZE_NUMBER_INT)));
 
             if ($this->getProjectSetting('external-module-deployment')) {
-                $this->setDeploymentEm(\ExternalModules\ExternalModules::getModuleInstance($this->getProjectSetting('external-module-deployment')));
+                //$this->setDeploymentEm(\ExternalModules\ExternalModules::getModuleInstance($this->getProjectSetting('external-module-deployment')));
 
                 $this->setEntityFactory(new \REDCapEntity\EntityFactory());
             }
