@@ -1,7 +1,7 @@
 {
     "name": "ExternalModuleManager",
     "namespace": "Stanford\\ExternalModuleManager",
-    "description": "Manage External Modules and Deployments",
+    "description": "Manage External Modules and generate logs for utilization and usage. ",
     "documentation": "README.md",
     "framework-version": 6,
     "authors": [
