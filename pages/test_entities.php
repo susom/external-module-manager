@@ -22,12 +22,17 @@ use REDCapEntity\EntityList;
 
 $data = array(
     'module_prefix' => '',
-    'project_id' => '',
-    'project_title' => '',
-    'status' => 123,
-    'record_count' => 'asd',
-    'is_em_enabled' => 123,
-    'number_of_settings_rows' => 'asd',
+    'version' => '',
+    'date' => 'bolbol',
+    'globally_enabled' => 123,
+    'total_enabled_projects' => 'asd',
+    'total_enabled_dev_projects' => 123,
+    'total_enabled_prod_projects' => 'asd',
 );
 
 $result = $module->getEntityFactory()->create('external_modules_utilization', $data);
+if (!$result) {
+    echo '<pre>';
+    print_r($module->getEntityFactory()->errors);
+    echo '</pre>';
+}
