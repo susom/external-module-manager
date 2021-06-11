@@ -179,7 +179,7 @@ class ExternalModuleManager extends \ExternalModules\AbstractExternalModule
 
     public function getEMTotalNumberOfProjects($externalModuleId, $status)
     {
-        $q = $this->query("select count(*) as count from redcap_projects where project_id IN (select project_id from redcap_external_module_settings where external_module_id = ?) and status = ?", [$externalModuleId, $status]);
+        $q = $this->query("select count(*) as count from redcap_projects where project_id IN (select project_id from redcap_external_module_settings where external_module_id = ? and `key` = 'enabled' and `value`= true) and status = ?", [$externalModuleId, $status]);
 
         $row = db_fetch_assoc($q);
         return $row['count'];
