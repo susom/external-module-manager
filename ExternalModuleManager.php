@@ -187,6 +187,7 @@ class ExternalModuleManager extends \ExternalModules\AbstractExternalModule
 
     /**
      * @return array
+     *
      */
     public function getExternalModulesDBRecords()
     {
