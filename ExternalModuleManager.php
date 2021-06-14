@@ -188,7 +188,7 @@ class ExternalModuleManager extends \ExternalModules\AbstractExternalModule
     /**
      * @return array
      */
-    public function getExternalModulesDBRecords(): array
+    public function getExternalModulesDBRecords()
     {
         if ($this->externalModulesDBRecords) {
             return $this->externalModulesDBRecords;
