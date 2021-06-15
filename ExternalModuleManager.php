@@ -341,7 +341,7 @@ GROUP BY rems.external_module_id ", []);
                 // $data[GITHUB_REPO_OPTION] = true;
                 $matches = preg_grep('/^commit?/m', $parts);
                 $commit = explode(" ", end($matches));
-                $data['current_git_commit'] = end($commit);
+                //$data['current_git_commit'] = end($commit);
             }
         }
         return $data;
