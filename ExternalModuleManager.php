@@ -230,7 +230,7 @@ GROUP BY rems.external_module_id ", []);
                 $em['entity'] = array(
                     'module_prefix' => $row['module_prefix'],
                     'version' => $this->getExternalModuleDeployedVersion($row['external_module_id']),
-                    'date' => date('Y-m-d H:i:s'),
+                    'date' => time(),
                     'total_enabled_projects' => $row['total_enabled_projects'],
                     'globally_enabled' => $this->isEMGloballyEnabled($row['external_module_id']),
                     'total_enabled_dev_projects' => $total_enabled_dev_projects,

@@ -24,7 +24,7 @@
     "links": {
         "project": [
             {
-                "name": "Test Page",
+                "name": "Test Page 2",
                 "icon": "fas fa-donate",
                 "url": "pages/test_entities.php",
                 "show-header-and-footer": true
