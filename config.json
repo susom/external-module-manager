@@ -42,7 +42,7 @@
                 "show-header-and-footer": true
             },
             {
-                "name": "Manually Trigger Crons",
+                "name": "Trigger Crons Manually",
                 "icon": "fas fa-donate",
                 "url": "pages/trigger_cron.php",
                 "show-header-and-footer": true
