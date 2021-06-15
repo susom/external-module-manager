@@ -230,7 +230,7 @@ GROUP BY rems.external_module_id ", []);
                 $em['entity'] = array(
                     'module_prefix' => $row['module_prefix'],
                     'version' => $this->getExternalModuleDeployedVersion($row['external_module_id']),
-                    'date' => time(),
+                    'date' => date('Y-m-d H:i:s'),
                     'total_enabled_projects' => $row['total_enabled_projects'],
                     'globally_enabled' => $this->isEMGloballyEnabled($row['external_module_id']),
                     'total_enabled_dev_projects' => $total_enabled_dev_projects,
@@ -255,9 +255,9 @@ GROUP BY rems.external_module_id ", []);
 
         $row = db_fetch_assoc($q);
         if ($row['count'] && $row['count'] > 0) {
-            return true;
+            return 1;
         } else {
-            return false;
+            return 0;
         }
     }
 
@@ -331,14 +331,14 @@ GROUP BY rems.external_module_id ", []);
                 $matches = preg_grep('/^url/m', $content);
                 $url = end($matches);
                 $data['git_url'] = preg_replace('/^url\s=\s/m', '', $url);
-                $data[GITHUB_REPO_OPTION] = true;
+                // $data[GITHUB_REPO_OPTION] = true;
             } elseif (file_exists($path . '/.gitrepo')) {
                 $content = file_get_contents($path . '/.gitrepo');
                 $parts = explode("\n\t", $content);
                 $matches = preg_grep('/^remote?/m', $parts);
                 $url = end($matches);
                 $data['git_url'] = preg_replace('/^remote\s=\s/m', '', $url);
-                $data[GITHUB_REPO_OPTION] = true;
+                // $data[GITHUB_REPO_OPTION] = true;
                 $matches = preg_grep('/^commit?/m', $parts);
                 $commit = explode(" ", end($matches));
                 $data['current_git_commit'] = end($commit);
@@ -352,6 +352,7 @@ GROUP BY rems.external_module_id ", []);
      * @param string $prefix
      * @return bool
      * @throws \Exception
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function createExternalModuleREDCapRecord($externalModuleId, $prefix)
     {
@@ -361,7 +362,7 @@ GROUP BY rems.external_module_id ", []);
         $response = \REDCap::saveData($this->getProjectId(), 'json', json_encode(array($data)));
         if (empty($response['errors'])) {
             $key = Repository::getGithubKey($data['git_url']);
-            $this->getDeploymentEm()->updateRepositoryDefaultBranchLatestCommit($key, $prefix);
+            //$this->getDeploymentEm()->updateRepositoryDefaultBranchLatestCommit($key, $prefix);
             return true;
         } else {
             $this->emError($response);
@@ -410,7 +411,7 @@ GROUP BY rems.external_module_id ", []);
         }
     }
 
-    public function updateEMREDCapRecordUsageNumbers($record)
+    public function updateEMREDCapRecordUsageNumbers($record): bool
     {
         $data[REDCap::getRecordIdField()] = $record[$this->getFirstEventId()][REDCap::getRecordIdField()];
         $data['count_active_production'] = $record[$this->getFirstEventId()]['count_active_production'];
@@ -430,7 +431,7 @@ GROUP BY rems.external_module_id ", []);
             if ($this->getExternalModulesDBRecords()) {
                 foreach ($this->getExternalModulesDBRecords() as $record) {
                     $entity = $this->getEntityFactory()->create('external_modules_utilization', $record['entity']);
-                    $this->updateEMREDCapRecordUsageNumbers($record['redcap']);
+                    //$this->updateEMREDCapRecordUsageNumbers($record['redcap']);
                     echo $entity->getId() . '<br>';
                 }
             }
