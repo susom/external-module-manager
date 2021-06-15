@@ -321,7 +321,7 @@ GROUP BY rems.external_module_id ", []);
         $version = $this->getExternalModuleDeployedVersion($externalModuleId);
         $fullExternalModuleName = $prefix . '_' . $version;
         $folders = scandir(__DIR__ . '/../');
-        $data = array('test_project_pid' => $this->getExternalModuleSampleProjectId($externalModuleId));
+        //$data = array('test_project_pid' => $this->getExternalModuleSampleProjectId($externalModuleId));
 
         if (in_array($fullExternalModuleName, $folders)) {
             $path = $this->getFolderPath($fullExternalModuleName);
