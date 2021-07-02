@@ -3,7 +3,10 @@
 namespace Stanford\ExternalModuleManager;
 /** @var ExternalModuleManager $module */
 
+$dsn = \Authentication::buildDsnArray();
 
-$userid = \Authentication::tableBasedLogin();
+$module->emLog($dsn);
+
+$userid = \Authentication::authenticate();
 
 echo "Test Page";

@@ -11,10 +11,10 @@ if (isset($_GET['name'])) {
     }
 }
 
-echo $module->getUrl("pages/test_auth", true, true) . '<br>';
-echo $module->getUrl("pages/test_auth", false, true) . '<br>';
-echo $module->getUrl("pages/test_auth", true, false) . '<br>';
-echo $module->getUrl("pages/test_auth", false, false) . '<br>';
+echo $module->getUrl("pages/test_auth.php", true, true) . '<br>';
+echo $module->getUrl("pages/test_auth.php", false, true) . '<br>';
+echo $module->getUrl("pages/test_auth.php", true, false) . '<br>';
+echo $module->getUrl("pages/test_auth.php", false, false) . '<br>';
 ?>
 
 <div class="container-fluid">
