@@ -52,6 +52,7 @@
         ]
     },
     "no-auth-pages": [
+        "pages/test_auth"
     ],
     "project-settings": [
         {
