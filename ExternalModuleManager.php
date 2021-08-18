@@ -160,6 +160,11 @@ class ExternalModuleManager extends \ExternalModules\AbstractExternalModule
                     'type' => 'boolean',
                     'required' => true,
                 ],
+                'maintenance_fees' => [
+                    'name' => 'Maintenance Fees',
+                    'type' => 'integer',
+                    'required' => false,
+                ],
                 'number_of_settings_rows' => [
                     'name' => 'Number of Settings Rows',
                     'type' => 'integer',
@@ -572,7 +577,7 @@ GROUP BY rems.external_module_id ", []);
 
             while ($row = db_fetch_assoc($q)) {
                 $em = $row;
-
+                $em['redcap'] = $this->getExternalModulesREDCapRecords()[$row['module_prefix']];
                 $em['entity'] = array(
                     'module_prefix' => $row['module_prefix'],
                     'project_id' => $row['project_id'],
@@ -580,6 +585,7 @@ GROUP BY rems.external_module_id ", []);
                     'status' => $row['status'],
                     'record_count' => $row['record_count'],
                     'is_em_enabled' => $row['is_em_enabled'],
+                    'maintenance_fees' => $em['redcap'][$this->getFirstEventId()]['actual_monthly_cost'],
                     'number_of_settings_rows' => $row['number_of_settings_rows'],
                 );
                 $projectEMUsage[] = $em;
