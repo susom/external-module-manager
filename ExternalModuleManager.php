@@ -11,7 +11,7 @@ require_once __DIR__ . '/vendor/autoload.php';
 require_once "emLoggerTrait.php";
 require_once "classes/User.php";
 require_once "classes/Repository.php";
-
+require_once("classes/Client.php");
 
 define('GITHUB_REPO_OPTION', 'module_source___1');
 define('DEVELOPMENT_STATUS', 0);
@@ -26,7 +26,10 @@ define('ANALYSIS_STATUS', 2);
  * @property \Project $project
  * @property \Stanford\ExternalModuleDeployment\ExternalModuleDeployment $deploymentEm
  * @property \REDCapEntity\EntityFactory $entityFactory
+ * @property \Stanford\ExternalModuleManager\Client $client
  * @property  array $projectEMUsage
+ * @property string $request
+ * @property  array $instances
  */
 class ExternalModuleManager extends \ExternalModules\AbstractExternalModule
 {
@@ -45,13 +48,25 @@ class ExternalModuleManager extends \ExternalModules\AbstractExternalModule
 
     private $projectEMUsage;
 
+    private $client;
+
+    private $request;
+
+    private $instances;
+
     public function __construct()
     {
         parent::__construct();
         // Other code to run when object is instantiated
 
-        if (isset($_GET['pid'])) {
-             $this->setProject(new \Project(filter_var($_GET['pid'], FILTER_SANITIZE_NUMBER_INT)));
+
+        if (isset($_GET['pid']) && $_GET['pid'] != '') {
+
+            $this->setClient(new Client($this->getSystemSetting('api-token')));
+
+            $this->setInstances();
+
+            $this->setProject(new \Project(filter_var($_GET['pid'], FILTER_SANITIZE_NUMBER_INT)));
 
             if ($this->getProjectSetting('external-module-deployment')) {
                 $this->setDeploymentEm(\ExternalModules\ExternalModules::getModuleInstance($this->getProjectSetting('external-module-deployment')));
@@ -70,6 +85,20 @@ class ExternalModuleManager extends \ExternalModules\AbstractExternalModule
             'label_plural' => 'External Modules Utilization',
             'icon' => 'home_pencil',
             'properties' => [
+                'instance' => [
+                    'name' => 'REDCap Instance',
+                    'type' => 'text',
+                    'required' => true,
+                    'default' => '0',
+                    'choices' => [
+                        '0' => 'som-dev',
+                        '1' => 'som-prod',
+                        '2' => 'lpch-dev',
+                        '3' => 'lpch-prod',
+                        '4' => 'shc-dev',
+                        '5' => 'shc-prod',
+                    ],
+                ],
                 'module_prefix' => [
                     'name' => 'Module Prefix',
                     'type' => 'text',
@@ -87,6 +116,11 @@ class ExternalModuleManager extends \ExternalModules\AbstractExternalModule
                 ],
                 'globally_enabled' => [
                     'name' => 'Is it Globally Enabled?',
+                    'type' => 'boolean',
+                    'required' => true,
+                ],
+                'discoverable_in_project' => [
+                    'name' => 'Discoverable by Regular Users?',
                     'type' => 'boolean',
                     'required' => true,
                 ],
@@ -124,6 +158,20 @@ class ExternalModuleManager extends \ExternalModules\AbstractExternalModule
             'label_plural' => 'Projects External Module Usage',
             'icon' => 'codebook',
             'properties' => [
+                'instance' => [
+                    'name' => 'REDCap Instance',
+                    'type' => 'text',
+                    'required' => true,
+                    'default' => '0',
+                    'choices' => [
+                        '0' => 'som-dev',
+                        '1' => 'som-prod',
+                        '2' => 'lpch-dev',
+                        '3' => 'lpch-prod',
+                        '4' => 'shc-dev',
+                        '5' => 'shc-prod',
+                    ],
+                ],
                 'module_prefix' => [
                     'name' => 'Module Prefix',
                     'type' => 'text',
@@ -241,6 +289,7 @@ GROUP BY rems.external_module_id ", []);
                     'date' => time(),
                     'total_enabled_projects' => $row['total_enabled_projects'],
                     'globally_enabled' => $this->isEMGloballyEnabled($row['external_module_id']),
+                    'discoverable_in_project' => $this->isEMDiscoverableInProject($row['external_module_id']),
                     'total_enabled_dev_projects' => $total_enabled_dev_projects,
                     'total_enabled_prod_projects' => $total_enabled_prod_projects,
                     'total_using_projects' => '' // TODO,
@@ -415,24 +464,42 @@ GROUP BY rems.external_module_id ", []);
     {
         try {
             if ($this->getProjectEMUsage()) {
-                foreach ($this->getProjectEMUsage() as $record) {
-                    if (!$entity = $this->isProjectEMUsageRecordExist($record)) {
-                        $entity = $this->getEntityFactory()->create('project_external_modules_usage', $record['entity']);
-                        echo $entity->getId() . '<br>';
-                    } else {
-                        #$entity = $this->getEntityFactory()->getInstance('project_external_modules_usage', $recordId);
-                        if ($entity->setData($record['entity'])) {
-                            $entity->save();
-                        } else {
-                            // Get a list of properties that failed on update
-                            print_r($entity->getErrors());
-                        }
-                    }
-                }
+//                foreach ($this->getProjectEMUsage() as $record) {
+//                    if (!$entity = $this->isProjectEMUsageRecordExist($record)) {
+//                        $entity = $this->getEntityFactory()->create('project_external_modules_usage', $record['entity']);
+//                        echo $entity->getId() . '<br>';
+//                    } else {
+//                        #$entity = $this->getEntityFactory()->getInstance('project_external_modules_usage', $recordId);
+//                        if ($entity->setData($record['entity'])) {
+//                            $entity->save();
+//                        } else {
+//                            // Get a list of properties that failed on update
+//                            print_r($entity->getErrors());
+//                        }
+//                    }
+//                }
+                echo json_encode($this->getProjectEMUsage());
             }
         } catch (\Exception $e) {
             echo $e->getMessage();
         }
+    }
+
+
+    /**
+     * @param $eventId
+     * @return int|string
+     * @throws \Exception
+     */
+    private function searchBranchNameViaEventId($eventId)
+    {
+        $arm = end($this->getProject()->events);
+        $description = $arm['events'][$eventId]['descrip'];
+        $options = parseEnum($this->getProject()->metadata['deploy']['element_enum']);
+        if ($index = array_search($description, $options)) {
+            return $index;
+        }
+        throw new \Exception("could not find branch for event $eventId");
     }
 
     public function updateEMREDCapRecordUsageNumbers($record, $eventId): bool
@@ -455,11 +522,12 @@ GROUP BY rems.external_module_id ", []);
     {
         try {
             if ($this->getExternalModulesDBRecords()) {
-                foreach ($this->getExternalModulesDBRecords() as $record) {
-                    $entity = $this->getEntityFactory()->create('external_modules_utilization', $record['entity']);
-                    $this->updateEMREDCapRecordUsageNumbers($record['redcap'], $eventId);
-                    echo $entity->getId() . '<br>';
-                }
+//                foreach ($this->getExternalModulesDBRecords() as $record) {
+//                    $entity = $this->getEntityFactory()->create('external_modules_utilization', $record['entity']);
+//                    $this->updateEMREDCapRecordUsageNumbers($record['redcap'], $eventId);
+//                    echo $entity->getId() . '<br>';
+//                }
+                echo json_encode($this->getExternalModulesDBRecords());
             }
         } catch (\Exception $e) {
             echo $e->getMessage();
@@ -597,5 +665,128 @@ GROUP BY rems.external_module_id ", []);
 
     }
 
+    public function processRequest()
+    {
+        if (!isset($_POST) or empty($_POST)) {
+            throw new \LogicException("you are not allowed to access the API");
+        }
+
+        if (!isset($_POST['secret_token']) || !isset($_POST['request'])) {
+            throw new \LogicException("request parameter is missing");
+        }
+
+        $token = filter_var($_POST['secret_token'], FILTER_SANITIZE_STRING);
+        if (!$this->verifyToken($token)) {
+            throw new \LogicException("wrong token provided");
+        }
+
+        // set request
+        $this->setRequest(filter_var($_POST['request'], FILTER_SANITIZE_STRING));
+
+        if ($this->getRequest() == 'em_utilization') {
+            $this->createExternalModuleUtilizationLogs($this->getFirstEventId());
+        }
+        if ($this->getRequest() == 'project_em_usage') {
+            $this->createProjectsExternalModuleUsageLogs();
+        }
+    }
+
+    public function processCron()
+    {
+        foreach ($this->getInstances() as $id => $instance) {
+            $response = $this->getClient()->getGuzzleClient()->post($instance['service-url'], [
+                'headers' => [
+                    'Accept' => 'application/json',
+                ],
+                'form_params' => [
+                    'secret_token' => $this->getSystemSetting('api-token'),
+                    'request' => filter_var($_GET['name'], FILTER_SANITIZE_STRING)
+                ]
+            ]);
+            $body = json_decode($response->getBody(), true);
+            if ($_GET['name'] == 'em_utilization') {
+                foreach ($body as $record) {
+                    $record['entity']['instance'] = $instance['name'];
+                    $entity = $this->getEntityFactory()->create('external_modules_utilization', $record['entity']);
+//                    $this->updateEMREDCapRecordUsageNumbers($record['redcap'], $eventId);
+                    echo $entity->getId() . '<br>';
+                }
+            }
+            if ($_GET['name'] == 'project_em_usage') {
+                foreach ($body as $record) {
+                    if (!$entity = $this->isProjectEMUsageRecordExist($record)) {
+                        $entity = $this->getEntityFactory()->create('project_external_modules_usage', $record['entity']);
+                        echo $entity->getId() . '<br>';
+                    } else {
+                        #$entity = $this->getEntityFactory()->getInstance('project_external_modules_usage', $recordId);
+                        if ($entity->setData($record['entity'])) {
+                            $entity->save();
+                        } else {
+                            // Get a list of properties that failed on update
+                            print_r($entity->getErrors());
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * check if provided token is correct or not
+     * @param $token
+     * @return bool
+     */
+    private function verifyToken($token)
+    {
+        return $token == $this->getClient()->getToken();
+    }
+
+    /**
+     * @return Client
+     */
+    public function getClient(): Client
+    {
+        return $this->client;
+    }
+
+    /**
+     * @param Client $client
+     */
+    public function setClient(Client $client): void
+    {
+        $this->client = $client;
+    }
+
+    /**
+     * @return string
+     */
+    public function getRequest(): string
+    {
+        return $this->request;
+    }
+
+    /**
+     * @param string $request
+     */
+    public function setRequest(string $request): void
+    {
+        $this->request = $request;
+    }
+
+    /**
+     * @return array
+     */
+    public function getInstances(): array
+    {
+        return $this->instances;
+    }
+
+    /**
+     * @param array $instances
+     */
+    public function setInstances(): void
+    {
+        $this->instances = $this->getSubSettings('instances', $this->getProjectId());;
+    }
 
 }

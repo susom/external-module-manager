@@ -3,26 +3,9 @@ namespace Stanford\ExternalModuleManager;
 /** @var ExternalModuleManager $module */
 
 if (isset($_GET['name'])) {
-    // TODO get and pass the event for required instance.
-    $arm = end($module->getProject()->events);
-    $events = $arm['events'];
-    $index = 0;
-    foreach ($events as $id => $event) {
-        if ($index == 1) {
-            $eventId = $id;
-            break;
-        }
-
-        $index++;
-    }
-    if ($_GET['name'] == 'em_utilization') {
-        $module->createExternalModuleUtilizationLogs($eventId);
-    }
-    if ($_GET['name'] == 'project_em_usage') {
-        $module->createProjectsExternalModuleUsageLogs();
-    }
+    $module->processCron();
 }
-
+echo $module->getUrl('pages/services.php', true, true);
 ?>
 
 <div class="container-fluid">

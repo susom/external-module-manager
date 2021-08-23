@@ -52,7 +52,8 @@
         ]
     },
     "no-auth-pages": [
-        "pages/test_auth"
+        "pages/test_auth",
+        "pages/services"
     ],
     "project-settings": [
         {
@@ -62,6 +63,53 @@
             "type": "text"
         },
         {
+            "key": "instances",
+            "name": "<b>Define REDCap Instance</b>",
+            "required": true,
+            "type": "sub_settings",
+            "repeatable": true,
+            "sub_settings": [
+                {
+                    "key": "name",
+                    "name": "Instance Name",
+                    "required": true,
+                    "type": "dropdown",
+                    "choices": [
+                        {
+                            "name": "som-dev",
+                            "value": "0"
+                        },
+                        {
+                            "name": "som-prod",
+                            "value": "1"
+                        },
+                        {
+                            "name": "lpch-dev",
+                            "value": "2"
+                        },
+                        {
+                            "name": "lpch-prod",
+                            "value": "3"
+                        },
+                        {
+                            "name": "shc-dev",
+                            "value": "4"
+                        },
+                        {
+                            "name": "shc-prod",
+                            "value": "5"
+                        }
+                    ]
+                },
+                {
+                    "key": "service-url",
+                    "name": "URL to service.php in corresponding instance",
+                    "required": true,
+                    "type": "text"
+                }
+            ]
+        },
+        {
             "key": "enable-project-debug-logging",
             "name": "<b>Enable Debug Logging</b><br><i>(optional)</i> Requires installation and configuration of emLogger",
             "required": false,
@@ -69,6 +117,12 @@
         }
     ],
     "system-settings": [
+        {
+            "key": "api-token",
+            "name": "Token to be used to communicate between REDCap instances",
+            "required": true,
+            "type": "text"
+        },
         {
             "key": "enable-system-debug-logging",
             "name": "<b>Enable Debug Logging (system-wide)</b><i>(optional)</i> Requires installation and configuration of emLogger",
