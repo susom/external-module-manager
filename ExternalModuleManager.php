@@ -714,6 +714,7 @@ GROUP BY rems.external_module_id ", []);
             }
             if ($_GET['name'] == 'project_em_usage') {
                 foreach ($body as $record) {
+                    $record['entity']['instance'] = $instance['name'];
                     if (!$entity = $this->isProjectEMUsageRecordExist($record)) {
                         $entity = $this->getEntityFactory()->create('project_external_modules_usage', $record['entity']);
                         echo $entity->getId() . '<br>';
