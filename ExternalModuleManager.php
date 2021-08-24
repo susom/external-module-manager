@@ -124,6 +124,11 @@ class ExternalModuleManager extends \ExternalModules\AbstractExternalModule
                     'type' => 'boolean',
                     'required' => true,
                 ],
+                'user_activate_permission' => [
+                    'name' => 'Can be enabled by Regular Users?',
+                    'type' => 'boolean',
+                    'required' => true,
+                ],
                 'total_enabled_projects' => [
                     'name' => 'Total Number of Projects enabled this EM?',
                     'type' => 'integer',
@@ -276,10 +281,10 @@ GROUP BY rems.external_module_id ", []);
                 $em['redcap'] = $this->getExternalModulesREDCapRecords()[$row['module_prefix']];
 
                 // use this to update redcap record.
-                $em['redcap'][$this->getFirstEventId()]['count_active_production'] = $total_enabled_prod_projects;
-                $em['redcap'][$this->getFirstEventId()]['count_active_dev'] = $total_enabled_dev_projects;
-                $em['redcap'][$this->getFirstEventId()]['globally_enabled'] = $this->isEMGloballyEnabled($row['external_module_id']);
-                $em['redcap'][$this->getFirstEventId()]['discoverable_in_project'] = $this->isEMDiscoverableInProject($row['external_module_id']);
+//                $em['redcap'][$this->getFirstEventId()]['count_active_production'] = $total_enabled_prod_projects;
+//                $em['redcap'][$this->getFirstEventId()]['count_active_dev'] = $total_enabled_dev_projects;
+//                $em['redcap'][$this->getFirstEventId()]['globally_enabled'] = $this->isEMGloballyEnabled($row['external_module_id']);
+//                $em['redcap'][$this->getFirstEventId()]['discoverable_in_project'] = $this->isEMDiscoverableInProject($row['external_module_id']);
 
 
                 $em['entity'] = array(
@@ -290,6 +295,7 @@ GROUP BY rems.external_module_id ", []);
                     'total_enabled_projects' => $row['total_enabled_projects'],
                     'globally_enabled' => $this->isEMGloballyEnabled($row['external_module_id']),
                     'discoverable_in_project' => $this->isEMDiscoverableInProject($row['external_module_id']),
+                    'user_activate_permission' => $this->isEMCanBeEnableByNormalUsers($row['external_module_id']),
                     'total_enabled_dev_projects' => $total_enabled_dev_projects,
                     'total_enabled_prod_projects' => $total_enabled_prod_projects,
                     'total_using_projects' => '' // TODO,
@@ -325,6 +331,23 @@ GROUP BY rems.external_module_id ", []);
     public function isEMDiscoverableInProject($externalModuleId)
     {
         $q = $this->query("select `value` from redcap_external_module_settings where project_id is NULL and `key` = 'discoverable-in-project' and external_module_id = ?", [$externalModuleId]);
+
+        $row = db_fetch_assoc($q);
+        if ($row['value']) {
+            return $row['value'] ? 1 : 0;
+        } else {
+            return 0;
+        }
+    }
+
+
+    /**
+     * @param $externalModuleId
+     * @return bool
+     */
+    public function isEMCanBeEnableByNormalUsers($externalModuleId)
+    {
+        $q = $this->query("select `value` from redcap_external_module_settings where project_id is NULL and `key` = 'user-activate-permission' and external_module_id = ?", [$externalModuleId]);
 
         $row = db_fetch_assoc($q);
         if ($row['value']) {
