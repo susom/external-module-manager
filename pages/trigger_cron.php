@@ -5,7 +5,7 @@ namespace Stanford\ExternalModuleManager;
 if (isset($_GET['name'])) {
     $module->processCron();
 }
-echo $module->getUrl('pages/services.php', true, true);
+//echo $module->getUrl('pages/services.php', true, true);
 ?>
 
 <div class="container-fluid">
