@@ -192,6 +192,11 @@ class ExternalModuleManager extends \ExternalModules\AbstractExternalModule
                     'type' => 'text',
                     'required' => true,
                 ],
+                'rit_portal_project_id' => [
+                    'name' => 'RIT Project',
+                    'type' => 'integer',
+                    'required' => false,
+                ],
                 'status' => [
                     'name' => 'Status',
                     'type' => 'text',
@@ -667,12 +672,25 @@ GROUP BY rems.external_module_id ", []);
                     group by rems.external_module_id, rems.project_id, rem.directory_prefix, rp.app_title, rp.status, rrc.record_count ", []);
 
             while ($row = db_fetch_assoc($q)) {
+                $linkedQ = $this->query("SELECT t.value
+                            FROM redcap.redcap_external_module_settings t
+                            WHERE project_id = ? and `key` = 'linked-project'", [$row['project_id']]);
+
+                $linkedRow = db_fetch_assoc($linkedQ);
+                if ($linkedRow['value'] && $linkedRow['value'] != '') {
+                    $v = json_decode($linkedRow['value'], true);
+                    $ritPID = array_key_first($v);
+                } else {
+                    $ritPID = null;
+                }
+
                 $em = $row;
                 $em['redcap'] = $this->getExternalModulesREDCapRecords()[$row['module_prefix']];
                 $em['entity'] = array(
                     'module_prefix' => $row['module_prefix'],
                     'project_id' => $row['project_id'],
                     'project_title' => $row['project_title'],
+                    'rit_portal_project_id' => $ritPID,
                     'status' => $row['status'],
                     'record_count' => $row['record_count'],
                     'is_em_enabled' => $row['is_em_enabled'],
