@@ -30,6 +30,8 @@ define('ANALYSIS_STATUS', 2);
  * @property  array $projectEMUsage
  * @property string $request
  * @property  array $instances
+ * @property  array $projects
+ * @property int $refreshProjectId
  */
 class ExternalModuleManager extends \ExternalModules\AbstractExternalModule
 {
@@ -53,6 +55,10 @@ class ExternalModuleManager extends \ExternalModules\AbstractExternalModule
     private $request;
 
     private $instances;
+
+    private $projects;
+
+    private $refreshProjectId;
 
     public function __construct()
     {
@@ -655,7 +661,25 @@ GROUP BY rems.external_module_id ", []);
     {
         try {
             $projectEMUsage = array();
-            $q = $this->query("select
+
+            if ($this->getRefreshProjectId()) {
+                $q = $this->query("select
+                       rems.external_module_id,
+                       rem.directory_prefix as module_prefix,
+                       rems.project_id,
+                       rp.app_title as project_title,
+                       rp.status,
+                       rrc.record_count,
+                       sum(case when rems.`key` = 'enabled' and rems.value = 'true' then 1 else 0 end) as is_em_enabled,
+                       count(*) as number_of_settings_rows
+                    from redcap_external_module_settings rems
+                    join redcap_external_modules rem on rems.external_module_id = rem.external_module_id
+                    join redcap_projects rp on rems.project_id = rp.project_id
+                    join redcap_record_counts rrc on rp.project_id = rrc.project_id
+                    where rems.project_id = ?
+                    group by rems.external_module_id, rems.project_id, rem.directory_prefix, rp.app_title, rp.status, rrc.record_count ", [$this->getRefreshProjectId()]);
+            } else {
+                $q = $this->query("select
                        rems.external_module_id,
                        rem.directory_prefix as module_prefix,
                        rems.project_id,
@@ -670,6 +694,8 @@ GROUP BY rems.external_module_id ", []);
                     join redcap_record_counts rrc on rp.project_id = rrc.project_id
                     where rems.project_id is not null
                     group by rems.external_module_id, rems.project_id, rem.directory_prefix, rp.app_title, rp.status, rrc.record_count ", []);
+            }
+
 
             while ($row = db_fetch_assoc($q)) {
                 $linkedQ = $this->query("SELECT t.value
@@ -691,7 +717,7 @@ GROUP BY rems.external_module_id ", []);
                     'project_id' => $row['project_id'],
                     'project_title' => $row['project_title'],
                     'rit_portal_project_id' => $ritPID,
-                    'status' => $row['status'],
+                    'status' => (string)$row['status'],
                     'record_count' => $row['record_count'],
                     'is_em_enabled' => $row['is_em_enabled'],
                     'maintenance_fees' => $em['redcap'][$this->getFirstEventId()]['actual_monthly_cost'],
@@ -773,6 +799,37 @@ GROUP BY rems.external_module_id ", []);
         }
     }
 
+    private function findCurrentInstanceName()
+    {
+        foreach ($this->getInstances() as $id => $instance) {
+            if (strpos($instance['service-url'], $_SERVER['HTTP_HOST']) !== false) {
+                return $instance['name'];
+            }
+        }
+        return '0'; #som-dev
+    }
+
+    public function refreshProjectEMUsage()
+    {
+        $this->setRefreshProjectId(filter_var($_GET['project_id'], FILTER_SANITIZE_STRING));
+        $instanceName = $this->findCurrentInstanceName();
+        foreach ($this->getProjectEMUsage() as $record) {
+            $record['entity']['instance'] = $instanceName;
+            if (!$entity = $this->isProjectEMUsageRecordExist($record)) {
+                $entity = $this->getEntityFactory()->create('project_external_modules_usage', $record['entity']);
+                echo $entity->getId() . '<br>';
+            } else {
+                #$entity = $this->getEntityFactory()->getInstance('project_external_modules_usage', $recordId);
+                if ($entity->setData($record['entity'])) {
+                    $entity->save();
+                } else {
+                    // Get a list of properties that failed on update
+                    print_r($entity->getErrors());
+                }
+            }
+        }
+    }
+
     /**
      * check if provided token is correct or not
      * @param $token
@@ -830,5 +887,44 @@ GROUP BY rems.external_module_id ", []);
     {
         $this->instances = $this->getSubSettings('instances', $this->getProjectId());;
     }
+
+    /**
+     * @return array
+     */
+    public function getProjects(): array
+    {
+        return $this->projects;
+    }
+
+    /**
+     * @param array $projects
+     */
+    public function setProjects(): void
+    {
+        $projects = array();
+        $q = $this->query("SELECT * FROM redcap_projects WHERE status IN (0,1) ", []);
+
+        while ($row = db_fetch_assoc($q)) {
+            $projects[] = $row;
+        }
+        $this->projects = $projects;
+    }
+
+    /**
+     * @return int
+     */
+    public function getRefreshProjectId()
+    {
+        return $this->refreshProjectId;
+    }
+
+    /**
+     * @param int $refreshProjectId
+     */
+    public function setRefreshProjectId(int $refreshProjectId): void
+    {
+        $this->refreshProjectId = $refreshProjectId;
+    }
+
 
 }
