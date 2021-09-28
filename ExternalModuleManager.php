@@ -783,7 +783,13 @@ GROUP BY rems.external_module_id ", []);
                 foreach ($body as $record) {
                     $record['entity']['instance'] = $instance['name'];
                     if (!$entity = $this->isProjectEMUsageRecordExist($record)) {
+                        $this->emLog("**********record*************");
+                        $this->emLog($record);
+                        $this->emLog("***********************");
                         $entity = $this->getEntityFactory()->create('project_external_modules_usage', $record['entity']);
+                        $this->emLog("***********entity************");
+                        $this->emLog($entity);
+                        $this->emLog("***********************");
                         echo $entity->getId() . '<br>';
                     } else {
                         #$entity = $this->getEntityFactory()->getInstance('project_external_modules_usage', $recordId);
