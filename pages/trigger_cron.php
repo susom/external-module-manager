@@ -45,7 +45,8 @@ $module->setProjects();
                 <?php
                 foreach ($module->getProjects() as $project) {
                     ?>
-                    <option value="<?php echo $project['project_id'] ?>"><?php echo $project['app_title'] ?></option>
+                    <option
+                        value="<?php echo $project['project_id'] ?>"><?php echo '(' . $project['project_id'] . ')' . $project['app_title'] ?></option>
                     <?php
                 }
                 ?>
