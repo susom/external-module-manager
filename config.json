@@ -6,11 +6,6 @@
     "framework-version": 6,
     "authors": [
         {
-            "name": "Andrew Martin",
-            "email": "andy123@stanford.edu",
-            "institution": "Stanford University"
-        },
-        {
             "name": "Ihab Zeedia",
             "email": "ihabz@stanford.edu",
             "institution": "Stanford University"
@@ -124,6 +119,13 @@
             "type": "text"
         },
         {
+            "key": "em-project-id",
+            "name": "Project contains EM records",
+            "required": true,
+            "default": "16000",
+            "type": "text"
+        },
+        {
             "key": "enable-system-debug-logging",
             "name": "<b>Enable Debug Logging (system-wide)</b><i>(optional)</i> Requires installation and configuration of emLogger",
             "required": false,
@@ -135,5 +137,14 @@
         "php-version-max": "",
         "redcap-version-min": "",
         "redcap-version-max": ""
-    }
+    },
+    "crons": [
+        {
+            "cron_name": "project_em_usage",
+            "cron_description": "This cron will update each Project Em usage. ",
+            "method": "projectEMUsageTriggerCron",
+            "cron_frequency": "60",
+            "cron_max_run_time": "600"
+        }
+    ]
 }

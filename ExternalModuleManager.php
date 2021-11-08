@@ -65,10 +65,10 @@ class ExternalModuleManager extends \ExternalModules\AbstractExternalModule
         parent::__construct();
         // Other code to run when object is instantiated
 
+        $this->setClient(new Client($this->getSystemSetting('api-token')));
+
 
         if (isset($_GET['pid']) && $_GET['pid'] != '') {
-
-            $this->setClient(new Client($this->getSystemSetting('api-token')));
 
             $this->setInstances();
 
@@ -796,6 +796,13 @@ GROUP BY rems.external_module_id ", []);
                 }
             }
         }
+    }
+
+    public function projectEMUsageTriggerCron()
+    {
+        $url = $this->getUrl("ajax/cron.php", true) . '&pid=' . $this->getSystemSetting('em-project-id');
+        $this->getClient()->getGuzzleClient()->request('GET', $url, array(\GuzzleHttp\RequestOptions::SYNCHRONOUS => true));
+        $this->emDebug("running cron for $url on project " . $this->getSystemSetting('em-project-id'));
     }
 
     public function processProjectEMUsage()
