@@ -141,7 +141,7 @@
             "cron_name": "project_em_usage",
             "cron_description": "This cron will update each Project Em usage. ",
             "method": "processProjectEMUsage",
-            "cron_frequency": "60",
+            "cron_frequency": "1209600",
             "cron_max_run_time": "600"
         }
     ]

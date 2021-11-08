@@ -907,6 +907,9 @@ GROUP BY rems.external_module_id ", []);
      */
     public function getInstances(): array
     {
+        if (!$this->instances) {
+            $this->setInstances();
+        }
         return $this->instances;
     }
 
