@@ -760,18 +760,34 @@ GROUP BY rems.external_module_id ", []);
 
     public function processCron()
     {
+        if ($_GET['name'] == 'em_utilization') {
+            $this->processEMUtilization();
+        }
+        if ($_GET['name'] == 'project_em_usage') {
+            $this->processProjectEMUsage();
+        }
+    }
+
+    public function getInstanceEMBody($name, $url)
+    {
+        $response = $this->getClient()->getGuzzleClient()->post($url, [
+            'headers' => [
+                'Accept' => 'application/json',
+            ],
+            'form_params' => [
+                'secret_token' => $this->getSystemSetting('api-token'),
+                'request' => filter_var($name, FILTER_SANITIZE_STRING)
+            ]
+        ]);
+        return json_decode($response->getBody(), true);
+    }
+
+    public function processEMUtilization()
+    {
         foreach ($this->getInstances() as $id => $instance) {
-            $response = $this->getClient()->getGuzzleClient()->post($instance['service-url'], [
-                'headers' => [
-                    'Accept' => 'application/json',
-                ],
-                'form_params' => [
-                    'secret_token' => $this->getSystemSetting('api-token'),
-                    'request' => filter_var($_GET['name'], FILTER_SANITIZE_STRING)
-                ]
-            ]);
-            $body = json_decode($response->getBody(), true);
-            if ($_GET['name'] == 'em_utilization') {
+
+            $body = $this->getInstanceEMBody('em_utilization', $instance['service-url']);
+            if ($body) {
                 foreach ($body as $record) {
                     $record['entity']['instance'] = $instance['name'];
                     $entity = $this->getEntityFactory()->create('external_modules_utilization', $record['entity']);
@@ -779,7 +795,15 @@ GROUP BY rems.external_module_id ", []);
                     echo $entity->getId() . '<br>';
                 }
             }
-            if ($_GET['name'] == 'project_em_usage') {
+        }
+    }
+
+    public function processProjectEMUsage()
+    {
+        foreach ($this->getInstances() as $id => $instance) {
+
+            $body = $this->getInstanceEMBody('project_em_usage', $instance['service-url']);
+            if ($body) {
                 foreach ($body as $record) {
                     $record['entity']['instance'] = $instance['name'];
                     if (!$entity = $this->isProjectEMUsageRecordExist($record)) {
