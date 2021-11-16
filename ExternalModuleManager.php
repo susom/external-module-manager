@@ -224,6 +224,12 @@ class ExternalModuleManager extends \ExternalModules\AbstractExternalModule
                     'type' => 'boolean',
                     'required' => true,
                 ],
+                'has_maintenance_fees' => [
+                    'name' => 'Has Maintenance Fees?',
+                    'type' => 'boolean',
+                    'default' => '1',
+                    'required' => true,
+                ],
                 'maintenance_fees' => [
                     'name' => 'Maintenance Fees',
                     'type' => 'integer',
@@ -721,6 +727,7 @@ GROUP BY rems.external_module_id ", []);
                     'record_count' => $row['record_count'],
                     'is_em_enabled' => $row['is_em_enabled'],
                     'maintenance_fees' => $em['redcap'][$this->getFirstEventId()]['actual_monthly_cost'],
+                    'has_maintenance_fees' => $em['redcap'][$this->getFirstEventId()]['maintenance_fee'],
                     'number_of_settings_rows' => $row['number_of_settings_rows'],
                 );
                 $projectEMUsage[] = $em;
