@@ -228,7 +228,7 @@ class ExternalModuleManager extends \ExternalModules\AbstractExternalModule
                     'name' => 'Has Maintenance Fees?',
                     'type' => 'boolean',
                     'default' => '1',
-                    'required' => true,
+                    'required' => false,
                 ],
                 'maintenance_fees' => [
                     'name' => 'Maintenance Fees',
@@ -821,17 +821,21 @@ GROUP BY rems.external_module_id ", []);
                 foreach ($body as $record) {
                     $record['entity']['instance'] = $instance['name'];
                     if (!$entity = $this->isProjectEMUsageRecordExist($record)) {
-                        $this->emLog("**********record*************");
-                        $this->emLog($record);
-                        $this->emLog("***********************");
-                        $this->emLog("**********record entity*************");
-                        $this->emLog($record['entity']);
-                        $this->emLog("***********************");
+//                        $this->emLog("**********record*************");
+//                        $this->emLog($record);
+//                        $this->emLog("***********************");
+//                        $this->emLog("**********record entity*************");
+//                        $this->emLog($record['entity']);
+//                        $this->emLog("***********************");
                         $entity = $this->getEntityFactory()->create('project_external_modules_usage', $record['entity']);
-                        $this->emLog("***********entity************");
-                        $this->emLog($entity);
-                        $this->emLog("***********************");
-                        echo $entity->getId() . '<br>';
+//                        $this->emLog("***********entity************");
+//                        $this->emLog($entity);
+//                        $this->emLog("***********************");
+                        if (!$entity) {
+                            print_r($this->getEntityFactory()->errors);
+                        } else {
+                            echo $entity->getId() . '<br>';
+                        }
                     } else {
                         #$entity = $this->getEntityFactory()->getInstance('project_external_modules_usage', $recordId);
                         if ($entity->setData($record['entity'])) {
