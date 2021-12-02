@@ -36,6 +36,12 @@
                 "show-header-and-footer": true
             },
             {
+                "name": "Display REDCap overdue payment",
+                "icon": "fas fa-donate",
+                "url": "pages/redcap_overdue_payments.php",
+                "show-header-and-footer": true
+            },
+            {
                 "name": "Display Project EM Usage",
                 "icon": "fas fa-donate",
                 "url": "pages/project_em_usage.php",

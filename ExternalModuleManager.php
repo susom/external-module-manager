@@ -164,6 +164,60 @@ class ExternalModuleManager extends \ExternalModules\AbstractExternalModule
             ],
         ];
 
+        $types['projects_overdue_payments'] = [
+            'label' => 'REDCap projects overdue payment',
+            'label_plural' => 'REDCap projects overdue payments',
+            'icon' => 'home_pencil',
+            'properties' => [
+                'instance' => [
+                    'name' => 'REDCap Instance',
+                    'type' => 'text',
+                    'required' => true,
+                    'default' => '0',
+                    'choices' => [
+                        '0' => 'som-dev',
+                        '1' => 'som-prod',
+                        '2' => 'lpch-dev',
+                        '3' => 'lpch-prod',
+                        '4' => 'shc-dev',
+                        '5' => 'shc-prod',
+                    ],
+                ],
+                'project_id' => [
+                    'name' => 'Project',
+                    'type' => 'project',
+                    'required' => true,
+                ],
+                'monthly_payments' => [
+                    'name' => 'Monthly Payment Amount',
+                    'type' => 'integer',
+                    'required' => true,
+                ],
+                'month' => [
+                    'name' => 'Payment`s Month',
+                    'type' => 'text',
+                    'required' => true,
+                    'choices' => [
+                        '1' => 'January',
+                        '2' => 'February',
+                        '3' => 'March',
+                        '4' => 'April',
+                        '5' => 'May',
+                        '6' => 'June',
+                        '7' => 'July',
+                        '8' => 'August',
+                        '9' => 'September',
+                        '10' => 'October',
+                        '11' => 'November',
+                        '12' => 'December',
+                    ],
+                ],
+            ],
+            'special_keys' => [
+                'label' => 'module_prefix', // "name" represents the entity label.
+            ],
+        ];
+
         $types['project_external_modules_usage'] = [
             'label' => 'Project External Module Usage',
             'label_plural' => 'Projects External Module Usage',
