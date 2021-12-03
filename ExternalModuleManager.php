@@ -193,10 +193,15 @@ class ExternalModuleManager extends \ExternalModules\AbstractExternalModule
                     'type' => 'integer',
                     'required' => true,
                 ],
+                'year' => [
+                    'name' => 'Payment`s Year',
+                    'type' => 'text',
+                    'required' => false,
+                ],
                 'month' => [
                     'name' => 'Payment`s Month',
                     'type' => 'text',
-                    'required' => true,
+                    'required' => false,
                     'choices' => [
                         '1' => 'January',
                         '2' => 'February',
