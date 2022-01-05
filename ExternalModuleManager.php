@@ -95,7 +95,7 @@ class ExternalModuleManager extends \ExternalModules\AbstractExternalModule
                     'name' => 'REDCap Instance',
                     'type' => 'text',
                     'required' => true,
-                    'default' => '0',
+                    'default' => '1',
                     'choices' => [
                         '0' => 'som-dev',
                         '1' => 'som-prod',
@@ -156,6 +156,11 @@ class ExternalModuleManager extends \ExternalModules\AbstractExternalModule
                 'total_using_projects' => [
                     'name' => 'Total Number of Projects actually using the EM?',
                     'type' => 'text',
+                    'required' => false,
+                ],
+                'maintenance_fees' => [
+                    'name' => 'Monthly Maintenance fees',
+                    'type' => 'integer',
                     'required' => false,
                 ],
             ],
@@ -374,7 +379,8 @@ GROUP BY rems.external_module_id ", []);
                     'user_activate_permission' => $this->isEMCanBeEnableByNormalUsers($row['external_module_id']),
                     'total_enabled_dev_projects' => $total_enabled_dev_projects,
                     'total_enabled_prod_projects' => $total_enabled_prod_projects,
-                    'total_using_projects' => '' // TODO,
+                    'total_using_projects' => '',// TODO,
+                    'maintenance_fees' => $em['redcap'][$this->getFirstEventId()]['actual_monthly_cost'],
                 );
                 $externalModulesDBRecords[] = $em;
             }
@@ -858,7 +864,11 @@ GROUP BY rems.external_module_id ", []);
                     $record['entity']['instance'] = $instance['name'];
                     $entity = $this->getEntityFactory()->create('external_modules_utilization', $record['entity']);
 //                    $this->updateEMREDCapRecordUsageNumbers($record['redcap'], $eventId);
-                    echo $entity->getId() . '<br>';
+                    if ($entity) {
+                        echo $entity->getId() . '<br>';
+                    } else {
+                        print_r($this->getEntityFactory()->errors);
+                    }
                 }
             }
         }
@@ -869,6 +879,49 @@ GROUP BY rems.external_module_id ", []);
         $url = $this->getUrl("ajax/cron.php", true) . '&pid=' . $this->getSystemSetting('em-project-id');
         $this->getClient()->getGuzzleClient()->request('GET', $url, array(\GuzzleHttp\RequestOptions::SYNCHRONOUS => true));
         $this->emDebug("running cron for $url on project " . $this->getSystemSetting('em-project-id'));
+    }
+
+    public function eMUtilizationTriggerCron()
+    {
+        $url = $this->getUrl("ajax/cron_em_util.php", true) . '&pid=' . $this->getSystemSetting('em-project-id');
+        $this->getClient()->getGuzzleClient()->request('GET', $url, array(\GuzzleHttp\RequestOptions::SYNCHRONOUS => true));
+        $this->emDebug("running cron for $url on project " . $this->getSystemSetting('em-project-id'));
+    }
+
+    public function getAllEMUtilizationRecoreds()
+    {
+        $query = "select
+id ,instance, module_prefix, version, FROM_UNIXTIME(`date`, '%Y-%m-%d') as `date` , globally_enabled, discoverable_in_project, user_activate_permission, total_enabled_projects, total_enabled_dev_projects, total_enabled_prod_projects, total_using_projects ,maintenance_fees
+ from redcap_entity_external_modules_utilization";
+        $q = db_query($query);
+        $result = [];
+        while ($row = db_fetch_assoc($q)) {
+            $result[] = $row;
+        }
+        return $result;
+    }
+
+    public function prepareEntityColumns($entityName, $columns)
+    {
+        $entities = $this->redcap_entity_types();
+        $result = array();
+        if (!key_exists($entityName, $entities)) {
+            throw new \Exception("entity $entityName not found in defined entities.");
+        } else {
+            $properties = $entities[$entityName]['properties'];
+            foreach ($properties as $key => $property) {
+                if (in_array($key, $columns)) {
+                    $index = array_search($key, $columns);
+                    $columns[$index] = $property['name'];
+                }
+            }
+        }
+
+
+        foreach ($columns as $column) {
+            $result[] = array('title' => $column);
+        }
+        return $result;
     }
 
     public function processProjectEMUsage()

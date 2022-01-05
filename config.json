@@ -156,6 +156,13 @@
             "method": "projectEMUsageTriggerCron",
             "cron_frequency": "86400",
             "cron_max_run_time": "600"
+        },
+        {
+            "cron_name": "em_utilization",
+            "cron_description": "This cron each month will create an EM utilization record. ",
+            "method": "eMUtilizationTriggerCron",
+            "cron_frequency": "2592000",
+            "cron_max_run_time": "3600"
         }
     ]
 }
