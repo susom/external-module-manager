@@ -901,6 +901,23 @@ id ,instance, module_prefix, version, FROM_UNIXTIME(`date`, '%Y-%m-%d') as `date
         return $result;
     }
 
+    public function getEMUtilizationRecordDoNotMatchREDCapProjectRecords()
+    {
+        $query = "select
+id ,instance, module_prefix, version, FROM_UNIXTIME(`date`, '%Y-%m-%d') as `date` , globally_enabled, discoverable_in_project, user_activate_permission, total_enabled_projects, total_enabled_dev_projects, total_enabled_prod_projects, total_using_projects ,maintenance_fees
+ from redcap_entity_external_modules_utilization";
+        $q = db_query($query);
+        $result = [];
+        while ($row = db_fetch_assoc($q)) {
+            $redcapRecord = $this->getExternalModulesREDCapRecords()[$row['module_prefix']];
+            if ($redcapRecord[$this->getFirstEventId()]['module_global'] != $row['globally_enabled'] || $redcapRecord[$this->getFirstEventId()]['module_discoverable'] != $row['discoverable_in_project'] || $redcapRecord[$this->getFirstEventId()]['module_self_enable'] != $row['user_activate_permission']) {
+                $result[] = $row;
+            }
+
+        }
+        return $result;
+    }
+
     public function prepareEntityColumns($entityName, $columns)
     {
         $entities = $this->redcap_entity_types();
