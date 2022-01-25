@@ -921,6 +921,15 @@ id ,instance, module_prefix, version, FROM_UNIXTIME(`date`, '%Y-%m-%d') as `date
         while ($row = db_fetch_assoc($q)) {
             $redcapRecord = $this->getExternalModulesREDCapRecords()[$row['module_prefix']];
             if ($redcapRecord[$this->getFirstEventId()]['module_global'] != $row['globally_enabled'] || $redcapRecord[$this->getFirstEventId()]['module_discoverable'] != $row['discoverable_in_project'] || $redcapRecord[$this->getFirstEventId()]['module_self_enable'] != $row['user_activate_permission']) {
+                if ($redcapRecord[$this->getFirstEventId()]['module_global'] != $row['globally_enabled']) {
+                    $row['globally_enabled'] = '<div class="alert alert-danger">' . $row['globally_enabled'] . '</div>';
+                }
+                if ($redcapRecord[$this->getFirstEventId()]['module_discoverable'] != $row['discoverable_in_project']) {
+                    $row['discoverable_in_project'] = '<div class="alert alert-danger">' . $row['discoverable_in_project'] . '</div>';
+                }
+                if ($redcapRecord[$this->getFirstEventId()]['module_self_enable'] != $row['user_activate_permission']) {
+                    $row['user_activate_permission'] = '<div class="alert alert-danger">' . $row['user_activate_permission'] . '</div>';
+                }
                 $result[] = $row;
             }
 
