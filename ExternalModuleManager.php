@@ -901,11 +901,21 @@ id ,instance, module_prefix, version, FROM_UNIXTIME(`date`, '%Y-%m-%d') as `date
         return $result;
     }
 
+    public function getUnixTimestampForLastCron()
+    {
+        $query = "select FROM_UNIXTIME(`date`, '%Y-%m-%d') as `date` from redcap.redcap_entity_external_modules_utilization group by date order by date desc limit 1";
+        $q = db_query($query);
+        $row = db_fetch_assoc($q);
+        return $row['date'];
+    }
+
     public function getEMUtilizationRecordDoNotMatchREDCapProjectRecords()
     {
+        $date = strtotime($this->getUnixTimestampForLastCron());
+
         $query = "select
 id ,instance, module_prefix, version, FROM_UNIXTIME(`date`, '%Y-%m-%d') as `date` , globally_enabled, discoverable_in_project, user_activate_permission, total_enabled_projects, total_enabled_dev_projects, total_enabled_prod_projects, total_using_projects ,maintenance_fees
- from redcap_entity_external_modules_utilization";
+ from redcap_entity_external_modules_utilization where date >= $date";
         $q = db_query($query);
         $result = [];
         while ($row = db_fetch_assoc($q)) {
