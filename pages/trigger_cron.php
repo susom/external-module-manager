@@ -5,7 +5,8 @@ namespace Stanford\ExternalModuleManager;
 if (isset($_GET['name'])) {
     $module->processCron();
 } elseif (isset($_GET['refresh']) && isset($_GET['project_id'])) {
-    $module->refreshProjectEMUsage();
+    $result = $module->refreshProjectEMUsage();
+    echo json_encode(array('status' => 'success', 'ids' => $result));
 }
 $module->setProjects();
 

@@ -1066,25 +1066,33 @@ id ,instance, module_prefix, version, FROM_UNIXTIME(`date`, '%Y-%m-%d') as `date
         return '0'; #som-dev
     }
 
-    public function refreshProjectEMUsage()
+    public function refreshProjectEMUsage($projectId = '')
     {
-        $this->setRefreshProjectId(filter_var($_GET['project_id'], FILTER_SANITIZE_STRING));
+        if ($projectId != '') {
+            $this->setRefreshProjectId(filter_var($projectId, FILTER_SANITIZE_STRING));
+        } else {
+            $this->setRefreshProjectId(filter_var($_GET['project_id'], FILTER_SANITIZE_STRING));
+        }
+
         $instanceName = $this->findCurrentInstanceName();
+        $result = [];
         foreach ($this->getProjectEMUsage() as $record) {
             $record['entity']['instance'] = $instanceName;
             if (!$entity = $this->isProjectEMUsageRecordExist($record)) {
                 $entity = $this->getEntityFactory()->create('project_external_modules_usage', $record['entity']);
-                echo $entity->getId() . '<br>';
+                $result[] = $entity->getId() . '<br>';
             } else {
                 #$entity = $this->getEntityFactory()->getInstance('project_external_modules_usage', $recordId);
                 if ($entity->setData($record['entity'])) {
                     $entity->save();
+                    $result[] = $entity->getId() . '<br>';
                 } else {
                     // Get a list of properties that failed on update
-                    print_r($entity->getErrors());
+                    $result[] = $entity->getErrors();
                 }
             }
         }
+        return $result;
     }
 
     /**
