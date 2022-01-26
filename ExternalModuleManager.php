@@ -489,6 +489,17 @@ GROUP BY rems.external_module_id ", []);
         }
     }
 
+    private function getReposFolders()
+    {
+        return scandir(__DIR__ . '/../');
+    }
+
+    private function buildExternalModulePath($externalModuleId, $prefix)
+    {
+        $version = $this->getExternalModuleDeployedVersion($externalModuleId);
+        return $prefix . '_' . $version;
+    }
+
     /**
      * @param int $externalModuleId
      * @param string $prefix
@@ -496,9 +507,8 @@ GROUP BY rems.external_module_id ", []);
      */
     private function lookupExternalModuleGithubInformation($externalModuleId, $prefix)
     {
-        $version = $this->getExternalModuleDeployedVersion($externalModuleId);
-        $fullExternalModuleName = $prefix . '_' . $version;
-        $folders = scandir(__DIR__ . '/../');
+        $fullExternalModuleName = $this->buildExternalModulePath($externalModuleId, $prefix);
+        $folders = $this->getReposFolders();
         //$data = array('test_project_pid' => $this->getExternalModuleSampleProjectId($externalModuleId));
 
         if (in_array($fullExternalModuleName, $folders)) {
@@ -525,6 +535,35 @@ GROUP BY rems.external_module_id ", []);
         return $data;
     }
 
+    private function lookupExternalModulesDefaultBranch($externalModuleId, $prefix)
+    {
+        $fullExternalModuleName = $this->buildExternalModulePath($externalModuleId, $prefix);
+        $folders = $this->getReposFolders();
+        if (in_array($fullExternalModuleName, $folders)) {
+            $path = $this->getFolderPath($fullExternalModuleName);
+            if (is_dir($path . '/.git')) {
+                $content = explode("\n\t", file_get_contents($path . '/.git/config'));
+
+                // branch
+                $matches = preg_grep('/\[branch\s\"/m', $content);
+                $branch = end($matches);
+                $branch = explode("\n", $branch);
+                $branch = end($branch);
+                $regex = "(\[branch\s\")";
+                $branch = preg_replace($regex, "", str_replace('"]', "", $branch));
+                return $branch;
+            } elseif (file_exists($path . '/.gitrepo')) {
+                $content = file_get_contents($path . '/.gitrepo');
+                $parts = explode("\n\t", $content);
+                $matches = preg_grep('/^branch?/m', $parts);
+                $branch = explode(" ", end($matches));
+                $branch = end($branch);
+                return $branch;
+            }
+        }
+        return false;
+    }
+
     /**
      * @param int $externalModuleId
      * @param string $prefix
@@ -539,12 +578,31 @@ GROUP BY rems.external_module_id ", []);
         $data['redcap_event_name'] = $this->getProject()->getUniqueEventNames($this->getFirstEventId());
         $response = \REDCap::saveData($this->getProjectId(), 'json', json_encode(array($data)));
         if (empty($response['errors'])) {
-            $key = Repository::getGithubKey($data['git_url']);
-            //$this->getDeploymentEm()->updateRepositoryDefaultBranchLatestCommit($key, $prefix);
+            $this->setExternalModulesDefaultBranchInREDCapRecord($externalModuleId, $prefix);
             return true;
         } else {
             $this->emError($response);
             throw new \Exception("cant save information for EM : " . $prefix . ' em id is: ' . $externalModuleId);
+        }
+    }
+
+    private function setExternalModulesDefaultBranchInREDCapRecord($externalModuleId, $prefix)
+    {
+        $data[REDCap::getRecordIdField()] = $prefix;
+        $data['git_branch'] = $this->lookupExternalModulesDefaultBranch($externalModuleId, $prefix);
+        if ($data['git_branch'] != '') {
+            $arm = end($this->getProject()->events);
+
+            foreach ($arm['events'] as $id => $event) {
+                if ($this->getFirstEventId() == $id) {
+                    continue;
+                }
+                $data['redcap_event_name'] = $this->getProject()->getUniqueEventNames($id);
+                $response = \REDCap::saveData($this->getProjectId(), 'json', json_encode(array($data)));
+                if (!empty($response['errors'])) {
+                    REDCap::logEvent(implode(",", $response['errors']));
+                }
+            }
         }
     }
 
