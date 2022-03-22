@@ -316,9 +316,13 @@ class ExternalModuleManager extends \ExternalModules\AbstractExternalModule
     }
 
 
-    public function getEMTotalNumberOfProjects($externalModuleId, $status)
+    public function getEMTotalNumberOfProjects($externalModuleId, $status = '')
     {
-        $q = $this->query("select count(*) as count from redcap_projects where project_id IN (select project_id from redcap_external_module_settings where external_module_id = ? and `key` = 'enabled' and `value`= 'true') and status = ?", [$externalModuleId, $status]);
+        if (!$status) {
+            $q = $this->query("select count(*) as count from redcap_projects where project_id IN (select project_id from redcap_external_module_settings where external_module_id = ? and `key` = 'enabled' and `value`= 'true')", [$externalModuleId, $status]);
+        } else {
+            $q = $this->query("select count(*) as count from redcap_projects where project_id IN (select project_id from redcap_external_module_settings where external_module_id = ? and `key` = 'enabled' and `value`= 'true') and status = ?", [$externalModuleId, $status]);
+        }
 
         $row = db_fetch_assoc($q);
         return $row['count'];
@@ -373,7 +377,7 @@ GROUP BY rems.external_module_id ", []);
                     'version' => $this->getExternalModuleDeployedVersion($row['external_module_id']),
                     //'date' => date('Y-m-d H:i:s'),
                     'date' => time(),
-                    'total_enabled_projects' => $row['total_enabled_projects'],
+                    'total_enabled_projects' => $this->getEMTotalNumberOfProjects($row['external_module_id']),
                     'globally_enabled' => $this->isEMGloballyEnabled($row['external_module_id']),
                     'discoverable_in_project' => $this->isEMDiscoverableInProject($row['external_module_id']),
                     'user_activate_permission' => $this->isEMCanBeEnableByNormalUsers($row['external_module_id']),
