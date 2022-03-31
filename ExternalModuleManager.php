@@ -286,7 +286,7 @@ class ExternalModuleManager extends \ExternalModules\AbstractExternalModule
                 'is_em_enabled' => [
                     'name' => 'Is EM Enabled?',
                     'type' => 'boolean',
-                    'required' => true,
+                    'required' => false,
                 ],
                 'has_maintenance_fees' => [
                     'name' => 'Has Maintenance Fees?',
