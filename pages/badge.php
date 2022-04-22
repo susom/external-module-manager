@@ -10,7 +10,8 @@ if (isset($_GET['prefix'])) {
     "schemaVersion" => 1,
     "label" => $prefix,
     "message" => "Test Output",
-    "color" => "orange"
+    "color" => "orange",
+      "namedLogoDefault" => "figshare"
   ];
     
 } else {
