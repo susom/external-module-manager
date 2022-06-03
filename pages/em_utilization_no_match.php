@@ -125,7 +125,7 @@ use REDCapEntity\EntityList;
                                                 .draw();
                                         } else {
                                             column
-                                                .search("^\d*$", true, false)
+                                                .search("^.*$", true, false)
                                                 .draw();
                                         }
 
