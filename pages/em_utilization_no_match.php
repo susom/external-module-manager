@@ -113,7 +113,7 @@ use REDCapEntity\EntityList;
                             this.api().columns([10]).every(function (index) {
                                 // below function will add filter to remove previous/completed appointments
                                 var column = this;
-                                $('<input type="checkbox" id="production-filter" name="old" checked/>')
+                                $('<input type="checkbox" id="production-filter" name="old"/>')
                                     .appendTo($('.production-filter'))
                                     .on('change', function () {
                                         var val = $.fn.dataTable.util.escapeRegex(
