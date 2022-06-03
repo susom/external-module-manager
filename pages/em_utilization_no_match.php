@@ -40,6 +40,10 @@ use REDCapEntity\EntityList;
     body.loading .loader {
         display: block;
     }
+
+    .production-filter:before {
+        content: 'EMs with Production Projects Only:';
+    }
 </style>
 <script type="text/javascript" charset="utf8" src="//cdn.datatables.net/1.10.19/js/jquery.dataTables.js"></script>
 <script src="https://cdn.datatables.net/buttons/1.6.4/js/dataTables.buttons.min.js"></script>
@@ -106,7 +110,7 @@ use REDCapEntity\EntityList;
                         ],
                         initComplete: function () {
                             // we only need day and location filter.
-                            this.api().columns([12]).every(function (index) {
+                            this.api().columns([10]).every(function (index) {
                                 // below function will add filter to remove previous/completed appointments
                                 var column = this;
                                 $('<input type="checkbox" id="production-filter" name="old" checked/>')
@@ -117,11 +121,11 @@ use REDCapEntity\EntityList;
                                         );
                                         if (document.getElementById('production-filter').checked) {
                                             column
-                                                .search("^$", true, false)
+                                                .search("^[1-9]\d*$", true, false)
                                                 .draw();
                                         } else {
                                             column
-                                                .search("^[1-9]\d*$", true, false)
+                                                .search("^$", true, false)
                                                 .draw();
                                         }
 
