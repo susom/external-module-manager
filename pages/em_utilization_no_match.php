@@ -96,14 +96,39 @@ use REDCapEntity\EntityList;
                 columns = res.columns
                 if (records.length > 0) {
                     $('#em-utilization').dataTable({
-                        dom: '<lf<t>Bip>',
+                        dom: '<"production-filter"><lf<t>Bip>',
                         "data": records,
                         "pageLength": 100,
                         "columns": columns,
                         "aaSorting": [[0, "asc"]],
                         buttons: [
                             'copy', 'csv', 'excel', 'pdf', 'print'
-                        ]
+                        ],
+                        initComplete: function () {
+                            // we only need day and location filter.
+                            this.api().columns([12]).every(function (index) {
+                                // below function will add filter to remove previous/completed appointments
+                                var column = this;
+                                $('<input type="checkbox" id="production-filter" name="old" checked/>')
+                                    .appendTo($('.production-filter'))
+                                    .on('change', function () {
+                                        var val = $.fn.dataTable.util.escapeRegex(
+                                            $(this).val()
+                                        );
+                                        if (document.getElementById('production-filter').checked) {
+                                            column
+                                                .search("^$", true, false)
+                                                .draw();
+                                        } else {
+                                            column
+                                                .search("^[1-9]\d*$", true, false)
+                                                .draw();
+                                        }
+
+                                    });
+
+                            });
+                        }
                     });
                 }
             },

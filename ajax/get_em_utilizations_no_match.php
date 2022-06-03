@@ -5,16 +5,20 @@ namespace Stanford\ExternalModuleManager;
 
 try {
     $data = $module->getEMUtilizationRecordDoNotMatchREDCapProjectRecords();
-    $columns = $module->prepareEntityColumns('external_modules_utilization', array_keys($data[0]));
-    $records = array();
+    $records = $columns = [];
+    if (!empty($data)) {
+        $columns = $module->prepareEntityColumns('external_modules_utilization', array_keys($data[0]));
+        $records = array();
 
-    # datatable does not accept associative arrays
-    foreach ($data as $item) {
-        $row = array_values($item);
-        $prifix = $row[2];
-        $row[2] = '<a target="_blank" href="https://redcap.stanford.edu' . APP_PATH_WEBROOT . 'DataEntry/record_home.php?pid=16000&arm=1&id=' . $prifix . '">' . $prifix . '</a>';
-        $records[] = $row;
+        # datatable does not accept associative arrays
+        foreach ($data as $item) {
+            $row = array_values($item);
+            $prifix = $row[2];
+            $row[2] = '<a target="_blank" href="https://redcap.stanford.edu' . APP_PATH_WEBROOT . 'DataEntry/record_home.php?pid=16000&arm=1&id=' . $prifix . '">' . $prifix . '</a>';
+            $records[] = $row;
+        }
     }
+
     echo json_encode(array('status' => 'success', 'data' => $records, 'columns' => $columns));
 } catch (\Exception $e) {
     header("Content-type: application/json");
