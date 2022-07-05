@@ -193,6 +193,11 @@ class ExternalModuleManager extends \ExternalModules\AbstractExternalModule
                     'type' => 'project',
                     'required' => true,
                 ],
+                'external_modules' => [
+                    'name' => 'JSON object for Project External Modules',
+                    'type' => 'json',
+                    'required' => false,
+                ],
                 'monthly_payments' => [
                     'name' => 'Monthly Payment Amount',
                     'type' => 'integer',
