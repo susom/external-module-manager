@@ -208,6 +208,11 @@ class ExternalModuleManager extends \ExternalModules\AbstractExternalModule
                     'type' => 'text',
                     'required' => false,
                 ],
+                'processed' => [
+                    'name' => 'Payment processed',
+                    'type' => 'boolean',
+                    'required' => false,
+                ],
                 'month' => [
                     'name' => 'Payment`s Month',
                     'type' => 'text',
