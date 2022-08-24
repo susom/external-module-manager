@@ -165,6 +165,13 @@
             "cron_max_run_time": "600"
         },
         {
+            "cron_name": "project_em_monthly_charge",
+            "cron_description": "Cron runs daily to create a monthly record for each project EM charge. ",
+            "method": "generateProjectEMCharges",
+            "cron_frequency": "86400",
+            "cron_max_run_time": "600"
+        },
+        {
             "cron_name": "em_utilization",
             "cron_description": "This cron each month will create an EM utilization record. ",
             "method": "eMUtilizationTriggerCron",
