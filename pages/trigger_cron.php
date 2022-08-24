@@ -30,6 +30,10 @@ $module->setProjects();
             <a href="<?php echo $module->getUrl('pages/trigger_cron.php') . '&name=project_em_usage' ?>"
                class="btn btn-primary">Trigger Project EM Usage Cron</a>
         </div>
+        <div class="col-2">
+            <a href="<?php echo $module->getUrl('pages/trigger_cron.php') . '&name=em_monthly_charges' ?>"
+               class="btn btn-primary">Trigger EM Monthly Charges Cron</a>
+        </div>
     </div>
     <hr>
 

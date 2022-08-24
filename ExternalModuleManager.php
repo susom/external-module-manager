@@ -169,6 +169,67 @@ class ExternalModuleManager extends \ExternalModules\AbstractExternalModule
             ],
         ];
 
+        $types['external_modules_charges'] = [
+            'label' => 'External Modules Monthly Charges',
+            'label_plural' => 'External Modules Utilization',
+            'icon' => 'home_pencil',
+            'properties' => [
+                'instance' => [
+                    'name' => 'REDCap Instance',
+                    'type' => 'text',
+                    'required' => true,
+                    'default' => '1',
+                    'choices' => [
+                        '0' => 'som-dev',
+                        '1' => 'som-prod',
+                        '2' => 'lpch-dev',
+                        '3' => 'lpch-prod',
+                        '4' => 'shc-dev',
+                        '5' => 'shc-prod',
+                    ],
+                ],
+                'project_id' => [
+                    'name' => 'Project',
+                    'type' => 'project',
+                    'required' => true,
+                ],
+                'module_prefix' => [
+                    'name' => 'Module Prefix',
+                    'type' => 'text',
+                    'required' => true,
+                ],
+                'maintenance_fees' => [
+                    'name' => 'Monthly Maintenance fees',
+                    'type' => 'integer',
+                    'required' => true,
+                ],
+                'charge_month' => [
+                    'name' => 'Charge Month',
+                    'type' => 'integer',
+                    'required' => true,
+                ],
+                'charge_year' => [
+                    'name' => 'Charge Year',
+                    'type' => 'integer',
+                    'required' => true,
+                ],
+                'viewed_at' => [
+                    'name' => 'Timestamp last viewed',
+                    'type' => 'date',
+                    'required' => false,
+                ],
+                'deleted_at' => [
+                    'name' => 'Timestamp record deleted',
+                    'type' => 'date',
+                    'required' => false,
+                ],
+
+            ],
+            'special_keys' => [
+                'label' => 'module_prefix', // "name" represents the entity label.
+            ],
+        ];
+
         $types['projects_overdue_payments'] = [
             'label' => 'REDCap projects overdue payment',
             'label_plural' => 'REDCap projects overdue payments',
@@ -620,6 +681,23 @@ GROUP BY rems.external_module_id ", []);
         }
     }
 
+    /**
+     * @param $record
+     * @return false|mixed|null
+     */
+    public function getProjectEMMonthlyCharge($record)
+    {
+        $entity = $this->getEntityFactory()->query('external_modules_charges')
+            ->condition('module_prefix', $record['module_prefix'])
+            ->condition('project_id', $record['project_id'])
+            ->condition('charge_month', date('m'))
+            ->condition('charge_year', date('Y'))
+            ->execute();
+        if ($entity) {
+            return array_pop($entity);
+        }
+        return false;
+    }
 
     /**
      * @param $record
@@ -635,6 +713,19 @@ GROUP BY rems.external_module_id ", []);
             return array_pop($entity);
         }
         return false;
+    }
+
+    public function createEMMonthlyChargesLogs()
+    {
+        try {
+            if ($this->getProjectEMUsage()) {
+                echo json_encode($this->getProjectEMUsage());
+            } else {
+                echo json_encode([]);
+            }
+        } catch (\Exception $e) {
+            echo $e->getMessage();
+        }
     }
 
     public function createProjectsExternalModuleUsageLogs()
@@ -900,6 +991,10 @@ GROUP BY rems.external_module_id ", []);
         if ($this->getRequest() == 'project_em_usage') {
             $this->createProjectsExternalModuleUsageLogs();
         }
+
+        if ($this->getRequest() == 'em_monthly_charges') {
+            $this->createEMMonthlyChargesLogs();
+        }
     }
 
     public function processCron()
@@ -909,6 +1004,10 @@ GROUP BY rems.external_module_id ", []);
         }
         if ($_GET['name'] == 'project_em_usage') {
             $this->processProjectEMUsage();
+        }
+
+        if ($_GET['name'] == 'em_monthly_charges') {
+            $this->processEMMonthlyCharges();
         }
     }
 
@@ -949,6 +1048,13 @@ GROUP BY rems.external_module_id ", []);
     public function projectEMUsageTriggerCron()
     {
         $url = $this->getUrl("ajax/cron.php", true) . '&pid=' . $this->getSystemSetting('em-project-id');
+        $this->getClient()->getGuzzleClient()->request('GET', $url, array(\GuzzleHttp\RequestOptions::SYNCHRONOUS => true));
+        $this->emDebug("running cron for $url on project " . $this->getSystemSetting('em-project-id'));
+    }
+
+    public function generateProjectEMCharges()
+    {
+        $url = $this->getUrl("ajax/em_charges_cron.php", true) . '&pid=' . $this->getSystemSetting('em-project-id');
         $this->getClient()->getGuzzleClient()->request('GET', $url, array(\GuzzleHttp\RequestOptions::SYNCHRONOUS => true));
         $this->emDebug("running cron for $url on project " . $this->getSystemSetting('em-project-id'));
     }
@@ -1030,6 +1136,36 @@ id ,instance, module_prefix, version, FROM_UNIXTIME(`date`, '%Y-%m-%d') as `date
             $result[] = array('title' => $column);
         }
         return $result;
+    }
+
+    public function processEMMonthlyCharges()
+    {
+        $factory = $this->getEntityFactory();
+        foreach ($this->getInstances() as $id => $instance) {
+            $body = $this->getInstanceEMBody('em_monthly_charges', $instance['service-url']);
+            if ($body) {
+                foreach ($body as $record) {
+                    $record['entity']['instance'] = $instance['name'];
+                    if (!$this->getProjectEMMonthlyCharge($record['entity'])) {
+                        $data = array(
+                            'instance' => $instance['name'],
+                            'project_id' => $record['entity']['project_id'],
+                            'module_prefix' => $record['entity']['module_prefix'],
+                            'maintenance_fees' => $record['entity']['maintenance_fees'],
+                            'charge_month' => date('m'),
+                            'charge_year' => date('Y'),
+                        );
+                        $entity = $factory->create('external_modules_charges', $data);
+                        if (!$entity) {
+                            $this->emError("Could not create EM Monthly Charge for REDCap PID#" . $data['project_id'] . " for EM " . $data['project_id']);
+                            $this->emError(implode(',', $factory->errors));
+                        } else {
+                            $this->emLog("EM Monthly Charge record was created for REDCap PID#" . $data['project_id'] . " for EM " . $data['project_id']);
+                        }
+                    }
+                }
+            }
+        }
     }
 
     public function processProjectEMUsage()
