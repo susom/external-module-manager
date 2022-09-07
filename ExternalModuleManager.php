@@ -223,6 +223,11 @@ class ExternalModuleManager extends \ExternalModules\AbstractExternalModule
                     'type' => 'date',
                     'required' => false,
                 ],
+                'r2p2_charge_id' => [
+                    'name' => 'R2P2 charge Record Id',
+                    'type' => 'integer',
+                    'required' => false,
+                ],
 
             ],
             'special_keys' => [
