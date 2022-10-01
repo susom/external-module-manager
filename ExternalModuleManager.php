@@ -228,7 +228,11 @@ class ExternalModuleManager extends \ExternalModules\AbstractExternalModule
                     'type' => 'integer',
                     'required' => false,
                 ],
-
+                'custom_charge_id' => [
+                    'name' => 'If this record is generated from REDCap Entity custom charge table',
+                    'type' => 'integer',
+                    'required' => false,
+                ],
             ],
             'special_keys' => [
                 'label' => 'module_prefix', // "name" represents the entity label.
