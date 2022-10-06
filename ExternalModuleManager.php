@@ -60,6 +60,8 @@ class ExternalModuleManager extends \ExternalModules\AbstractExternalModule
 
     private $refreshProjectId;
 
+    private $customCharges;
+
     public function __construct()
     {
         parent::__construct();
@@ -223,13 +225,8 @@ class ExternalModuleManager extends \ExternalModules\AbstractExternalModule
                     'type' => 'date',
                     'required' => false,
                 ],
-                'r2p2_charge_id' => [
+                'r2p2_em_charge_id' => [
                     'name' => 'R2P2 charge Record Id',
-                    'type' => 'integer',
-                    'required' => false,
-                ],
-                'custom_charge_id' => [
-                    'name' => 'If this record is generated from REDCap Entity custom charge table',
                     'type' => 'integer',
                     'required' => false,
                 ],
@@ -724,11 +721,24 @@ GROUP BY rems.external_module_id ", []);
         return false;
     }
 
-    public function createEMMonthlyChargesLogs()
+    public function getEMMonthlyChargesRecords()
     {
         try {
             if ($this->getProjectEMUsage()) {
                 echo json_encode($this->getProjectEMUsage());
+            } else {
+                echo json_encode([]);
+            }
+        } catch (\Exception $e) {
+            echo $e->getMessage();
+        }
+    }
+
+    public function getCustomMonthlyChargesRecords()
+    {
+        try {
+            if ($this->getCustomCharges()) {
+                echo json_encode($this->getCustomCharges());
             } else {
                 echo json_encode([]);
             }
@@ -1002,7 +1012,11 @@ GROUP BY rems.external_module_id ", []);
         }
 
         if ($this->getRequest() == 'em_monthly_charges') {
-            $this->createEMMonthlyChargesLogs();
+            $this->getEMMonthlyChargesRecords();
+        }
+
+        if ($this->getRequest() == 'custom_charges') {
+            $this->getCustomMonthlyChargesRecords();
         }
     }
 
@@ -1166,15 +1180,25 @@ id ,instance, module_prefix, version, FROM_UNIXTIME(`date`, '%Y-%m-%d') as `date
                         );
                         $entity = $factory->create('external_modules_charges', $data);
                         if (!$entity) {
-                            $this->emError("Could not create EM Monthly Charge for REDCap PID#" . $data['project_id'] . " for EM " . $data['project_id']);
+                            $this->emError("Could not create EM Monthly Charge for REDCap PID#" . $data['project_id'] . " for EM " . $data['module_prefix']);
                             $this->emError(implode(',', $factory->errors));
                         } else {
-                            $this->emLog("EM Monthly Charge record was created for REDCap PID#" . $data['project_id'] . " for EM " . $data['project_id']);
+                            $this->emLog("EM Monthly Charge record was created for REDCap PID#" . $data['project_id'] . " for EM " . $data['module_prefix']);
                         }
                     }
                 }
             }
         }
+    }
+
+    public function processCustomCharges()
+    {
+        $result = [];
+        foreach ($this->getInstances() as $id => $instance) {
+            $body = $this->getInstanceEMBody('custom_charges', $instance['service-url']);
+            $result[$instance['name']] = $body;
+        }
+        return $result;
     }
 
     public function processProjectEMUsage()
@@ -1351,6 +1375,31 @@ id ,instance, module_prefix, version, FROM_UNIXTIME(`date`, '%Y-%m-%d') as `date
     public function setRefreshProjectId(int $refreshProjectId): void
     {
         $this->refreshProjectId = $refreshProjectId;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCustomCharges()
+    {
+        if (!$this->customCharges) {
+            $this->setCustomCharges();
+        }
+        return $this->customCharges;
+    }
+
+    /**
+     * @param mixed $customCharges
+     */
+    public function setCustomCharges(): void
+    {
+        $charges = array();
+        $q = $this->query("SELECT * FROM redcap_entity_custom_charges WHERE status  = 1 ", []);
+
+        while ($row = db_fetch_assoc($q)) {
+            $charges[] = $row;
+        }
+        $this->customCharges = $charges;
     }
 
 
