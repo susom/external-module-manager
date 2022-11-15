@@ -1377,6 +1377,32 @@ id ,instance, module_prefix, version, FROM_UNIXTIME(`date`, '%Y-%m-%d') as `date
         $this->refreshProjectId = $refreshProjectId;
     }
 
+
+    public function getProjectTotalCustomCharges($projectId)
+    {
+        $total = 0;
+        foreach ($this->getProjectCustomCharges($projectId) as $charge) {
+            $total += $charge['amount'];
+        }
+        return $total;
+    }
+
+    /**
+     * @param $projectId
+     * @return array
+     */
+    public function getProjectCustomCharges($projectId)
+    {
+        $result = [];
+        foreach ($this->getCustomCharges() as $charge) {
+            if ($charge['project_id'] == $projectId) {
+                $result[] = $charge;
+            }
+        }
+
+        return $result;
+    }
+
     /**
      * @return mixed
      */
