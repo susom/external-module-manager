@@ -930,7 +930,10 @@ GROUP BY rems.external_module_id ", []);
                     join redcap_projects rp on rems.project_id = rp.project_id
                     join redcap_record_counts rrc on rp.project_id = rrc.project_id
                     where rems.project_id = ?
-                    group by rems.external_module_id, rems.project_id, rem.directory_prefix, rp.app_title, rp.status, rrc.record_count ", [$this->getRefreshProjectId()]);
+                    group by rems.external_module_id, rems.project_id, rem.directory_prefix, rp.app_title, rp.status, rrc.record_count having
+                    rp.status = 1            -- is production
+                    and is_em_enabled = 1 -- is enabled
+                    and number_of_settings_rows > 0  -- has actual data", [$this->getRefreshProjectId()]);
             } else {
                 $q = $this->query("select
                        rems.external_module_id,
@@ -946,7 +949,10 @@ GROUP BY rems.external_module_id ", []);
                     join redcap_projects rp on rems.project_id = rp.project_id
                     join redcap_record_counts rrc on rp.project_id = rrc.project_id
                     where rems.project_id is not null
-                    group by rems.external_module_id, rems.project_id, rem.directory_prefix, rp.app_title, rp.status, rrc.record_count ", []);
+                    group by rems.external_module_id, rems.project_id, rem.directory_prefix, rp.app_title, rp.status, rrc.record_count having
+                    rp.status = 1            -- is production
+                    and is_em_enabled = 1 -- is enabled
+                    and number_of_settings_rows > 0  -- has actual data", []);
             }
 
 
@@ -1169,7 +1175,7 @@ id ,instance, module_prefix, version, FROM_UNIXTIME(`date`, '%Y-%m-%d') as `date
             if ($body) {
                 foreach ($body as $record) {
                     $record['entity']['instance'] = $instance['name'];
-                    if (!$this->getProjectEMMonthlyCharge($record['entity'])) {
+                    if ($record['entity']['is_em_enabled'] && !$this->getProjectEMMonthlyCharge($record['entity'])) {
                         $data = array(
                             'instance' => $instance['name'],
                             'project_id' => $record['entity']['project_id'],
@@ -1179,7 +1185,7 @@ id ,instance, module_prefix, version, FROM_UNIXTIME(`date`, '%Y-%m-%d') as `date
                             'charge_year' => date('Y'),
                         );
                         $entity = $factory->create('external_modules_charges', $data);
-                        if (!$entity) {
+                        if (!$entity && $factory->errors) {
                             $this->emError("Could not create EM Monthly Charge for REDCap PID#" . $data['project_id'] . " for EM " . $data['module_prefix']);
                             $this->emError(implode(',', $factory->errors));
                         } else {
