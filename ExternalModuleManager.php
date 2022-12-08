@@ -958,7 +958,7 @@ GROUP BY rems.external_module_id ", []);
 
             while ($row = db_fetch_assoc($q)) {
                 $linkedQ = $this->query("SELECT t.value
-                            FROM redcap.redcap_external_module_settings t
+                            FROM redcap_external_module_settings t
                             WHERE project_id = ? and `key` = 'linked-project'", [$row['project_id']]);
 
                 $linkedRow = db_fetch_assoc($linkedQ);
