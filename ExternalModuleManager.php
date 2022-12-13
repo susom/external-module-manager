@@ -1180,7 +1180,7 @@ id ,instance, module_prefix, version, FROM_UNIXTIME(`date`, '%Y-%m-%d') as `date
                             'instance' => $instance['name'],
                             'project_id' => $record['entity']['project_id'],
                             'module_prefix' => $record['entity']['module_prefix'],
-                            'maintenance_fees' => $record['entity']['maintenance_fees'],
+                            'maintenance_fees' => $record['entity']['maintenance_fees'] ?: 0,
                             'charge_month' => date('m'),
                             'charge_year' => date('Y'),
                         );
