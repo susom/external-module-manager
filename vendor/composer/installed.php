@@ -1,30 +1,23 @@
 <?php return array(
-    'root' =>
-        array(
+    'root' => array(
+        'name' => '__root__',
+        'pretty_version' => 'dev-master',
+        'version' => 'dev-master',
+        'reference' => '959da6eda7fdc5a73d40523ea39e5d4a7692f981',
+        'type' => 'library',
+        'install_path' => __DIR__ . '/../../',
+        'aliases' => array(),
+        'dev' => true,
+    ),
+    'versions' => array(
+        '__root__' => array(
             'pretty_version' => 'dev-master',
             'version' => 'dev-master',
-            'aliases' =>
-                array(),
-            'reference' => 'b52b09e4afc9c79029dd7f1d7c152f7a7b803c98',
-            'name' => '__root__',
+            'reference' => '959da6eda7fdc5a73d40523ea39e5d4a7692f981',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../../',
+            'aliases' => array(),
+            'dev_requirement' => false,
         ),
-    'versions' =>
-        array(
-            '__root__' =>
-                array(
-                    'pretty_version' => 'dev-master',
-                    'version' => 'dev-master',
-                    'aliases' =>
-                        array(),
-                    'reference' => 'b52b09e4afc9c79029dd7f1d7c152f7a7b803c98',
-                ),
-            'firebase/php-jwt' =>
-                array(
-                    'pretty_version' => 'v5.2.1',
-                    'version' => '5.2.1.0',
-                    'aliases' =>
-                        array(),
-                    'reference' => 'f42c9110abe98dd6cfe9053c49bc86acc70b2d23',
-                ),
-        ),
+    ),
 );
