@@ -931,9 +931,9 @@ GROUP BY rems.external_module_id ", []);
                     join redcap_record_counts rrc on rp.project_id = rrc.project_id
                     where rems.project_id = ?
                     group by rems.external_module_id, rems.project_id, rem.directory_prefix, rp.app_title, rp.status, rrc.record_count having
-                    rp.status = 1            -- is production
+                    -- rp.status = 1            -- is production
                     -- and is_em_enabled = 1 -- is enabled
-                    and number_of_settings_rows > 0  -- has actual data", [$this->getRefreshProjectId()]);
+                     number_of_settings_rows > 0  -- has actual data", [$this->getRefreshProjectId()]);
             } else {
                 $q = $this->query("select
                        rems.external_module_id,
