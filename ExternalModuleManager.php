@@ -13,10 +13,6 @@ require_once "classes/User.php";
 require_once "classes/Repository.php";
 require_once("classes/Client.php");
 
-define('GITHUB_REPO_OPTION', 'module_source___1');
-define('DEVELOPMENT_STATUS', 0);
-define('PRODUCTION_STATUS', 1);
-define('ANALYSIS_STATUS', 2);
 
 /**
  * Class ExternalModuleManager
@@ -35,6 +31,11 @@ define('ANALYSIS_STATUS', 2);
  */
 class ExternalModuleManager extends \ExternalModules\AbstractExternalModule
 {
+
+    const GITHUB_REPO_OPTION = 'module_source___1';
+    const DEVELOPMENT_STATUS = 0;
+    const PRODUCTION_STATUS = 1;
+    const ANALYSIS_STATUS = 2;
 
     use emLoggerTrait;
 
@@ -438,8 +439,8 @@ GROUP BY rems.external_module_id ", []);
                         $this->createExternalModuleREDCapRecord($row['external_module_id'], $row['module_prefix']);
                     }
                 }
-                $total_enabled_dev_projects = $this->getEMTotalNumberOfProjects($row['external_module_id'], DEVELOPMENT_STATUS);
-                $total_enabled_prod_projects = $this->getEMTotalNumberOfProjects($row['external_module_id'], PRODUCTION_STATUS);
+                $total_enabled_dev_projects = $this->getEMTotalNumberOfProjects($row['external_module_id'], self::DEVELOPMENT_STATUS);
+                $total_enabled_prod_projects = $this->getEMTotalNumberOfProjects($row['external_module_id'], self::PRODUCTION_STATUS);
                 $em['redcap'] = $this->getExternalModulesREDCapRecords()[$row['module_prefix']];
 
                 // use this to update redcap record.
