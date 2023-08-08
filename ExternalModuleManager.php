@@ -13,7 +13,6 @@ require_once "classes/User.php";
 require_once "classes/Repository.php";
 require_once("classes/Client.php");
 
-
 /**
  * Class ExternalModuleManager
  * @package Stanford\ExternalModuleManager
@@ -31,11 +30,6 @@ require_once("classes/Client.php");
  */
 class ExternalModuleManager extends \ExternalModules\AbstractExternalModule
 {
-
-    const GITHUB_REPO_OPTION = 'module_source___1';
-    const DEVELOPMENT_STATUS = 0;
-    const PRODUCTION_STATUS = 1;
-    const ANALYSIS_STATUS = 2;
 
     use emLoggerTrait;
 
@@ -62,6 +56,11 @@ class ExternalModuleManager extends \ExternalModules\AbstractExternalModule
     private $refreshProjectId;
 
     private $customCharges;
+
+    const DEVELOPMENT_STATUS = 0;
+    const PRODUCTION_STATUS = 1;
+    const ANALYSIS_STATUS = 2;
+    const GITHUB_REPO_OPTION = 'module_source___1';
 
     public function __construct()
     {
