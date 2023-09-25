@@ -78,7 +78,6 @@ class ExternalModuleManager extends \ExternalModules\AbstractExternalModule
 
             if ($this->getProjectSetting('external-module-deployment')) {
                 $this->setDeploymentEm(\ExternalModules\ExternalModules::getModuleInstance($this->getProjectSetting('external-module-deployment')));
-                $this->setEntityFactory(new \REDCapEntity\EntityFactory());
             }
         }
     }
@@ -885,6 +884,9 @@ GROUP BY rems.external_module_id ", []);
      */
     public function getEntityFactory(): \REDCapEntity\EntityFactory
     {
+        if(!$this->entityFactory){
+            $this->setEntityFactory(new \REDCapEntity\EntityFactory());
+        }
         return $this->entityFactory;
     }
 
