@@ -229,6 +229,11 @@ class ExternalModuleManager extends \ExternalModules\AbstractExternalModule
                     'type' => 'integer',
                     'required' => false,
                 ],
+                'has_maintenance_fees' => [
+                    'name' => 'Has maintenance fees?',
+                    'type' => 'integer',
+                    'required' => false,
+                ],
             ],
             'special_keys' => [
                 'label' => 'module_prefix', // "name" represents the entity label.
@@ -1050,7 +1055,7 @@ GROUP BY rems.external_module_id ", []);
             ],
             'form_params' => [
                 'secret_token' => $this->getSystemSetting('api-token'),
-                'request' => filter_var($name, FILTER_SANITIZE_STRING)
+                'request' => htmlentities($name)
             ]
         ]);
         return json_decode($response->getBody(), true);
@@ -1182,15 +1187,22 @@ id ,instance, module_prefix, version, FROM_UNIXTIME(`date`, '%Y-%m-%d') as `date
                             'instance' => $instance['name'],
                             'project_id' => $record['entity']['project_id'],
                             'module_prefix' => $record['entity']['module_prefix'],
-                            'has_maintenance_fees' => $record['entity']['has_maintenance_fees'],
-                            'maintenance_fees' => $record['entity']['maintenance_fees'] AND $record['entity']['has_maintenance_fees']?$record['entity']['maintenance_fees']: 0,
+                            'has_maintenance_fees' => $record['entity']['has_maintenance_fees']?1:0,
+                            'maintenance_fees' => ($record['entity']['maintenance_fees'] AND $record['entity']['has_maintenance_fees'])?$record['entity']['maintenance_fees']: 0,
                             'charge_month' => date('m'),
                             'charge_year' => date('Y'),
                         );
                         $entity = $factory->create('external_modules_charges', $data);
                         if (!$entity && $factory->errors) {
                             $this->emError("Could not create EM Monthly Charge for REDCap PID#" . $data['project_id'] . " for EM " . $data['module_prefix']);
-                            $this->emError(implode(',', $factory->errors));
+                            $key_value_pairs = [];
+                            foreach ($factory->errors as $key => $value) {
+                                $key_value_pairs[] = "$key: $value";
+                            }
+
+                            // Implode the key-value pairs into a string, separated by commas
+                            $result = implode(', ', $key_value_pairs);
+                            $this->emError($result);
                         } else {
                             $this->emLog("EM Monthly Charge record was created for REDCap PID#" . $data['project_id'] . " for EM " . $data['module_prefix']);
                         }
