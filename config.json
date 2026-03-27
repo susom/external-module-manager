@@ -58,16 +58,29 @@
                 "icon": "fas fa-donate",
                 "url": "pages/trigger_cron.php",
                 "show-header-and-footer": true
+            },
+            {
+                "name": "Finance Reports – EM Charges by PTA",
+                "icon": "fas fa-file-invoice-dollar",
+                "url": "pages/finance_reports.php",
+                "show-header-and-footer": true
             }
         ],
         "control-center": [
+            {
+                "name": "Finance Reports – EM Charges by PTA",
+                "icon": "fas fa-file-invoice-dollar",
+                "url": "pages/finance_reports.php"
+            }
         ]
     },
     "no-auth-pages": [
         "pages/test_auth",
         "pages/services",
         "ajax/refresh_project_em_util",
-        "ajax/em_charges_cron"
+        "ajax/em_charges_cron",
+        "ajax/finance_report_action",
+        "ajax/finance_report_download"
     ],
     "project-settings": [
         {

@@ -1,0 +1,63 @@
+/* finance_reports.css – Styles for the Monthly EM Charges Finance Reports page */
+
+/* ── Loading overlay ─────────────────────────────────────────── */
+.loader {
+    display: none;
+    position: fixed;
+    z-index: 10000;
+    top: 0; left: 0;
+    height: 100%; width: 100%;
+    background: rgba(255,255,255,.8);
+}
+body.loading .loader { display: block; }
+
+/* ── Drill-down accordion headers ────────────────────────────── */
+.drilldown-header {
+    transition: background-color .15s;
+}
+.drilldown-header:hover {
+    background-color: #e9ecef;
+}
+.drilldown-header .toggle-icon {
+    width: 16px;
+    text-align: center;
+    transition: transform .2s;
+}
+
+/* ── Nested cards indent ─────────────────────────────────────── */
+#report-drilldown .card {
+    border-radius: .25rem;
+}
+#report-drilldown .card .card {
+    border-left: 3px solid #007bff;
+}
+#report-drilldown .card .card .card-body table {
+    font-size: .88rem;
+}
+
+/* ── Badge tweaks ────────────────────────────────────────────── */
+#report-drilldown .badge {
+    font-size: .82rem;
+}
+
+/* ── Report summary bar ──────────────────────────────────────── */
+#report-summary .badge {
+    font-size: .95rem;
+}
+
+/* ── Button sizes (Bootstrap 3 compat) ───────────────────────── */
+.btn-xs {
+    padding: .15rem .4rem;
+    font-size: .78rem;
+    line-height: 1.4;
+    border-radius: .2rem;
+}
+
+/* ── PTA / Mapping tables ────────────────────────────────────── */
+#pta-table, #mapping-table, #reports-list-table {
+    font-size: .9rem;
+}
+#pta-table th, #mapping-table th, #reports-list-table th {
+    white-space: nowrap;
+}
+
