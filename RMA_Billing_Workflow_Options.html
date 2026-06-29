@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RMA Billing Migration - Workflow Options</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 3rem 2rem;
+            text-align: center;
+        }
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+        header p {
+            font-size: 1.1rem;
+            opacity: 0.95;
+        }
+
+        .content {
+            padding: 2rem;
+        }
+
+        .intro {
+            background: #f0f4ff;
+            border-left: 4px solid #667eea;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border-radius: 4px;
+        }
+
+        .workflows {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .workflow-card {
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .workflow-card:hover {
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            border-color: #667eea;
+        }
+
+        .workflow-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .workflow-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .recommendation-badge {
+            background: #ffd700;
+            color: #333;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .workflow-body {
+            padding: 2rem;
+        }
+
+        .workflow-diagram {
+            background: #f9f9f9;
+            border: 1px solid #e0e0e0;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 0.85rem;
+            line-height: 1.8;
+            overflow-x: auto;
+            color: #333;
+        }
+
+        .workflow-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .workflow-section h4 {
+            color: #667eea;
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .workflow-section p {
+            color: #555;
+            margin-bottom: 0.5rem;
+        }
+
+        .pros-cons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .pros, .cons {
+            padding: 1rem;
+            border-radius: 4px;
+        }
+
+        .pros {
+            background: #e8f5e9;
+            border-left: 4px solid #4caf50;
+        }
+
+        .cons {
+            background: #ffebee;
+            border-left: 4px solid #f44336;
+        }
+
+        .pros h5, .cons h5 {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.8rem;
+            font-size: 0.95rem;
+        }
+
+        .pros h5::before {
+            content: "✓";
+            display: inline-block;
+            margin-right: 0.5rem;
+            color: #4caf50;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .cons h5::before {
+            content: "✗";
+            display: inline-block;
+            margin-right: 0.5rem;
+            color: #f44336;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .pros ul, .cons ul {
+            list-style: none;
+            font-size: 0.9rem;
+            color: #555;
+        }
+
+        .pros li, .cons li {
+            margin-bottom: 0.5rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .pros li::before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: #4caf50;
+        }
+
+        .cons li::before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: #f44336;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 2rem 0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .comparison-table thead {
+            background: #667eea;
+            color: white;
+        }
+
+        .comparison-table th {
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .comparison-table td {
+            padding: 1rem;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .comparison-table tr:hover {
+            background: #f5f5f5;
+        }
+
+        .comparison-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .metric-label {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .score-high {
+            color: #4caf50;
+            font-weight: 600;
+        }
+
+        .score-medium {
+            color: #ff9800;
+            font-weight: 600;
+        }
+
+        .score-low {
+            color: #f44336;
+            font-weight: 600;
+        }
+
+        .recommendation {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 1.5rem;
+            margin: 2rem 0;
+            border-radius: 4px;
+        }
+
+        .recommendation h3 {
+            color: #1565c0;
+            margin-bottom: 0.5rem;
+        }
+
+        .footer {
+            background: #f5f5f5;
+            padding: 2rem;
+            text-align: center;
+            color: #666;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .step-number {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 28px;
+            font-weight: 600;
+            margin-right: 0.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .pros-cons {
+                grid-template-columns: 1fr;
+            }
+            header h1 {
+                font-size: 1.8rem;
+            }
+            .workflow-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🏥 RMA Billing Migration</h1>
+            <p>External Module Manager – Workflow & Approval Process Analysis</p>
+        </header>
+
+        <div class="content">
+            <div class="intro">
+                <h3>Project Overview</h3>
+                <p>Migrate RMA (Recurring Maintenance Agreement) charges from R2P2 into REDCap's External Module Manager.
+                This document presents three workflow options for managing EM enablement requests, approval processes, and monthly billing cycles.</p>
+            </div>
+
+            <!-- OPTION 1: SEQUENTIAL (RECOMMENDED) -->
+            <div class="workflows">
+                <div class="workflow-card">
+                    <div class="workflow-header">
+                        <span class="workflow-title">Option 1: Sequential Queue-Based Approval</span>
+                        <span class="recommendation-badge">⭐ RECOMMENDED</span>
+                    </div>
+                    <div class="workflow-body">
+                        <div class="workflow-section">
+                            <h4>Overview</h4>
+                            <p>Straightforward approval queue. Users submit requests → centralized admin review queue → one-at-a-time approval → auto-enable EM → charge next billing cycle.</p>
+                        </div>
+
+                        <div class="workflow-diagram">
+┌─────────────────────────────────────────────────────────────────────────────────┐
+│                           SEQUENTIAL WORKFLOW                                   │
+└─────────────────────────────────────────────────────────────────────────────────┘
+
+  PROJECT ADMIN              REDCAP SUPER USER                 REDCap/System
+       │                            │                              │
+       ├─ Fill PTA                  │                              │
+       ├─ Select EMs                │                              │
+       └─ Submit Request ────────────→ Queue page lists pending    │
+                                    │   requests (draft status)     │
+                                    │                              │
+                                    ├─ Review PTA & EMs            │
+                                    ├─ Check Project Health        │
+                                    ├─ Add Notes (optional)        │
+                                    └─ Click "Approve All" ───────→ EM auto-enables
+                                    │   or "Reject" with reason    │ Item status = approved
+                                    │                              │ Monthly billing includes
+                                    │                              │ from next cutoff date
+                                    │                              │ (day 28/29 of month)
+                                    │
+                                    └─── User notified by email
+                                         of approval/rejection
+                        </div>
+
+                        <div class="workflow-section">
+                            <h4>Key Steps</h4>
+                            <ol style="margin-left: 1.5rem;">
+                                <li><strong>Request Submission:</strong> Project admin → select EMs → enter/confirm PTA → submit → status = "pending"</li>
+                                <li><strong>Approval Queue:</strong> One page lists all pending requests, grouped by project (or PTA)</li>
+                                <li><strong>Admin Action:</strong> Click row → drill-down: view project info, PTA, EMs, notes → approve/reject</li>
+                                <li><strong>Auto-Enable:</strong> On approval, system immediately enables EM in REDCap (via external API/setting)</li>
+                                <li><strong>Billing Snapshot:</strong> At month-end cutoff (28/29), cron creates billing lines for all approved+enabled EMs</li>
+                                <li><strong>Finance Export:</strong> Monthly billing page generates CSV, finance downloads and processes</li>
+                                <li><strong>Finance Re-import:</strong> Finance uploads CSV with updated statuses (charged/rejected/waived/hold)</li>
+                                <li><strong>Carry Forward:</strong> Any rejected line creates new billing line next month with attempt# + 1, linked to prior line</li>
+                            </ol>
+                        </div>
+
+                        <div class="workflow-section">
+                            <h4>Roles & Permissions</h4>
+                            <ul style="margin-left: 1.5rem;">
+                                <li><strong>Project Admin:</strong> Submit requests, view own request history</li>
+                                <li><strong>REDCap Super User:</strong> View all pending requests in central queue, approve/reject, add notes</li>
+                                <li><strong>Finance Team:</strong> Export monthly runs, re-upload with statuses</li>
+                                <li><strong>System:</strong> Auto-enable/disable EMs, auto-generate monthly runs and carry-forwards</li>
+                            </ul>
+                        </div>
+
+                        <div class="pros-cons">
+                            <div class="pros">
+                                <h5>Pros</h5>
+                                <ul>
+                                    <li>Simple mental model: submit → queue → approve → done</li>
+                                    <li>Straightforward audit trail (one request row per approval event)</li>
+                                    <li>Fast deployment; minimal extra roles/gates</li>
+                                    <li>Finance team workload is flat (one export/import per month)</li>
+                                    <li>Clear responsibility: admins approve, system executes</li>
+                                    <li>Easy to track approval SLA (all pending, sorted by date)</li>
+                                    <li>Low complexity: 3–4 entity types, ~3 pages</li>
+                                </ul>
+                            </div>
+                            <div class="cons">
+                                <h5>Cons</h5>
+                                <ul>
+                                    <li>No security/compliance review stage (if org needs it later)</li>
+                                    <li>Admins must review every request individually (scales with volume)</li>
+                                    <li>If PTA changes mid-billing-cycle, affects only future runs</li>
+                                    <li>No built-in SLA escalation (requires manual follow-up)</li>
+                                    <li>No "draft" save option for multi-step requests</li>
+                                    <li>Rejected requests don't auto-retry; user must resubmit</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- OPTION 2: PARALLEL GATES -->
+                <div class="workflow-card">
+                    <div class="workflow-header">
+                        <span class="workflow-title">Option 2: Parallel Approval Gates (Security + Finance)</span>
+                    </div>
+                    <div class="workflow-body">
+                        <div class="workflow-section">
+                            <h4>Overview</h4>
+                            <p>Multi-stage approval. Request enters IT/Security review <em>in parallel</em> with Admin approval. Both must sign off before EM is enabled.
+                            Adds compliance & governance layer but increases processing time.</p>
+                        </div>
+
+                        <div class="workflow-diagram">
+┌─────────────────────────────────────────────────────────────────────────────────┐
+│                      PARALLEL GATES WORKFLOW                                    │
+└─────────────────────────────────────────────────────────────────────────────────┘
+
+  PROJECT ADMIN              REDCAP ADMIN          IT/SECURITY          System
+       │                          │                      │               │
+       ├─ Submit Request ────→ Status = pending          │               │
+       │  (PTA, EMs)            both queues              │               │
+       │                          │                      │               │
+       │                          ├─ Admin Queue ──┐     │               │
+       │                          │   (review PTA) │     │               │
+       │                          │   → Approve    │     │               │
+       │                          │                ├──→ If both approved:
+       │                          │                │     │ EM auto-enables
+       │                          │                │     │ Status = enabled
+       │                          │                ├──→ Monthly billing
+       │                          │                │     includes from
+       │                          │                │     next cutoff
+       │                    Status = admin_approved      │
+       │                          │                      │
+       │                          │   Security Queue ──┐ │
+       │                          │   (scan EM code,   │ │
+       │                          │   check license)   │ │
+       │                          │   → Approve/Reject │ │
+       │                          │                    ├─→ If rejected:
+       │                          │                    │   Status = sec_rejected
+       │                    Status = security_approved │   User notified
+       │                          │                      │
+       │                          └──── Auditor Trail ───→ Log both approvals
+       │
+       └──── Both approval paths stored, SLA tracked per user/gate
+                        </div>
+
+                        <div class="workflow-section">
+                            <h4>Key Steps</h4>
+                            <ol style="margin-left: 1.5rem;">
+                                <li><strong>Request Submission:</strong> Project admin submits; request enters both queues (admin_pending, sec_pending)</li>
+                                <li><strong>Dual Queue:</strong> Admin page shows requests pending <em>admin</em> approval; Security page shows requests pending <em>security</em> approval</li>
+                                <li><strong>Admin Gate:</strong> Admin reviews PTA, budget, project status → approve/reject</li>
+                                <li><strong>Security Gate:</strong> Security scans EM source code, checks licenses, compliance → approve/reject (or request more info)</li>
+                                <li><strong>Dual Check:</strong> Auto-enable triggers <strong>only if both gates approve</strong></li>
+                                <li><strong>Rejection Path:</strong> If either rejects, entire request rejected; user notified with reason from both gates</li>
+                                <li><strong>SLA Tracking:</strong> Each gate has SLA clock; if admin approves but security delays, visible in dashboard</li>
+                                <li><strong>Billing & Carry-Forward:</strong> Same as Option 1</li>
+                            </ol>
+                        </div>
+
+                        <div class="workflow-section">
+                            <h4>Roles & Permissions</h4>
+                            <ul style="margin-left: 1.5rem;">
+                                <li><strong>Project Admin:</strong> Submit requests</li>
+                                <li><strong>REDCap Admin:</strong> Approve based on project health, PTA, budget</li>
+                                <li><strong>IT/Security Officer:</strong> Review EM code, licenses, compliance; approve/reject</li>
+                                <li><strong>Finance Team:</strong> Export/import billing (same as Option 1)</li>
+                                <li><strong>Finance Approval (optional):</strong> Finance team could be a 3rd gate if costs exceed threshold</li>
+                            </ul>
+                        </div>
+
+                        <div class="pros-cons">
+                            <div class="pros">
+                                <h5>Pros</h5>
+                                <ul>
+                                    <li>Compliance-ready: security review baked in from day one</li>
+                                    <li>Reduces risk: two independent reviewers catch issues</li>
+                                    <li>SLA visibility: see where approvals are bottlenecked</li>
+                                    <li>Scalable to add 3rd gate (Finance, etc.) later</li>
+                                    <li>Better audit trail: separate sign-offs for governance</li>
+                                    <li>Parallel processing: admin & security review simultaneously (faster than sequential if well-staffed)</li>
+                                </ul>
+                            </div>
+                            <div class="cons">
+                                <h5>Cons</h5>
+                                <ul>
+                                    <li>Slower time-to-enable: both gates must finish (can be ~1–2 weeks)</li>
+                                    <li>More complex: 5–6 entity types, 4+ pages, state machine logic</li>
+                                    <li>Higher overhead for simple low-risk requests (overkill for common EMs)</li>
+                                    <li>Requires dedicated Security resource; not feasible if org lacks it</li>
+                                    <li>Rejection from one gate kills whole request (no partial approval)</li>
+                                    <li>Request management more fragmented (two separate queues to monitor)</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- OPTION 3: PRE-APPROVAL WITH AUTO-TRACKING -->
+                <div class="workflow-card">
+                    <div class="workflow-header">
+                        <span class="workflow-title">Option 3: Pre-Approval Self-Service (Admin Batch Review)</span>
+                    </div>
+                    <div class="workflow-body">
+                        <div class="workflow-section">
+                            <h4>Overview</h4>
+                            <p>Users self-enable EMs immediately (with PTA on file); system auto-tracks as pending-approval. Admins batch-review weekly and
+                            retroactively approve/reject. Billing includes only approved items. Fastest user experience, but requires strong admin discipline.</p>
+                        </div>
+
+                        <div class="workflow-diagram">
+┌─────────────────────────────────────────────────────────────────────────────────┐
+│              PRE-APPROVAL / SELF-SERVICE WORKFLOW                               │
+└─────────────────────────────────────────────────────────────────────────────────┘
+
+  PROJECT ADMIN                  System                      REDCAP ADMIN      Finance
+       │                           │                             │               │
+       ├─ Fill PTA on project      │                             │               │
+       │  (stored in project)       │                             │               │
+       │                            │                             │               │
+       ├─ Browse available EMs ─────→ Auto-check: PTA on file?   │               │
+       │                            │ If YES: allow self-enable   │               │
+       │                            │ If NO: show error, require  │               │
+       │                            │        PTA first            │               │
+       │                            │                             │               │
+       ├─ Click "Enable EM [X]" ────→ IMMEDIATE: EM enables in   │               │
+       │  for [Module Y]            │ REDCap + creates tracking   │               │
+       │                            │ record (status=pending_approve)
+       │                            │                             │               │
+       │  "Enabled but pending      │                             │               │
+       │   admin review" message    │                             │               │
+       │  shows on project          │                             │               │
+       │                            │                             │               │
+       │                            │                    ← Weekly batch admin review (e.g., Mondays)
+       │                            │                             │               │
+       │                            │      Pending Approvals Page │               │
+       │                            │      ├─ All pending_approve │               │
+       │                            │      │  items from past week │               │
+       │                            │      ├─ Bulk actions:       │               │
+       │                            │      │  "Approve All", or   │               │
+       │                            │      │  "Reject [X,Y]"      │               │
+       │                            │      └─ Send notif: "Admin  │               │
+       │                            │         reviewed this week"  │               │
+       │                            │                             │               │
+       │                            │     Month-End Cutoff ─ Cron │               │
+       │                            │     ├─ Build billing run    │               │
+       │                            │     │  (EMs where status=   │               │
+       │                            │     │   "approved")         │               │
+       │                            │     │                       │               │
+       │                            │     └─────────────────────────► Export CSV  │
+       │                            │                             │  Download +  │
+       │                            │                             │  Send to     │
+       │                            │                             │  Finance    ──→ Process
+       │                            │                             │               │
+       │                            │                             │        Upload with
+       │                            │                             │        statuses back
+                        </div>
+
+                        <div class="workflow-section">
+                            <h4>Key Steps</h4>
+                            <ol style="margin-left: 1.5rem;">
+                                <li><strong>PTA On-File Requirement:</strong> Project must have PTA stored before EM self-enable is available</li>
+                                <li><strong>Self-Enable:</strong> Project admin checks available EMs → clicks "Enable" → EM immediately activates, but flagged as pending approval</li>
+                                <li><strong>Async Approval:</strong> Admin reviews pending items on a schedule (weekly, or as needed), in bulk</li>
+                                <li><strong>Batch Actions:</strong> "Approve All Pending" or select specific items to reject with reason</li>
+                                <li><strong>Retroactive Reject:</strong> If admin rejects after user has already enabled, EM is disabled, user notified</li>
+                                <li><strong>Billing Logic:</strong> Only items with status="approved" are included in monthly billing run</li>
+                                <li><strong>Carry-Forward:</strong> Rejected items create new billing line next month (if still enabled and re-approved)</li>
+                            </ol>
+                        </div>
+
+                        <div class="workflow-section">
+                            <h4>Roles & Permissions</h4>
+                            <ul style="margin-left: 1.5rem;">
+                                <li><strong>Project Admin:</strong> Must set PTA first; can immediately enable EMs (pending approval)</li>
+                                <li><strong>REDCap Admin:</strong> Batch-review pending items weekly; approve/reject in bulk</li>
+                                <li><strong>Finance Team:</strong> Export/import monthly billing (same)</li>
+                                <li><strong>System:</strong> Auto-enable/disable, auto-flag for approval, cron for monthly runs</li>
+                            </ul>
+                        </div>
+
+                        <div class="pros-cons">
+                            <div class="pros">
+                                <h5>Pros</h5>
+                                <ul>
+                                    <li><strong>Fastest user experience:</strong> No wait; enable now, admin validates retroactively</li>
+                                    <li>Admin can batch-process (more efficient than one-by-one)</li>
+                                    <li>Reduces request backlog pressure (no queue congestion)</li>
+                                    <li>Billing is still clean (only approved items charged)</li>
+                                    <li>Simpler workflow for low-risk projects (pre-approved by PTA requirement)</li>
+                                    <li>Admin has more context: can see how EM is being used before approving</li>
+                                    <li>Scalable: even with large volume, admins review once/week</li>
+                                </ul>
+                            </div>
+                            <div class="cons">
+                                <h5>Cons</h5>
+                                <ul>
+                                    <li><strong>Out-of-control risk:</strong> EMs are live before approval (if admin rejects, user already used it)</li>
+                                    <li>Billing chaos if admin forgets to batch-review (pending items pile up)</li>
+                                    <li>No SLA enforcement; admin could review late/never</li>
+                                    <li>Rejections after the fact upset users (they've already enabled EM)</li>
+                                    <li>Audit trail is messier (EM was live before approval)</li>
+                                    <li>Requires strong admin discipline and weekly reminder process</li>
+                                    <li>If PTA later changes/expired, billing run may include stale PTA</li>
+                                    <li>Harder to track "why was this not approved?"</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- COMPARISON TABLE -->
+            <div class="workflow-section" style="margin-top: 3rem;">
+                <h2 style="color: #333; margin-bottom: 1.5rem;">📊 Side-by-Side Comparison</h2>
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Metric</th>
+                            <th>Option 1: Sequential Queue</th>
+                            <th>Option 2: Parallel Gates</th>
+                            <th>Option 3: Pre-Approval</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="metric-label">User Wait Time</td>
+                            <td><span class="score-low">3–5 business days</span></td>
+                            <td><span class="score-low">1–2 weeks</span></td>
+                            <td><span class="score-high">Immediate</span></td>
+                        </tr>
+                        <tr>
+                            <td class="metric-label">Admin Overhead</td>
+                            <td><span class="score-high">Low</span> (one-off reviews)</td>
+                            <td><span class="score-low">High</span> (two gates)</td>
+                            <td><span class="score-medium">Medium</span> (weekly batch)</td>
+                        </tr>
+                        <tr>
+                            <td class="metric-label">Implementation Complexity</td>
+                            <td><span class="score-high">Low</span> (3 pages)</td>
+                            <td><span class="score-low">High</span> (6 pages, state machine)</td>
+                            <td><span class="score-medium">Medium</span> (4 pages)</td>
+                        </tr>
+                        <tr>
+                            <td class="metric-label">Compliance/Governance</td>
+                            <td><span class="score-medium">Standard</span></td>
+                            <td><span class="score-high">Excellent</span> (multi-gate)</td>
+                            <td><span class="score-low">Weak</span> (retroactive)</td>
+                        </tr>
+                        <tr>
+                            <td class="metric-label">Risk of Bad Approvals</td>
+                            <td><span class="score-high">Low</span></td>
+                            <td><span class="score-high">Very Low</span></td>
+                            <td><span class="score-low">High</span></td>
+                        </tr>
+                        <tr>
+                            <td class="metric-label">Billing Process Complexity</td>
+                            <td><span class="score-high">Simple</span> (include approved)</td>
+                            <td><span class="score-high">Simple</span> (include approved)</td>
+                            <td><span class="score-medium">Medium</span> (only approved)</td>
+                        </tr>
+                        <tr>
+                            <td class="metric-label">Audit Trail</td>
+                            <td><span class="score-high">Clear</span></td>
+                            <td><span class="score-high">Very Clear</span></td>
+                            <td><span class="score-low">Messy</span></td>
+                        </tr>
+                        <tr>
+                            <td class="metric-label">Scalability (High Volume)</td>
+                            <td><span class="score-medium">Moderate</span> (queue backlog risk)</td>
+                            <td><span class="score-low">Poor</span> (double review)</td>
+                            <td><span class="score-high">Excellent</span> (batch mode)</td>
+                        </tr>
+                        <tr>
+                            <td class="metric-label">Best For</td>
+                            <td>Standard org; controlled volume; clear owner</td>
+                            <td>Regulated/compliance-heavy org; risk-averse</td>
+                            <td>Trusted admins; low-risk, high-volume EMs</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- RECOMMENDATION -->
+            <div class="recommendation">
+                <h3>🎯 Recommendation: Start with Option 1 (Sequential Queue)</h3>
+                <p>
+                    <strong>Reasoning:</strong>
+                </p>
+                <ul style="margin-left: 1.5rem; margin-top: 1rem;">
+                    <li><strong>Lowest risk:</strong> Simple approval gate before EM is enabled and billed.</li>
+                    <li><strong>Fastest to deploy:</strong> 3–4 pages, standard entity setup, straightforward state machine (pending → approved/rejected).</li>
+                    <li><strong>Clear audit trail:</strong> One request ID, one approval event, easy to track who approved what and when.</li>
+                    <li><strong>Operational clarity:</strong> Admin has one queue to monitor; can set SLA expectations (e.g., "review within 3 business days").</li>
+                    <li><strong>Flexible later:</strong> If organization later needs multi-gate approval (Option 2) or bulk batching (Option 3), can add those features without rearchitecting.</li>
+                    <li><strong>Finance-friendly:</strong> Monthly billing is straightforward: "include only approved items."</li>
+                </ul>
+                <p style="margin-top: 1rem;">
+                    <strong>Migration Path:</strong> Deploy Option 1 for v1 (2–3 sprints). After 2–3 months of live operation,
+                    gather feedback from admins and finance team. If needed, migrate to Option 2 or add batch-review capability (Option 3 hybrid) in v2.
+                </p>
+            </div>
+
+            <!-- HYBRID OPTION -->
+            <div class="recommendation">
+                <h3>💡 Bonus: Hybrid Approach (Option 1 + Option 3 for Low-Risk)</h3>
+                <p>
+                    <strong>Middle ground:</strong> Implement Option 1, but add a <em>risk tier</em>:
+                </p>
+                <ul style="margin-left: 1.5rem; margin-top: 1rem;">
+                    <li><strong>Tier 1 (High-risk):</strong> Full approval queue (Option 1). Examples: paid EMs, complex integrations, new vendors.</li>
+                    <li><strong>Tier 2 (Low-risk):</strong> Pre-approval self-enable (Option 3). Examples: standard utility EMs, already-approved vendors, <$100/month.</li>
+                </ul>
+                <p style="margin-top: 1rem;">
+                    System auto-checks EM against risk profile; if low-risk, enable immediately; if high-risk, send to queue.
+                    Admin can override risk tier per project if needed.
+                </p>
+                <p style="margin-top: 1rem;">
+                    <strong>Benefit:</strong> 80% of users get instant gratification (low-risk), while risky requests still get scrutinized.
+                </p>
+            </div>
+
+            <!-- KEY DECISIONS -->
+            <div style="background: #fff3e0; border-left: 4px solid #ff9800; padding: 1.5rem; margin: 2rem 0; border-radius: 4px;">
+                <h3 style="color: #e65100; margin-bottom: 1rem;">⚙️ Key Implementation Decisions (All Options)</h3>
+                <ul style="margin-left: 1.5rem;">
+                    <li><strong>Monthly cutoff:</strong> Day 28 or 29 of each month at 23:59 (configurable); billing lines generated at cutoff.</li>
+                    <li><strong>Auto-enable mechanism:</strong> On approval, system calls REDCap API or updates DB to enable EM in production instance.</li>
+                    <li><strong>PTA storage:</strong> Plain string in project-level entity; can add validation regex later.</li>
+                    <li><strong>Billing lines:</strong> One line per project+EM+month; carry-forward: new line with prior_line_id + attempt# = 2.</li>
+                    <li><strong>CSV import:</strong> Finance updates status field (charged/rejected/waived/hold); system processes on re-upload.</li>
+                    <li><strong>Rejected line handling:</strong> If rejected, status = "rejected", rejection_reason stored; next month, new line created with attempt# = attempt# + 1.</li>
+                    <li><strong>Notifications:</strong> Email on request approval, rejection, and end-of-month billing export (can be built in v2).</li>
+                    <li><strong>Hard cutover date:</strong> TBD; migration script imports no data from R2P2 (users refer to R2P2 for historical months).</li>
+                </ul>
+            </div>
+
+        </div>
+
+        <div class="footer">
+            <p><strong>Document created:</strong> June 25, 2026</p>
+            <p>For questions or feedback, contact the REDCap External Module Manager team.</p>
+        </div>
+    </div>
+</body>
+</html>
+

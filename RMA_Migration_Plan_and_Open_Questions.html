@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RMA Migration Plan and Open Questions</title>
+    <style>
+        :root {
+            --bg: #f5f7fb;
+            --card: #ffffff;
+            --text: #1f2937;
+            --muted: #4b5563;
+            --primary: #1d4ed8;
+            --primary-soft: #dbeafe;
+            --warning: #92400e;
+            --warning-soft: #ffedd5;
+            --ok: #065f46;
+            --ok-soft: #d1fae5;
+            --border: #e5e7eb;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+
+        .hero {
+            background: linear-gradient(135deg, #1d4ed8 0%, #4338ca 100%);
+            color: #fff;
+            border-radius: 12px;
+            padding: 28px;
+            margin-bottom: 20px;
+        }
+
+        .hero h1 {
+            margin: 0 0 8px;
+            font-size: 1.8rem;
+        }
+
+        .hero p {
+            margin: 0;
+            opacity: 0.95;
+        }
+
+        .meta {
+            margin-top: 12px;
+            font-size: 0.95rem;
+            opacity: 0.9;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 16px;
+        }
+
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .card h2 {
+            margin-top: 0;
+            font-size: 1.2rem;
+            color: #0f172a;
+        }
+
+        .card h3 {
+            margin: 18px 0 8px;
+            font-size: 1rem;
+            color: #111827;
+        }
+
+        ul, ol {
+            margin: 8px 0 0;
+            padding-left: 20px;
+        }
+
+        li { margin-bottom: 6px; }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-right: 8px;
+        }
+
+        .badge-primary { background: var(--primary-soft); color: var(--primary); }
+        .badge-ok { background: var(--ok-soft); color: var(--ok); }
+        .badge-warn { background: var(--warning-soft); color: var(--warning); }
+
+        .timeline {
+            border-left: 3px solid #bfdbfe;
+            margin-top: 10px;
+            padding-left: 16px;
+        }
+
+        .timeline .step {
+            margin-bottom: 14px;
+        }
+
+        .timeline .step strong {
+            display: block;
+            color: #1e3a8a;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th, td {
+            border: 1px solid var(--border);
+            text-align: left;
+            padding: 10px;
+            vertical-align: top;
+        }
+
+        th {
+            background: #f8fafc;
+            font-weight: 700;
+        }
+
+        .muted { color: var(--muted); }
+
+        .footer {
+            margin-top: 14px;
+            font-size: 0.92rem;
+            color: var(--muted);
+        }
+
+        @media (min-width: 980px) {
+            .grid.two {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <section class="hero">
+            <h1>RMA Charges Migration Plan</h1>
+            <p>Move EM billing operations from R2P2 to REDCap External Module Manager with approval queue, PTA tracking, monthly billing export/import, and carry-forward logic.</p>
+            <div class="meta">Date: June 29, 2026 | Scope: New REDCap-only workflow (no legacy migration required)</div>
+        </section>
+
+        <div class="grid">
+            <section class="card">
+                <h2>1) Agreed Decisions</h2>
+                <p>
+                    <span class="badge badge-ok">Confirmed</span>
+                    <span class="badge badge-primary">Implementation Baseline</span>
+                </p>
+                <ul>
+                    <li>Approval should auto-enable requested EM(s) on approve.</li>
+                    <li>A request can include multiple EMs.</li>
+                    <li>Billing cutoff is end-of-month day 28/29.</li>
+                    <li>Rejected charges carry forward next month with the same amount.</li>
+                    <li>Finance upload should support all line statuses.</li>
+                    <li>Request submission should be limited to project admins.</li>
+                    <li>PTA changes affect future runs only (not already-generated lines).</li>
+                    <li>No migration of historical R2P2 data is required.</li>
+                </ul>
+            </section>
+
+            <section class="card">
+                <h2>2) Target Workflow (Recommended)</h2>
+                <p><span class="badge badge-primary">Sequential Queue Model</span></p>
+                <ol>
+                    <li>Project admin opens request page and submits PTA + selected EMs.</li>
+                    <li>Request appears in super-user approval queue with per-EM line items.</li>
+                    <li>Super user approves/rejects each line (or bulk action).</li>
+                    <li>Approved lines auto-enable EM in REDCap project.</li>
+                    <li>Monthly billing run creates charge lines from approved + enabled + fee-bearing EMs at cutoff.</li>
+                    <li>Finance exports CSV, processes externally, re-uploads statuses.</li>
+                    <li>Rejected lines are recreated for the next month as carry-forward attempts.</li>
+                </ol>
+            </section>
+        </div>
+
+        <div class="grid two">
+            <section class="card">
+                <h2>3) Delivery Plan</h2>
+                <div class="timeline">
+                    <div class="step">
+                        <strong>Phase A - Request + Approval</strong>
+                        Build project-admin request page, super-user queue, and auto-enable action.
+                    </div>
+                    <div class="step">
+                        <strong>Phase B - Billing Engine</strong>
+                        Add monthly billing run creation, grouping by PTA and by Project views, and fee snapshot logic.
+                    </div>
+                    <div class="step">
+                        <strong>Phase C - Finance CSV Loop</strong>
+                        Export CSV template, import processed CSV, status updates, and carry-forward generation.
+                    </div>
+                    <div class="step">
+                        <strong>Phase D - Hard Cutover</strong>
+                        Turn on REDCap workflow as source of truth for all new billing periods.
+                    </div>
+                </div>
+                <p class="footer">Note: This plan intentionally excludes historical backfill from R2P2.</p>
+            </section>
+
+            <section class="card">
+                <h2>4) Data/Reporting Shape</h2>
+                <ul>
+                    <li><strong>Request Header:</strong> project, requester, PTA, status, timestamps.</li>
+                    <li><strong>Request Items:</strong> module prefix, fee snapshot, item status, approver info.</li>
+                    <li><strong>Billing Run:</strong> month/year, cutoff timestamp, run status.</li>
+                    <li><strong>Billing Lines:</strong> project, module, PTA, amount, status, attempt number, prior line link.</li>
+                    <li><strong>Views Needed:</strong> grouped by PTA and grouped by Project.</li>
+                </ul>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Billing Status</th>
+                                <th>Meaning</th>
+                                <th>Next Behavior</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>charged</td>
+                                <td>Finance completed charge</td>
+                                <td>Closed; no carry-forward</td>
+                            </tr>
+                            <tr>
+                                <td>rejected</td>
+                                <td>Charge failed/rejected</td>
+                                <td>Create new line next month, same amount</td>
+                            </tr>
+                            <tr>
+                                <td>waived</td>
+                                <td>Charge forgiven</td>
+                                <td>Closed; no carry-forward</td>
+                            </tr>
+                            <tr>
+                                <td>hold</td>
+                                <td>Temporary hold by finance</td>
+                                <td>Remains open for policy decision</td>
+                            </tr>
+                            <tr>
+                                <td>pending</td>
+                                <td>Awaiting finance result</td>
+                                <td>Await import update</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+
+        <section class="card">
+            <h2>5) Open Questions (Decision Checklist)</h2>
+            <p><span class="badge badge-warn">Needs Decision</span></p>
+            <ol>
+                <li><strong>Approval granularity:</strong> Should super users approve per-request only, per-line only, or both?</li>
+                <li><strong>Reject behavior:</strong> If one line in a multi-EM request is rejected, should approved lines still auto-enable immediately?</li>
+                <li><strong>Cutoff timezone:</strong> Which timezone governs day 28/29 cutoff (server timezone, institution timezone, configurable)?</li>
+                <li><strong>Finance import key:</strong> What unique line identifier will finance preserve and return in CSV (line ID, external key, both)?</li>
+                <li><strong>Hold policy:</strong> Should <code>hold</code> lines carry to next month automatically or remain in current run until resolved?</li>
+                <li><strong>PTA validation timing:</strong> Validate PTA format only at request submission, or also before billing run generation?</li>
+                <li><strong>Enable failure handling:</strong> If EM auto-enable fails at approval time, should item become <code>approval_error</code> and retryable?</li>
+                <li><strong>Notification scope:</strong> For v1, is in-app status enough, or do you want basic email notifications included now?</li>
+                <li><strong>Finance edits:</strong> Can finance modify amount in CSV, or should amount be read-only and only status/reason editable?</li>
+                <li><strong>Access model details:</strong> Which exact rule defines "project admin" in this instance for submit permission checks?</li>
+                <li><strong>Retroactive EM disable:</strong> If a previously approved EM is later disabled, should open carry-forward lines be cancelled?</li>
+                <li><strong>Duplicate prevention:</strong> Should same project+EM+month line be hard-blocked from duplicate generation at DB/entity level?</li>
+            </ol>
+        </section>
+
+        <section class="card">
+            <h2>6) Risks and Mitigations</h2>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Risk</th>
+                            <th>Impact</th>
+                            <th>Mitigation</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Duplicate billing lines</td>
+                            <td>Overbilling</td>
+                            <td>Add uniqueness checks on project+module+month+year and idempotent run logic.</td>
+                        </tr>
+                        <tr>
+                            <td>Unclear finance status semantics</td>
+                            <td>Bad carry-forward outcomes</td>
+                            <td>Lock status dictionary and import validation with reject report.</td>
+                        </tr>
+                        <tr>
+                            <td>Auto-enable fails silently</td>
+                            <td>User thinks EM is active when it is not</td>
+                            <td>Persist enable result and expose explicit error state in queue UI.</td>
+                        </tr>
+                        <tr>
+                            <td>PTA changes mid-cycle</td>
+                            <td>Confusion in billing ownership</td>
+                            <td>Snapshot PTA at line creation and display both current PTA and snapshot PTA in UI.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <p class="footer">This page is intended as planning documentation for stakeholder review before implementation.</p>
+        </section>
+
+        <p class="muted" style="margin: 18px 0 0;">File: RMA_Migration_Plan_and_Open_Questions.html</p>
+    </div>
+</body>
+</html>
+
