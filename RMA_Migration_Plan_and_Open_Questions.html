@@ -161,7 +161,7 @@
         <section class="hero">
             <h1>RMA Charges Migration Plan</h1>
             <p>Move EM billing operations from R2P2 to REDCap External Module Manager with approval queue, PTA tracking, monthly billing export/import, and carry-forward logic.</p>
-            <div class="meta">Date: June 29, 2026 | Scope: New REDCap-only workflow (no legacy migration required)</div>
+            <div class="meta">Date: June 29, 2026, updated July 6, 2026 · <strong>revised July 10, 2026</strong> (request flow redesigned: catalog/cart → survey → PI approval → auto-enable/Jira · per-PTA finance CSV · PTA debt ledger · som-prod v1 scope — see Section 9) | Scope: New REDCap-only workflow, EM deactivation (Section 7), historical R2P2 data migration (Section 8)</div>
         </section>
 
         <div class="grid">
@@ -179,21 +179,40 @@
                     <li>Finance upload should support all line statuses.</li>
                     <li>Request submission should be limited to project admins.</li>
                     <li>PTA changes affect future runs only (not already-generated lines).</li>
-                    <li>No migration of historical R2P2 data is required.</li>
+                    <li>
+                        <span class="badge badge-ok" style="margin-right:6px;">Reversed</span>
+                        <s>No migration of historical R2P2 data is required.</s>
+                        <span class="muted">— full historical migration of EM-related charges is now confirmed, see Section 8.</span>
+                    </li>
+                    <li>
+                        <span class="badge badge-warn" style="margin-right:6px;">Superseded 7/10</span>
+                        <s>Notification scope for v1 is in-app status only — no email notifications.</s>
+                        <span class="muted">— the PI approval step now uses a REDCap Alert email (survey link). All other status surfaces remain in-app only.</span>
+                    </li>
+                    <li>
+                        <span class="badge badge-warn" style="margin-right:6px;">Superseded 7/10</span>
+                        <s>Approval is per line item (one EM per project = one line); an approved line auto-enables immediately regardless of other lines' outcomes in the same request.</s>
+                        <span class="muted">— the super-user approval queue is replaced by a PI/Admin survey approval covering the <strong>whole request</strong>; per-EM divergence happens after approval (auto-enable flag vs. RSSD Jira ticket). See Sections 2 and 9.</span>
+                    </li>
+                    <li>Deactivation is self-service for project admins — no super-user approval needed, except for system auto-detected deactivations, which still route through the queue.</li>
                 </ul>
             </section>
 
             <section class="card">
-                <h2>2) Target Workflow (Recommended)</h2>
-                <p><span class="badge badge-primary">Sequential Queue Model</span></p>
+                <h2>2) Target Workflow <span class="badge badge-ok">Revised July 10, 2026</span></h2>
+                <p>
+                    <span class="badge badge-primary">Cart → Survey → PI Approval Model</span>
+                    <span class="muted">(replaces the earlier Sequential Queue Model — no super-user approval queue)</span>
+                </p>
                 <ol>
-                    <li>Project admin opens request page and submits PTA + selected EMs.</li>
-                    <li>Request appears in super-user approval queue with per-EM line items.</li>
-                    <li>Super user approves/rejects each line (or bulk action).</li>
-                    <li>Approved lines auto-enable EM in REDCap project.</li>
-                    <li>Monthly billing run creates charge lines from approved + enabled + fee-bearing EMs at cutoff.</li>
-                    <li>Finance exports CSV, processes externally, re-uploads statuses.</li>
-                    <li>Rejected lines are recreated for the next month as carry-forward attempts.</li>
+                    <li>Requester (project "Design" right, som-prod) opens the <strong>EM Catalog</strong> page in the project's EM menu, browses requestable EMs with monthly fees (catalog managed in the EM-records project, PID 16000), and adds one or more to a <strong>cart</strong>.</li>
+                    <li>Checkout: requester enters the <strong>PTA number</strong> (regex-validated). The module creates a record in the <strong>request-tracking REDCap project</strong> (header + one EM line per cart item, status <code>pending</code>) and redirects to that record's survey.</li>
+                    <li>On the survey, the requester looks up the <strong>PI / Admin approver</strong> (Stanford person-lookup EM) and submits.</li>
+                    <li>A <strong>REDCap Alert emails the PI</strong> the approval survey: one Approve/Reject decision for the <strong>whole request</strong> (PTA + all EMs), with a note.</li>
+                    <li>On approval (<code>redcap_save_record</code> hook): the request's PTA auto-creates/updates the project's PTA mapping; each EM with the <strong>auto-enable flag</strong> (PID 16000) is enabled immediately (failure → <code>approval_error</code>, retryable); the rest go into <strong>one RSSD Jira ticket per request</strong> (REST API) as <code>awaiting_super_user</code>.</li>
+                    <li>The super user works the Jira ticket and enables those EMs manually; nightly reconciliation flips their lines to <code>enabled</code>.</li>
+                    <li>Requester tracks statuses in-app on the catalog page and on REDCap's core EM manager page (module-injected fee/PTA/status annotations).</li>
+                    <li>Monthly billing run (Diagram 3) creates charge lines from enabled + fee-bearing EMs; Finance CSV loop and carry-forward as in Section 4.</li>
                 </ol>
             </section>
         </div>
@@ -203,8 +222,11 @@
                 <h2>3) Delivery Plan</h2>
                 <div class="timeline">
                     <div class="step">
-                        <strong>Phase A - Request + Approval</strong>
-                        Build project-admin request page, super-user queue, and auto-enable action.
+                        <strong>Phase A - Request + Approval <span class="badge badge-warn">Redesigned 7/10</span></strong>
+                        Build the EM catalog/cart page, request-tracking project handoff, PI approval survey +
+                        Alert, save-record hook (PTA sync · auto-enable · RSSD Jira), and the request-admin page.
+                        Deactivation records reuse the same tracking project's EM-line instrument
+                        (<code>source</code> = manual | auto_detected) — see Sections 7 and 9.
                     </div>
                     <div class="step">
                         <strong>Phase B - Billing Engine</strong>
@@ -218,18 +240,26 @@
                         <strong>Phase D - Hard Cutover</strong>
                         Turn on REDCap workflow as source of truth for all new billing periods.
                     </div>
+                    <div class="step">
+                        <strong>Phase E - Historical R2P2 Migration (one-time, parallel-safe)</strong>
+                        Export EM-related charges from R2P2 and import into <code>external_modules_charges</code>.
+                        Independent of Phases A–D; can run before, during, or after cutover. See Section 8.
+                    </div>
                 </div>
-                <p class="footer">Note: This plan intentionally excludes historical backfill from R2P2.</p>
+                <p class="footer">Historical backfill from R2P2 is now in scope — see Section 8 for the confirmed approach.</p>
             </section>
 
             <section class="card">
-                <h2>4) Data/Reporting Shape</h2>
+                <h2>4) Data/Reporting Shape <span class="badge badge-ok">Revised July 10, 2026</span></h2>
                 <ul>
-                    <li><strong>Request Header:</strong> project, requester, PTA, status, timestamps.</li>
-                    <li><strong>Request Items:</strong> module prefix, fee snapshot, item status, approver info.</li>
-                    <li><strong>Billing Run:</strong> month/year, cutoff timestamp, run status.</li>
-                    <li><strong>Billing Lines:</strong> project, module, PTA, amount, status, attempt number, prior line link.</li>
-                    <li><strong>Views Needed:</strong> grouped by PTA and grouped by Project.</li>
+                    <li><strong>Request Header + EM Lines:</strong> now <em>REDCap records in the request-tracking project</em> (not entities): project, requester, PTA, approver; repeating EM line — module prefix, fee snapshot, auto-enable snapshot, line status, Jira key, source.</li>
+                    <li><strong>Billing Run</strong> (<code>finance_billing_runs</code> entity): month/year, status (<code>draft → exported → finalized</code>), totals, generated by/at, exported/imported at.</li>
+                    <li><strong>Billing Lines</strong> (<code>finance_billing_lines</code> entity): project, module, amount, <em>snapshot PTA</em>, status, status source (generation | csv_import | manual) + who/when, attempt number, prior-line link, charge-entity link.</li>
+                    <li><strong>Finance CSV:</strong> the editable file is <strong>one row per PTA</strong> (finance rejects at PTA level; import fans the status out to that PTA's pending lines) + a read-only per-line detail file.</li>
+                    <li><strong>Unmapped projects:</strong> generated lines get <code>status = hold</code> + "No PTA mapping" — never dropped; they carry forward until the project is mapped.</li>
+                    <li><strong>Views:</strong> run detail grouped PTA → project → EM; <strong>Outstanding Balances ledger keyed by PTA</strong> (open rejected/hold lines attributed to each project's <em>current</em> PTA) — the backcharge tool.</li>
+                    <li><strong>Manual overrides:</strong> super user can set any line/PTA-group status with a required, audited note — allowed even after finalize (closes settled backcharges).</li>
+                    <li><strong>Scope v1:</strong> som-prod charges only (<code>external_modules_charges.instance = som-prod</code>).</li>
                 </ul>
                 <div class="table-wrap">
                     <table>
@@ -259,7 +289,7 @@
                             <tr>
                                 <td>hold</td>
                                 <td>Temporary hold by finance</td>
-                                <td>Remains open for policy decision</td>
+                                <td>Rolls to next month automatically, same as rejected</td>
                             </tr>
                             <tr>
                                 <td>pending</td>
@@ -273,21 +303,78 @@
         </div>
 
         <section class="card">
-            <h2>5) Open Questions (Decision Checklist)</h2>
-            <p><span class="badge badge-warn">Needs Decision</span></p>
+            <h2>5) Decisions <span class="badge badge-ok">Decided</span></h2>
+            <p class="muted">Formerly "Open Questions" — all items below are now resolved. Original question kept for context, decision follows.</p>
+            <p>
+                <span class="badge badge-warn">July 10, 2026</span>
+                Items <strong>#1, #2, #4, #8</strong> are superseded by the redesigned request flow and the per-PTA
+                finance CSV — see Section 9 for the current decisions. Item <strong>#10</strong> still defines who may
+                submit (Design right), now applied to the catalog/cart page.
+            </p>
             <ol>
-                <li><strong>Approval granularity:</strong> Should super users approve per-request only, per-line only, or both?</li>
-                <li><strong>Reject behavior:</strong> If one line in a multi-EM request is rejected, should approved lines still auto-enable immediately?</li>
-                <li><strong>Cutoff timezone:</strong> Which timezone governs day 28/29 cutoff (server timezone, institution timezone, configurable)?</li>
-                <li><strong>Finance import key:</strong> What unique line identifier will finance preserve and return in CSV (line ID, external key, both)?</li>
-                <li><strong>Hold policy:</strong> Should <code>hold</code> lines carry to next month automatically or remain in current run until resolved?</li>
-                <li><strong>PTA validation timing:</strong> Validate PTA format only at request submission, or also before billing run generation?</li>
-                <li><strong>Enable failure handling:</strong> If EM auto-enable fails at approval time, should item become <code>approval_error</code> and retryable?</li>
-                <li><strong>Notification scope:</strong> For v1, is in-app status enough, or do you want basic email notifications included now?</li>
-                <li><strong>Finance edits:</strong> Can finance modify amount in CSV, or should amount be read-only and only status/reason editable?</li>
-                <li><strong>Access model details:</strong> Which exact rule defines "project admin" in this instance for submit permission checks?</li>
-                <li><strong>Retroactive EM disable:</strong> If a previously approved EM is later disabled, should open carry-forward lines be cancelled?</li>
-                <li><strong>Duplicate prevention:</strong> Should same project+EM+month line be hard-blocked from duplicate generation at DB/entity level?</li>
+                <li>
+                    <strong>Approval granularity:</strong> Should super users approve per-request only, per-line only, or both?
+                    <br><span class="badge badge-ok">Decided</span> Per-line. One line = one EM within one project. Each line is approved/denied independently, even when it arrived as part of a multi-EM request.
+                </li>
+                <li>
+                    <strong>Reject behavior:</strong> If one line in a multi-EM request is rejected, should approved lines still auto-enable immediately?
+                    <br><span class="badge badge-ok">Decided</span> No dependency between sibling lines — every EM request/line is independent and won't affect the others. If one line in a multi-EM request is rejected, the rest are unaffected and still auto-enable on approval, same as if they'd been submitted separately.
+                </li>
+                <li>
+                    <strong>Cutoff timezone:</strong> Which timezone governs day 28/29 cutoff (server timezone, institution timezone, configurable)?
+                    <br><span class="badge badge-ok">Decided</span> No system-enforced timezone gate. The cutoff is operational, not automated: it's whenever the super-user actually clicks "Generate Report" for that month (day 28/29 is guidance for when to click it, not a server-side check). See Diagram 3, which drops the automated cutoff gate accordingly.
+                </li>
+                <li>
+                    <strong>Finance import key:</strong> What unique line identifier will finance preserve and return in CSV (line ID, external key, both)?
+                    <br><span class="badge badge-ok">Decided</span> Both — the CSV Contract in Workflow_Diagrams.html already exports both <code>line_id</code> and <code>billing_run_id</code>; no change needed.
+                </li>
+                <li>
+                    <strong>Hold policy:</strong> Should <code>hold</code> lines carry to next month automatically or remain in current run until resolved?
+                    <br><span class="badge badge-ok">Decided</span> Rolls to next month automatically, same treatment as rejected. Section 4's status table and the Workflow_Diagrams.html status flow are both updated.
+                </li>
+                <li>
+                    <strong>PTA validation timing:</strong> Validate PTA format only at request submission, or also before billing run generation?
+                    <br><span class="badge badge-ok">Decided</span> At request submission only. No re-validation at billing run time.
+                </li>
+                <li>
+                    <strong>Enable failure handling:</strong> If EM auto-enable fails at approval time, should item become <code>approval_error</code> and retryable?
+                    <br><span class="badge badge-ok">Decided</span> Yes — item becomes <code>approval_error</code> and retryable, and the error is surfaced to admins (not just logged silently).
+                </li>
+                <li>
+                    <strong>Notification scope:</strong> For v1, is in-app status enough, or do you want basic email notifications included now?
+                    <br><span class="badge badge-ok">Decided</span> In-app is enough for v1. No email notifications. Diagrams 1–3 updated to drop email steps in favor of in-app status.
+                </li>
+                <li>
+                    <strong>Finance edits:</strong> Can finance modify amount in CSV, or should amount be read-only and only status/reason editable?
+                    <br><span class="badge badge-ok">Decided</span> No amount modifications by finance. Matches the existing CSV Contract (amount/fee columns are export-only; only <code>status</code> and <code>finance_note</code> are editable).
+                </li>
+                <li>
+                    <strong>Access model details:</strong> Which exact rule defines "project admin" in this instance for submit permission checks?
+                    <br><span class="badge badge-ok">Decided</span> REDCap users with the project's "Design" user right. This already matches the existing <code>classes/User.php::hasDesignRights()</code> helper (design right or SUPER_USER) — no new permission model needed.
+                </li>
+                <li>
+                    <strong>Retroactive EM disable:</strong> If a previously approved EM is later disabled, should open carry-forward lines be cancelled?
+                    <br><span class="badge badge-ok">Decided</span> Don't cancel anything retroactively. Instead, prevent the problem at the source: when a monthly invoice/billing run is generated, only create a line item for a project+EM if, at that moment, the project is in Production status <em>and</em> the EM is currently enabled. Already-generated lines are left alone and run their normal course. See decision #15 and Section 7 / Diagram 2 (now simplified — no cancel-vs-finish gate needed).
+                </li>
+                <li><strong>Duplicate prevention:</strong> Should same project+EM+month line be hard-blocked from duplicate generation at DB/entity level?
+                    <br><span class="badge badge-ok">Decided</span> Yes, at the report level: once a report is generated for a month, a super-user can't generate a second one for that same month. If the existing report hasn't been sent to finance yet (still <code>draft</code>), they can append/regenerate it in place instead of creating a duplicate. See Diagram 3's new duplicate-report gate.
+                </li>
+                <li>
+                    <strong>Deactivation approval:</strong> Does deactivation need super-user confirmation like activation does, or can a project admin self-service deactivate without approval?
+                    <br><span class="badge badge-ok">Decided</span> No approval needed. A project admin can deactivate any EM they no longer need directly — self-service, immediate. (Contrast with enablement, which still requires approval.)
+                </li>
+                <li>
+                    <strong>Auto-detected deactivation:</strong> When the nightly reconciliation job finds an EM disabled outside the workflow, should it still route through the super-user queue, or auto-close silently with just a log entry?
+                    <br><span class="badge badge-ok">Decided</span> Goes through the admin queue. Unlike self-service deactivation, an out-of-band disable wasn't initiated through the system at all, so it's surfaced for a super-user to acknowledge or flag.
+                </li>
+                <li>
+                    <strong>Deactivation timing vs. cutoff:</strong> If an EM is deactivated after the billing cutoff but before the run is generated, is the current month still billed in full, or excluded?
+                    <br><span class="badge badge-ok">Decided</span> Excluded. Enforced by the same generation-time check as #11: no Production+enabled, no line item, regardless of how much of the month it was active.
+                </li>
+                <li>
+                    <strong>Re-enable after deactivation:</strong> Does re-enabling a previously deactivated EM go through the full request/approval flow again, or is there a lighter-weight reactivation path?
+                    <br><span class="badge badge-ok">Decided</span> Full request/approval flow again (Diagram 1) — no shortcut, even though deactivation itself is now approval-free.
+                </li>
             </ol>
         </section>
 
@@ -323,10 +410,137 @@
                             <td>Confusion in billing ownership</td>
                             <td>Snapshot PTA at line creation and display both current PTA and snapshot PTA in UI.</td>
                         </tr>
+                        <tr>
+                            <td>EM disabled outside the deactivation workflow</td>
+                            <td>Billing keeps generating charges for an EM that is no longer actually active</td>
+                            <td>Nightly reconciliation cron compares <code>redcap_external_module_settings</code> against approved requests and files an auto-detected deactivation record (Section 7 / Diagram 2).</td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
             <p class="footer">This page is intended as planning documentation for stakeholder review before implementation.</p>
+        </section>
+
+        <section class="card">
+            <h2>7) EM Deactivation Workflow <span class="badge badge-ok">Decided</span></h2>
+            <p>
+                Companion to Section 2's enablement flow, but <strong>not symmetric with it</strong>: deactivation is
+                self-service (decision #13) except when the system detects an out-of-band disable, which still needs
+                admin eyes (decision #14). Full flow diagram: <em>Workflow_Diagrams.html, Diagram 2 — EM Deactivation
+                Request &amp; Approval Flow</em>.
+            </p>
+            <h3>Target Workflow</h3>
+            <ol>
+                <li>Project admin opens the EM management page, selects one or more currently-enabled EMs, and deactivates them directly — no approval step. The EM is disabled in REDCap immediately (if not already) and the request/items are recorded as <code>deactivated</code> for audit.</li>
+                <li><em>OR</em> a nightly reconciliation cron finds an EM disabled directly in <code>redcap_external_module_settings</code> with no matching deactivation record, and auto-creates one (<code>source = auto_detected</code>, <code>status = pending</code>). This one <em>does</em> go to the super-user approval queue for acknowledgment.</li>
+                <li>No explicit "exclude from billing" step is needed: the monthly billing-run generation logic (decision #11) already only creates a line item when the project is Production status <em>and</em> the EM is currently enabled, so a deactivated EM simply stops generating new lines on its own.</li>
+                <li>Already-generated/open billing lines for that project+EM are left untouched and run their normal course (charged/rejected/etc.) — deactivation does not retroactively cancel them (decision #11).</li>
+                <li>Re-enabling a previously deactivated EM always goes through the full enablement request/approval flow again (decision #16, Diagram 1) — there is no lightweight reactivation shortcut.</li>
+            </ol>
+            <h3>Data Shape <span class="badge badge-warn">Revised 7/10</span></h3>
+            <p>
+                <s>Reuse <code>em_enable_requests</code> / <code>em_enable_request_items</code> entities.</s>
+                Deactivations are recorded on the <strong>request-tracking REDCap project's EM-line instrument</strong>
+                (same store as enablement requests — the planned entities are not built): line status
+                <code>deactivated</code> with who/when/reason, and a <code>source</code> field
+                (<code>manual</code> | <code>auto_detected</code>). <code>manual</code> deactivations (via the module's
+                Disable button injected into REDCap's core EM manager page) are recorded already-resolved;
+                <code>auto_detected</code> ones (nightly reconciliation) are created pending and appear in the
+                acknowledgment queue on the request-admin page.
+            </p>
+            <p class="footer">Corresponding decisions are in Section 5, items 11 and 13–16, and Section 9.</p>
+        </section>
+
+        <section class="card">
+            <h2>8) Historical R2P2 Data Migration <span class="badge badge-ok">Decided</span></h2>
+            <p>
+                Reverses the "no migration required" decision in Section 1. Full historical migration of EM-related
+                charges is confirmed. This section was rewritten after finding that R2P2 already has a dedicated
+                REDCap-linking model — the mapping is more direct than originally assumed.
+            </p>
+            <h3>Source data (R2P2)</h3>
+            <p>Reviewed <code>backend/app/projects/sow/invoices/</code> and <code>backend/app/projects/redcap/</code> in the R2P2 codebase. Relevant models:</p>
+            <ul>
+                <li><strong>REDCapEMCharges</strong> (<code>app_redcapemcharges</code>, in <code>app/projects/redcap/em_charges/</code>) — the key model for this migration. It's already a replica of this module's <code>external_modules_charges</code> shape: <code>redcap_instance</code>, <code>pid</code>, <code>year</code>, <code>month</code>, <code>module_prefix</code>, <code>amount</code>. Its primary key, <code>redcap_em_charge_id</code>, <em>is</em> the corresponding REDCap <code>external_modules_charges</code> entity ID (per your note) — not a local autoincrement. It FKs to <code>ChargeItem</code>.</li>
+                <li><strong>ChargeItem</strong> — the underlying per-month charge: SOW, PTA (via <code>Finance</code>), <code>amount</code>, <code>start_date</code>. Also carries <code>redcap_custom_charge_id</code> / <code>redcap_custom_project_id</code> / <code>redcap_custom_charge_instance</code> — <strong>confirmed</strong> to target REDCap's separate <code>custom_charges</code> entity (table <code>redcap_entity_custom_charges</code>, defined by the <code>custom_charges_v9.9.9</code> module), <em>not</em> <code>external_modules_charges</code>.</li>
+                <li><strong>custom_charges</strong> (REDCap-side, <code>custom_charges_v9.9.9</code> module) — fields: <code>project_id</code>, <code>module_prefix</code> (optional), <code>is_recurring</code>, <code>amount</code>, <code>notes</code>, <code>status</code>, <code>rma_id</code> (R2P2's RMA id). Because <code>module_prefix</code> is optional, this entity holds a mix of EM-related charges (module_prefix populated) and genuinely non-EM charges (e.g. Twilio fees, per that module's own description) — it is <em>not</em> exclusively "not related to EMs."</li>
+                <li><strong>InvoiceItem</strong> — one row per SOW per invoice: <code>pta_num</code>, <code>amount</code>, <code>status</code> (Pending=1 / Charged=2 / Rejected=3).</li>
+                <li><strong>SOW</strong> — must be <code>types = 2</code> (REDCap Maintenance Agreement) and <code>status IN (2, 6, 7)</code> (approved/active) to count as an EM-related charge — confirmed by existing R2P2 queries in <code>ProjectREDCap.get_redcap_project_with_approved_rma()</code> / <code>get_redcap_project_with_broken_rma_billing()</code>, which join exactly this chain: <code>REDCapEMCharges → ChargeItem → InvoiceItem → SOW → Finance</code>.</li>
+                <li><strong>Finance</strong> (via <code>SOW.finance_id</code>) — <code>pta_charge_number</code> is the PTA on file.</li>
+            </ul>
+            <h3>Target</h3>
+            <p>
+                Reuse <code>external_modules_charges</code> (decided). Extend it with a <code>source</code> field
+                (<code>live</code> | <code>migrated_r2p2</code>) plus traceability fields
+                (<code>r2p2_charge_item_id</code>, <code>r2p2_invoice_item_id</code>) so a re-run can detect
+                already-migrated rows and skip them.
+            </p>
+            <h3>Decisions (Decision Checklist)</h3>
+            <ol>
+                <li>
+                    <strong>Scope:</strong> <span class="badge badge-ok">Decided</span> Full history — but only EM-related charges (SOW <code>types = 2</code> / RMA, approved/active status). R2P2 has other, non-EM SOW charge types that must be excluded.
+                    <br><span class="badge badge-primary">Default applied</span> "EM-related" is read broadly: it includes both (a) <code>ChargeItem</code> rows linked via <code>REDCapEMCharges</code>, and (b) <code>ChargeItem</code> rows linked via <code>redcap_custom_charge_id</code> where the target <code>custom_charges</code> row has <code>module_prefix</code> populated. Purely non-EM <code>custom_charges</code> rows (no module_prefix) stay out of scope.
+                    <span class="muted">You didn't confirm this when asked — I went with the broader reading since it matches your original "full EM charges" framing. Say the word if you meant REDCapEMCharges-only.</span>
+                </li>
+                <li><strong>Target entity:</strong> <span class="badge badge-ok">Decided</span> Reuse <code>external_modules_charges</code> (see Target above), not a new dedicated entity. Rows sourced from <code>custom_charges</code> (path b above) are normalized into the same <code>external_modules_charges</code> shape on import — <code>module_prefix</code> carries over directly, and there's no month/year on the source side, so it's derived from <code>ChargeItem.start_date</code>.</li>
+                <li>
+                    <strong>Mapping key:</strong> <span class="badge badge-ok">Decided</span> Two valid linkage paths, checked in order: (1) <code>ChargeItem</code> → <code>REDCapEMCharges</code> (primary — already carries <code>pid</code>/<code>module_prefix</code>/<code>amount</code>/<code>month</code>/<code>year</code> directly); (2) <code>ChargeItem.redcap_custom_charge_id</code> → a <code>custom_charges</code> row with <code>module_prefix</code> populated (fallback, per the scope default above). If neither path resolves — no <code>REDCapEMCharges</code> link, and no populated <code>redcap_custom_charge_id</code>/<code>redcap_custom_project_id</code>/<code>redcap_custom_charge_instance</code> — the row is unmappable: skip it and log an error rather than guessing at a match.
+                </li>
+                <li><strong>PTA mapping:</strong> <span class="badge badge-ok">Decided</span> Yes, 1:1 — R2P2's <code>Finance.pta_charge_number</code> (via SOW) maps directly onto <code>pta_accounts.pta_number</code>. The import creates any missing <code>pta_accounts</code> / <code>project_pta_mapping</code> records on the fly.</li>
+                <li><strong>Date range:</strong> <span class="badge badge-ok">Decided</span> Full history, no cutoff date.</li>
+                <li><strong>Status mapping:</strong> <span class="badge badge-ok">Decided</span> Direct 1:1 — R2P2 <code>Pending</code>→<code>pending</code>, <code>Charged</code>→<code>charged</code>, <code>Rejected</code>→<code>rejected</code>. REDCap's two newer statuses (<code>waived</code>, <code>hold</code>) have no R2P2 source and are simply never produced by this migration.</li>
+                <li><strong>Delivery mechanism:</strong> <span class="badge badge-ok">Decided</span> One-time export/import — not a standing repeatable tool. Built once, run once, retired.</li>
+                <li>
+                    <strong>Data access:</strong> <span class="badge badge-ok">Decided</span> No direct R2P2 database access.
+                    <span class="badge badge-primary">Proposed mechanism</span> A one-time R2P2-side export (management command or admin view) serializes the joined
+                    <code>REDCapEMCharges ⋈ ChargeItem ⋈ InvoiceItem ⋈ SOW ⋈ Finance</code> rows (filtered per scope, #1) to a JSON/CSV file.
+                    A one-time PHP import page in this module (e.g. <code>pages/migrate_r2p2_charges.php</code> + an ajax handler) reads that file and
+                    creates <code>external_modules_charges</code> entities per the mapping rules above.
+                    <span class="muted">This mechanism is my proposal, not something you specified — please confirm before I build it.</span>
+                </li>
+            </ol>
+            <p class="footer">Decision #8 in Section 1 now reads "Reversed" — full historical migration of EM-related charges is in scope.</p>
+        </section>
+
+        <section class="card">
+            <h2>9) July 10, 2026 Design Revision <span class="badge badge-ok">Decided</span></h2>
+            <p class="muted">Decisions from the July 10 design session. Where these conflict with Sections 1–5, these win. Full implementation detail: <em>EM_Billing_Implementation_Plan.html</em>; updated diagrams: <em>Workflow_Diagrams.html</em> (v2.0).</p>
+
+            <h3>Request flow (replaces the super-user approval queue)</h3>
+            <ol>
+                <li><strong>Catalog &amp; cart:</strong> project-side EM Catalog page (EM menu, som-prod, Design right required); catalog and fees managed as records in the EM-records project (PID 16000), including a new per-EM <code>auto_enable</code> flag.</li>
+                <li><strong>Survey handoff:</strong> checkout validates the PTA (regex) and pre-creates a record in a dedicated <strong>request-tracking REDCap project</strong> (system setting <code>em-request-project-id</code>), then redirects to the record's survey — no data passed through the URL.</li>
+                <li><strong>Approver lookup:</strong> requester selects the PI/Admin on the survey via the Stanford person-lookup EM.</li>
+                <li><strong>Approval unit:</strong> the PI approves/rejects the <strong>whole request</strong> (one decision covering the PTA and all EMs) on a second survey instrument delivered by a REDCap Alert email.</li>
+                <li><strong>Post-approval processing:</strong> <code>redcap_save_record</code> hook — per EM: auto-enable when flagged (failure → <code>approval_error</code>, retryable); otherwise <strong>one RSSD Jira ticket per request</strong> via REST API, lines <code>awaiting_super_user</code> until reconciliation sees the manual enable.</li>
+                <li><strong>PTA sync:</strong> an approved request's PTA auto-creates/updates <code>pta_accounts</code> and the project's active <code>project_pta_mapping</code> — the main way billing mappings stay current.</li>
+                <li><strong>Store:</strong> requests/lines live as tracking-project records; the previously planned <code>em_enable_requests</code> / <code>em_enable_request_items</code> entities are not built.</li>
+            </ol>
+
+            <h3>Billing / invoice / debt</h3>
+            <ol>
+                <li><strong>Line-level storage, view-level grouping:</strong> <code>finance_billing_lines</code> (one per project+EM+month, PTA snapshotted) under <code>finance_billing_runs</code>; invoice view groups PTA → project → EM. The JSON-snapshot <code>monthly_pta_reports</code> implementation is replaced.</li>
+                <li><strong>Debt owner = PTA:</strong> the Outstanding Balances ledger is keyed by PTA (open rejected/hold lines attributed to each project's <em>current</em> PTA; original attempt PTA kept on the line for audit).</li>
+                <li><strong>Finance rejects per PTA:</strong> editable CSV is one row per PTA; import fans the status out to that PTA's still-pending lines (all-or-nothing validation; manually-resolved lines skipped and reported). A read-only per-line detail CSV accompanies it.</li>
+                <li><strong>Carry-forward:</strong> re-bills the project's <em>current</em> PTA, same amount, attempt+1, linked via <code>carried_from_line_id</code>; created regardless of current enablement (it is already-incurred debt).</li>
+                <li><strong>Unmapped projects:</strong> lines generated with <code>status = hold</code> + "No PTA mapping" (excluded from the finance summary file, flagged at export) so nothing is silently dropped.</li>
+                <li><strong>Manual overrides:</strong> allowed any time, required note, audited (<code>status_source = manual</code>, who/when) — used to close settled backcharges.</li>
+                <li><strong>Scope v1:</strong> som-prod only; multi-instance keys (instance+project_id) deferred.</li>
+            </ol>
+
+            <h3>Deactivation, core page, reconciliation</h3>
+            <ol>
+                <li><strong>Core EM manager page injection:</strong> per-EM fee / PTA / request-status annotations plus a module-owned Disable button (confirm dialog, required reason, immediate, audited). Re-enable = full new request.</li>
+                <li><strong>Reconciliation cron (nightly):</strong> out-of-band disables → <code>auto_detected</code> record into the acknowledgment queue; Jira-resolved manual enables → line flipped to <code>enabled</code>.</li>
+                <li><strong>Go-live baseline:</strong> one-time seeding of <em>grandfathered</em> tracking records for every currently-enabled billable EM, so reconciliation starts from a complete picture.</li>
+            </ol>
+
+            <h3>Security fix (found during review)</h3>
+            <p>
+                <code>ajax/finance_report_action.php</code> and <code>ajax/finance_report_download.php</code> are
+                currently listed in <code>no-auth-pages</code> with no permission or token check — they must be removed
+                from <code>no-auth-pages</code> and guarded super-user-only before release.
+            </p>
         </section>
 
         <p class="muted" style="margin: 18px 0 0;">File: RMA_Migration_Plan_and_Open_Questions.html</p>

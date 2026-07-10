@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Mockups 3–5 — Billing Runs · Import CSV · Outstanding Balances</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+<link rel="stylesheet" href="mockup.css">
+</head>
+<body>
+
+<div class="rc-topbar">
+    <span class="rc-brand"><span class="rc-cardinal">Stanford Medicine</span> · REDCap</span>
+    <span>Logged in as <b>rssd_admin</b> (SUPER USER) &nbsp;|&nbsp; Control Center</span>
+</div>
+<div class="rc-context">
+    <span class="text-muted">Control Center &raquo;</span> <span class="rc-project"><i class="fas fa-file-invoice-dollar"></i> EM Billing — Finance</span>
+</div>
+<div class="mock-caption">
+    <span class="mock-step">Screens 4–6 of 7 — RSSD super user.</span>
+    Monthly cycle: <b>Generate</b> the run on/after day 28 → download the <b>Summary CSV</b> and email it to Finance →
+    Finance sets one status per PTA and returns the file → <b>Import CSV</b> fans statuses out to every line and finalizes
+    the run → unpaid (rejected/hold) lines appear in <b>Outstanding Balances</b> and re-bill automatically next month.
+    &nbsp;<a href="pi_approval_survey.html">← PI Survey</a> &nbsp;|&nbsp; Next: <a href="request_admin.html">Request Admin →</a>
+</div>
+
+<div class="page-wrap">
+    <h4 class="page-title mb-3"><i class="fas fa-file-invoice-dollar"></i> External Module Billing</h4>
+
+    <ul class="nav nav-tabs">
+        <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#runs"><i class="fas fa-list"></i> Billing Runs</a></li>
+        <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#generate"><i class="fas fa-cogs"></i> Generate</a></li>
+        <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#import"><i class="fas fa-file-upload"></i> Import CSV</a></li>
+        <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#balances"><i class="fas fa-balance-scale"></i> Outstanding Balances</a></li>
+        <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#pta"><i class="fas fa-university"></i> PTA Accounts</a></li>
+        <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#mapping"><i class="fas fa-link"></i> Project↔PTA Mapping</a></li>
+    </ul>
+
+    <div class="tab-content pt-3">
+
+    <!-- ================= TAB: BILLING RUNS ================= -->
+    <div class="tab-pane fade show active" id="runs">
+        <div class="panel-box">
+            <h6><i class="fas fa-list"></i> Monthly billing runs</h6>
+            <table class="table-rc">
+                <thead><tr>
+                    <th>Month</th><th>Status</th><th class="text-right">New</th><th class="text-right">Carried fwd</th>
+                    <th class="text-right">Total</th><th class="text-right">Lines</th><th>Generated</th><th></th>
+                </tr></thead>
+                <tbody>
+                <tr>
+                    <td><b>July 2026</b></td>
+                    <td><span class="b b-draft"><i class="fas fa-pencil-alt"></i>draft</span></td>
+                    <td class="text-money">$3,675</td><td class="text-money">$650</td>
+                    <td class="text-money"><b>$4,325</b></td><td class="text-money">38</td>
+                    <td class="small-muted">rssd_admin · 07/09/2026 09:14</td>
+                    <td class="text-nowrap">
+                        <button class="btn btn-xs btn-primary" onclick="mockToast('Run detail below shows June 2026 as the example')">View</button>
+                        <button class="btn btn-xs btn-outline-secondary" onclick="mockToast('Summary CSV downloads once the run is exported')"><i class="fas fa-download"></i> Summary</button>
+                        <button class="btn btn-xs btn-outline-secondary" onclick="mockToast('Detail CSV downloaded')"><i class="fas fa-download"></i> Detail</button>
+                    </td>
+                </tr>
+                <tr style="background:#f2f7f2;">
+                    <td><b>June 2026</b></td>
+                    <td><span class="b b-finalized"><i class="fas fa-lock"></i>finalized</span></td>
+                    <td class="text-money">$3,700</td><td class="text-money">$450</td>
+                    <td class="text-money"><b>$4,150</b></td><td class="text-money">36</td>
+                    <td class="small-muted">rssd_admin · 06/28/2026 16:02</td>
+                    <td class="text-nowrap">
+                        <button class="btn btn-xs btn-primary" onclick="$('#run-detail')[0].scrollIntoView({behavior:'smooth'})">View</button>
+                        <button class="btn btn-xs btn-outline-secondary" onclick="mockToast('em_billing_2026-06_summary.csv downloaded')"><i class="fas fa-download"></i> Summary</button>
+                        <button class="btn btn-xs btn-outline-secondary" onclick="mockToast('em_billing_2026-06_detail.csv downloaded')"><i class="fas fa-download"></i> Detail</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td><b>May 2026</b></td>
+                    <td><span class="b b-finalized"><i class="fas fa-lock"></i>finalized</span></td>
+                    <td class="text-money">$3,750</td><td class="text-money">$150</td>
+                    <td class="text-money"><b>$3,900</b></td><td class="text-money">34</td>
+                    <td class="small-muted">rssd_admin · 05/29/2026 10:48</td>
+                    <td class="text-nowrap">
+                        <button class="btn btn-xs btn-primary" onclick="mockToast('Would open the May 2026 run')">View</button>
+                        <button class="btn btn-xs btn-outline-secondary"><i class="fas fa-download"></i> Summary</button>
+                        <button class="btn btn-xs btn-outline-secondary"><i class="fas fa-download"></i> Detail</button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Run detail -->
+        <div class="panel-box" id="run-detail">
+            <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap">
+                <h6 class="mb-0"><i class="fas fa-search-dollar"></i> Run detail — June 2026
+                    <span class="b b-finalized"><i class="fas fa-lock"></i>finalized</span></h6>
+                <span class="small-muted">Grouping: PTA → project → EM line. Click a row to collapse/expand.</span>
+            </div>
+
+            <!-- PTA group 1 -->
+            <div class="pta-group">
+                <div class="pta-head">
+                    <span><i class="fas fa-caret-down caret-i"></i>
+                        <span class="pta-num">1234567-100-ABCDE</span>
+                        <span class="pta-desc">— NIH R01 “CHOIR” · Dr. Emily Chen (echen@stanford.edu)</span>
+                        <span class="small-muted">· 2 projects</span></span>
+                    <span class="pta-money">new $325 + carried $0 = <b>$325</b>
+                        <span class="b b-charged"><i class="fas fa-check"></i>charged</span>
+                        <button class="btn btn-xs btn-outline-secondary ml-1 ovr-pta" data-pta="1234567-100-ABCDE">Set status for PTA…</button></span>
+                </div>
+                <div class="proj-block">
+                    <div class="proj-head"><span><i class="fas fa-caret-down caret-i"></i> CHOIR PRO Registry (PID 21433)</span><span class="text-money">$225</span></div>
+                    <table class="line-table">
+                        <tr><td style="width:40%;">Survey Dashboard <span class="small-muted">(survey_dashboard)</span></td>
+                            <td class="text-money" style="width:10%;">$150</td>
+                            <td><span class="b b-charged"><i class="fas fa-check"></i>charged</span></td><td></td>
+                            <td class="text-right"><button class="btn btn-xs btn-outline-secondary ovr-line">Override status…</button></td></tr>
+                        <tr><td>Text To Download <span class="small-muted">(text_to_download)</span></td>
+                            <td class="text-money">$75</td>
+                            <td><span class="b b-charged"><i class="fas fa-check"></i>charged</span></td><td></td>
+                            <td class="text-right"><button class="btn btn-xs btn-outline-secondary ovr-line">Override status…</button></td></tr>
+                    </table>
+                </div>
+                <div class="proj-block">
+                    <div class="proj-head"><span><i class="fas fa-caret-down caret-i"></i> CHOIR Satellite Sites (PID 22871)</span><span class="text-money">$100</span></div>
+                    <table class="line-table">
+                        <tr><td style="width:40%;">Vizr Charts <span class="small-muted">(vizr)</span></td>
+                            <td class="text-money" style="width:10%;">$100</td>
+                            <td><span class="b b-charged"><i class="fas fa-check"></i>charged</span></td><td></td>
+                            <td class="text-right"><button class="btn btn-xs btn-outline-secondary ovr-line">Override status…</button></td></tr>
+                    </table>
+                </div>
+            </div>
+
+            <!-- PTA group 2 (rejected) -->
+            <div class="pta-group">
+                <div class="pta-head">
+                    <span><i class="fas fa-caret-down caret-i"></i>
+                        <span class="pta-num">8891011-250-FGHIJ</span>
+                        <span class="pta-desc">— K23 “Peds Asthma” · Dr. Marcus Lee (mlee2@stanford.edu)</span>
+                        <span class="small-muted">· 1 project</span></span>
+                    <span class="pta-money">new $150 + carried $250 = <b>$400</b>
+                        <span class="b b-brejected"><i class="fas fa-times-circle"></i>rejected</span>
+                        <button class="btn btn-xs btn-outline-secondary ml-1 ovr-pta" data-pta="8891011-250-FGHIJ">Set status for PTA…</button></span>
+                </div>
+                <div class="proj-block">
+                    <div class="proj-head"><span><i class="fas fa-caret-down caret-i"></i> Pediatric Asthma Cohort (PID 18092)</span><span class="text-money">$400</span></div>
+                    <table class="line-table">
+                        <tr><td style="width:40%;">API Sync Pro <span class="small-muted">(api_sync_pro)</span></td>
+                            <td class="text-money" style="width:10%;">$250</td>
+                            <td><span class="b b-brejected"><i class="fas fa-times-circle"></i>rejected</span></td>
+                            <td><span class="carried-flag">↩ attempt #2 (from May 2026)</span></td>
+                            <td class="text-right"><button class="btn btn-xs btn-outline-secondary ovr-line">Override status…</button></td></tr>
+                        <tr><td>Survey Dashboard <span class="small-muted">(survey_dashboard)</span></td>
+                            <td class="text-money">$150</td>
+                            <td><span class="b b-brejected"><i class="fas fa-times-circle"></i>rejected</span></td>
+                            <td></td>
+                            <td class="text-right"><button class="btn btn-xs btn-outline-secondary ovr-line">Override status…</button></td></tr>
+                    </table>
+                    <div class="px-3 py-1 small-muted" style="margin-left:26px;">Finance note: “PTA expired 05/31/2026 — request new PTA from study team.”</div>
+                </div>
+            </div>
+
+            <!-- PTA group 3 -->
+            <div class="pta-group">
+                <div class="pta-head">
+                    <span><i class="fas fa-caret-down caret-i"></i>
+                        <span class="pta-num">5554443-300-KLMNO</span>
+                        <span class="pta-desc">— Cancer Center Core · Grants Mgmt (ccgrants@stanford.edu)</span>
+                        <span class="small-muted">· 2 projects</span></span>
+                    <span class="pta-money">new $350 + carried $0 = <b>$350</b>
+                        <span class="small-muted">(mixed)</span>
+                        <button class="btn btn-xs btn-outline-secondary ml-1 ovr-pta" data-pta="5554443-300-KLMNO">Set status for PTA…</button></span>
+                </div>
+                <div class="proj-block">
+                    <div class="proj-head"><span><i class="fas fa-caret-down caret-i"></i> CV Outcomes Biobank (PID 19544)</span><span class="text-money">$200</span></div>
+                    <table class="line-table">
+                        <tr><td style="width:40%;">Cross-Project Piping <span class="small-muted">(cross_project_piping)</span></td>
+                            <td class="text-money" style="width:10%;">$200</td>
+                            <td><span class="b b-charged"><i class="fas fa-check"></i>charged</span></td><td></td>
+                            <td class="text-right"><button class="btn btn-xs btn-outline-secondary ovr-line">Override status…</button></td></tr>
+                    </table>
+                </div>
+                <div class="proj-block">
+                    <div class="proj-head"><span><i class="fas fa-caret-down caret-i"></i> Neuro-Onc Tumor Board (PID 20117)</span><span class="text-money">$150</span></div>
+                    <table class="line-table">
+                        <tr><td style="width:40%;">Survey Dashboard <span class="small-muted">(survey_dashboard)</span></td>
+                            <td class="text-money" style="width:10%;">$150</td>
+                            <td><span class="b b-waived"><i class="fas fa-hand-holding-usd"></i>waived</span></td>
+                            <td><span class="small-muted">manual · rssd_admin: “Comped during pilot quarter.”</span></td>
+                            <td class="text-right"><button class="btn btn-xs btn-outline-secondary ovr-line">Override status…</button></td></tr>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Unmapped group -->
+            <div class="pta-group unmapped">
+                <div class="pta-head">
+                    <span><i class="fas fa-caret-down caret-i"></i>
+                        <span class="pta-num"><i class="fas fa-exclamation-triangle"></i> Unmapped — no PTA</span>
+                        <span class="pta-desc">— excluded from the Finance summary CSV until a PTA is assigned</span></span>
+                    <span class="pta-money"><b>$75</b> <span class="b b-hold"><i class="fas fa-pause-circle"></i>hold</span></span>
+                </div>
+                <div class="proj-block">
+                    <div class="proj-head"><span><i class="fas fa-caret-down caret-i"></i> GI Fellows QI Tracker (PID 23310)</span><span class="text-money">$75</span></div>
+                    <table class="line-table">
+                        <tr><td style="width:40%;">Image Map <span class="small-muted">(image_map)</span></td>
+                            <td class="text-money" style="width:10%;">$75</td>
+                            <td><span class="b b-hold"><i class="fas fa-pause-circle"></i>hold</span></td>
+                            <td><span class="small-muted">“No PTA mapping” — carries forward until mapped</span></td>
+                            <td class="text-right"><button class="btn btn-xs btn-outline-secondary ovr-line">Override status…</button></td></tr>
+                    </table>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-end pta-money mt-2">
+                Run total:&nbsp;<b>$4,150</b>&nbsp;<span class="small-muted">(28 charged · 5 rejected · 2 waived · 1 hold across 36 lines — 3 of the charged were closed manually)</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= TAB: GENERATE ================= -->
+    <div class="tab-pane fade" id="generate">
+        <div class="panel-box" style="max-width:640px;">
+            <h6><i class="fas fa-cogs"></i> Generate monthly billing run</h6>
+            <p class="small-muted mb-2">Policy: generate on/after day 28 of the month. Only one run may exist per month.</p>
+            <div class="form-row align-items-end">
+                <div class="col-4">
+                    <label class="mb-1"><b>Month</b></label>
+                    <select id="gen-month" class="form-control form-control-sm">
+                        <option>May 2026</option><option selected>June 2026</option><option>July 2026</option>
+                    </select>
+                </div>
+                <div class="col-8">
+                    <button class="btn btn-outline-primary btn-sm" onclick="mockToast('Preview rendered — hierarchy shown without saving (see Billing Runs tab for the layout)')"><i class="fas fa-eye"></i> Preview</button>
+                    <button class="btn btn-rc-green btn-sm" id="gen-btn"><i class="fas fa-bolt"></i> Generate run</button>
+                </div>
+            </div>
+
+            <div id="gen-blocked" class="alert alert-danger mt-3 mb-0 py-2 d-none" style="font-size:12.5px;">
+                <i class="fas fa-lock"></i> <b>A finalized run already exists for June 2026.</b>
+                Finalized runs cannot be regenerated — use per-line status overrides for corrections.
+            </div>
+            <div id="gen-draft" class="alert alert-warning mt-3 mb-0 py-2 d-none" style="font-size:12.5px;">
+                <i class="fas fa-pencil-alt"></i> <b>A draft run already exists for July 2026</b> (not yet sent to Finance).
+                <button class="btn btn-xs btn-primary ml-2" onclick="mockToast('Draft deleted and rebuilt in place — 38 lines regenerated')">Regenerate in place</button>
+                <button class="btn btn-xs btn-outline-secondary" onclick="mockToast('Opening existing draft…')">Open existing draft</button>
+            </div>
+            <div class="callout-info mt-3">
+                <i class="fas fa-info-circle"></i> Generation creates one line per <b>production project + enabled fee-bearing EM</b>
+                (som-prod), snapshots each project's current PTA, and re-creates any still-unpaid
+                (<b>rejected</b>/<b>hold</b>) lines from prior months as carry-forward attempts billed to the project's <i>current</i> PTA.
+                Projects without a PTA mapping get <b>hold</b> lines under “Unmapped”.
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= TAB: IMPORT CSV ================= -->
+    <div class="tab-pane fade" id="import">
+        <div class="panel-box" style="max-width:720px;">
+            <h6><i class="fas fa-file-upload"></i> Import processed Finance CSV</h6>
+            <div class="form-row align-items-end mb-3">
+                <div class="col-6">
+                    <label class="mb-1"><b>Billing run</b></label>
+                    <select class="form-control form-control-sm">
+                        <option selected>June 2026 — exported 06/28/2026 (latest exported)</option>
+                        <option>May 2026 — finalized (import blocked)</option>
+                    </select>
+                </div>
+                <div class="col-6 small-muted">Finance returns the <b>summary CSV</b> — one row per PTA with
+                    <code>status</code> + <code>finance_note</code> filled in. Import applies each PTA's status to all of
+                    its lines.</div>
+            </div>
+            <div class="dropzone" onclick="mockToast('File picker would open — use the demo buttons below')">
+                <i class="fas fa-cloud-upload-alt"></i><br>
+                Drop <code>em_billing_2026-06_summary.csv</code> here or click to choose a file
+            </div>
+            <div class="mt-2">
+                <b class="small-muted">Demo:</b>
+                <button class="btn btn-xs btn-outline-danger" onclick="$('#imp-err').removeClass('d-none');$('#imp-ok').addClass('d-none')">Show validation-failure state</button>
+                <button class="btn btn-xs btn-outline-success" onclick="$('#imp-ok').removeClass('d-none');$('#imp-err').addClass('d-none')">Show success state</button>
+            </div>
+
+            <!-- failure state -->
+            <div id="imp-err" class="d-none mt-3">
+                <div class="alert alert-danger py-2 mb-2" style="font-size:12.5px;">
+                    <i class="fas fa-times-circle"></i> <b>Import failed validation — nothing was applied.</b>
+                    Fix the rows below in the CSV and upload the whole file again (all-or-nothing).
+                </div>
+                <table class="table-rc">
+                    <thead><tr><th style="width:80px;">Row</th><th>Problem</th></tr></thead>
+                    <tbody>
+                    <tr><td>4</td><td>PTA <code>9990001-110-QQQQQ</code> is not part of the June 2026 run</td></tr>
+                    <tr><td>7</td><td>Status “<code>paid</code>” is not valid — use <code>charged</code> / <code>rejected</code> / <code>waived</code> / <code>hold</code></td></tr>
+                    <tr><td>9</td><td>Status <code>rejected</code> requires a <code>finance_note</code> (reason)</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- success state -->
+            <div id="imp-ok" class="d-none mt-3">
+                <div class="alert alert-success py-2 mb-2" style="font-size:12.5px;">
+                    <i class="fas fa-check-circle"></i> <b>Import applied.</b> Run <b>June 2026</b> is now
+                    <span class="b b-finalized"><i class="fas fa-lock"></i>finalized</span> — statuses were fanned out
+                    from 12 PTA rows to 36 billing lines.
+                </div>
+                <div class="stat-row">
+                    <div class="stat-tile stat-neutral"><div class="stat-num">12</div><div class="stat-label"><i class="fas fa-university"></i>PTAs processed</div></div>
+                    <div class="stat-tile stat-charged"><div class="stat-num">25</div><div class="stat-label"><i class="fas fa-check"></i>lines charged</div></div>
+                    <div class="stat-tile stat-rejected"><div class="stat-num">5</div><div class="stat-label"><i class="fas fa-times-circle"></i>lines rejected</div></div>
+                    <div class="stat-tile stat-waived"><div class="stat-num">2</div><div class="stat-label"><i class="fas fa-hand-holding-usd"></i>lines waived</div></div>
+                    <div class="stat-tile stat-hold"><div class="stat-num">1</div><div class="stat-label"><i class="fas fa-pause-circle"></i>lines on hold</div></div>
+                    <div class="stat-tile stat-skipped"><div class="stat-num">3</div><div class="stat-label"><i class="fas fa-user-shield"></i>skipped — already resolved manually</div></div>
+                </div>
+                <div class="small-muted mt-2">Rejected and hold lines will re-bill automatically as carry-forward attempts
+                    in the July 2026 run and appear under <b>Outstanding Balances</b>.</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= TAB: OUTSTANDING BALANCES ================= -->
+    <div class="tab-pane fade" id="balances">
+        <div class="callout-info mb-3">
+            <i class="fas fa-info-circle"></i> <b>How debt works:</b> every open <b>rejected</b> or <b>hold</b> line
+            re-bills automatically each month — as a new attempt against the project's <i>current</i> PTA — until Finance
+            charges it or a super user waives it. “Mark paid” below closes a line that was settled outside the monthly CSV
+            cycle (audited manual override, status = charged).
+        </div>
+
+        <!-- PTA debt card 1 -->
+        <div class="pta-group">
+            <div class="pta-head">
+                <span><i class="fas fa-caret-down caret-i"></i>
+                    <span class="pta-num">8891011-250-FGHIJ</span>
+                    <span class="pta-desc">— K23 “Peds Asthma” · Dr. Marcus Lee (mlee2@stanford.edu)</span></span>
+                <span class="pta-money">Total owed: <b style="font-size:15px;">$1,150</b>
+                    <span class="small-muted">· 3 months outstanding</span>
+                    <button class="btn btn-xs btn-rc-green ml-1 ovr-pta" data-pta="8891011-250-FGHIJ" data-paid="1">Mark PTA paid…</button></span>
+            </div>
+            <div class="proj-block">
+                <div class="proj-head"><span><i class="fas fa-caret-down caret-i"></i> Pediatric Asthma Cohort (PID 18092)</span><span class="text-money">$1,150</span></div>
+                <table class="line-table">
+                    <thead><tr class="small-muted"><th>Month billed</th><th>External Module</th><th class="text-right">Amount</th><th>Attempts</th><th>Age</th><th></th></tr></thead>
+                    <tr><td>July 2026</td><td>API Sync Pro</td><td class="text-money">$250</td>
+                        <td><span class="carried-flag">↩ attempt #3</span> <span class="small-muted">(first billed May 2026)</span></td>
+                        <td>3 mo</td>
+                        <td class="text-right"><button class="btn btn-xs btn-rc-green ovr-line" data-paid="1">Mark paid…</button></td></tr>
+                    <tr><td>July 2026</td><td>API Sync Pro <span class="small-muted">(June service month)</span></td><td class="text-money">$250</td>
+                        <td><span class="carried-flag">↩ attempt #2</span></td>
+                        <td>2 mo</td>
+                        <td class="text-right"><button class="btn btn-xs btn-rc-green ovr-line" data-paid="1">Mark paid…</button></td></tr>
+                    <tr><td>July 2026</td><td>API Sync Pro <span class="small-muted">(July service month)</span></td><td class="text-money">$250</td>
+                        <td>attempt #1</td>
+                        <td>&lt;1 mo</td>
+                        <td class="text-right"><button class="btn btn-xs btn-rc-green ovr-line" data-paid="1">Mark paid…</button></td></tr>
+                    <tr><td>July 2026</td><td>Survey Dashboard <span class="small-muted">(June service month)</span></td><td class="text-money">$150</td>
+                        <td><span class="carried-flag">↩ attempt #2</span></td>
+                        <td>2 mo</td>
+                        <td class="text-right"><button class="btn btn-xs btn-rc-green ovr-line" data-paid="1">Mark paid…</button></td></tr>
+                    <tr><td>July 2026</td><td>Survey Dashboard <span class="small-muted">(July service month)</span></td><td class="text-money">$150</td>
+                        <td>attempt #1</td>
+                        <td>&lt;1 mo</td>
+                        <td class="text-right"><button class="btn btn-xs btn-rc-green ovr-line" data-paid="1">Mark paid…</button></td></tr>
+                    <tr><td>June 2026</td><td>Nomogram Calculator <span class="small-muted">(waived candidate)</span></td><td class="text-money">$100</td>
+                        <td><span class="carried-flag">↩ attempt #2</span></td>
+                        <td>2 mo</td>
+                        <td class="text-right"><button class="btn btn-xs btn-rc-green ovr-line" data-paid="1">Mark paid…</button></td></tr>
+                </table>
+            </div>
+        </div>
+
+        <!-- Unmapped debt card -->
+        <div class="pta-group unmapped">
+            <div class="pta-head">
+                <span><i class="fas fa-caret-down caret-i"></i>
+                    <span class="pta-num"><i class="fas fa-exclamation-triangle"></i> Unmapped — no PTA</span>
+                    <span class="pta-desc">— assign a PTA on the Mapping tab; next run re-bills these to it</span></span>
+                <span class="pta-money">Total owed: <b style="font-size:15px;">$150</b>
+                    <span class="small-muted">· 2 months outstanding</span></span>
+            </div>
+            <div class="proj-block">
+                <div class="proj-head"><span><i class="fas fa-caret-down caret-i"></i> GI Fellows QI Tracker (PID 23310)</span><span class="text-money">$150</span></div>
+                <table class="line-table">
+                    <tr><td>July 2026</td><td>Image Map <span class="small-muted">(June service month)</span></td><td class="text-money">$75</td>
+                        <td><span class="carried-flag">↩ attempt #2</span> <span class="small-muted">hold — “No PTA mapping”</span></td>
+                        <td>2 mo</td>
+                        <td class="text-right"><button class="btn btn-xs btn-rc-green ovr-line" data-paid="1">Mark paid…</button></td></tr>
+                    <tr><td>July 2026</td><td>Image Map <span class="small-muted">(July service month)</span></td><td class="text-money">$75</td>
+                        <td>attempt #1 <span class="small-muted">hold</span></td>
+                        <td>&lt;1 mo</td>
+                        <td class="text-right"><button class="btn btn-xs btn-rc-green ovr-line" data-paid="1">Mark paid…</button></td></tr>
+                </table>
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-end pta-money">Total outstanding across all PTAs:&nbsp;<b style="font-size:15px;">$1,300</b></div>
+    </div>
+
+    <!-- ================= TAB: PTA ACCOUNTS ================= -->
+    <div class="tab-pane fade" id="pta">
+        <div class="panel-box">
+            <div class="dt-toolbar">
+                <h6 class="mb-0"><i class="fas fa-university"></i> PTA accounts</h6>
+                <div class="d-flex" style="gap:8px;">
+                    <input id="pta-search" class="form-control form-control-sm dt-search" placeholder="Search PTAs…">
+                    <button class="btn btn-rc-green btn-sm text-nowrap" onclick="openPtaModal()"><i class="fas fa-plus"></i> Add PTA</button>
+                </div>
+            </div>
+            <div class="callout-info mb-2">
+                <i class="fas fa-info-circle"></i> PTA accounts are normally <b>created automatically</b> the first time a
+                PI approves a request billed to a new PTA. This tab is for corrections: fix a contact, deactivate a
+                closed PTA, or pre-register one before a request arrives.
+            </div>
+            <table class="table-rc" id="pta-table">
+                <thead><tr>
+                    <th>PTA number</th><th>Description</th><th>Contact</th><th>Active</th>
+                    <th class="text-right">Mapped projects</th><th class="text-right">Open balance</th><th></th>
+                </tr></thead>
+                <tbody>
+                <tr>
+                    <td><code>1234567-100-ABCDE</code></td>
+                    <td>NIH R01 “CHOIR” (Chen)</td>
+                    <td>Dr. Emily Chen <span class="small-muted">echen@stanford.edu</span></td>
+                    <td><span class="b b-enabled"><i class="fas fa-check"></i>active</span></td>
+                    <td class="text-money">2</td>
+                    <td class="text-money">$0</td>
+                    <td class="text-right"><button class="btn btn-xs btn-outline-secondary" onclick="openPtaModal('1234567-100-ABCDE')">Edit</button></td>
+                </tr>
+                <tr>
+                    <td><code>8891011-250-FGHIJ</code></td>
+                    <td>K23 “Peds Asthma” (Lee)</td>
+                    <td>Dr. Marcus Lee <span class="small-muted">mlee2@stanford.edu</span></td>
+                    <td><span class="b b-error"><i class="fas fa-ban"></i>expired 05/31</span></td>
+                    <td class="text-money">1</td>
+                    <td class="text-money text-danger"><b>$1,150</b></td>
+                    <td class="text-right"><button class="btn btn-xs btn-outline-secondary" onclick="openPtaModal('8891011-250-FGHIJ')">Edit</button></td>
+                </tr>
+                <tr>
+                    <td><code>5554443-300-KLMNO</code></td>
+                    <td>Cancer Center Core</td>
+                    <td>Grants Mgmt <span class="small-muted">ccgrants@stanford.edu</span></td>
+                    <td><span class="b b-enabled"><i class="fas fa-check"></i>active</span></td>
+                    <td class="text-money">2</td>
+                    <td class="text-money">$0</td>
+                    <td class="text-right"><button class="btn btn-xs btn-outline-secondary" onclick="openPtaModal('5554443-300-KLMNO')">Edit</button></td>
+                </tr>
+                <tr>
+                    <td><code>7712345-110-PQRST</code></td>
+                    <td>Dept. of Medicine gift funds</td>
+                    <td>Cheryl Alvarez <span class="small-muted">calvarez@stanford.edu</span></td>
+                    <td><span class="b b-enabled"><i class="fas fa-check"></i>active</span></td>
+                    <td class="text-money">0</td>
+                    <td class="text-money">$0</td>
+                    <td class="text-right"><button class="btn btn-xs btn-outline-secondary" onclick="openPtaModal('7712345-110-PQRST')">Edit</button></td>
+                </tr>
+                </tbody>
+            </table>
+            <div class="dt-info">Showing 4 entries</div>
+            <div class="small-muted mt-2"><b>Open balance</b> links to <a href="#balances" onclick="$('.nav-tabs a[href=\'#balances\']').tab('show')">Outstanding Balances</a> —
+                an expired PTA with debt is the classic backcharge case: assign the project a new PTA on the Mapping tab
+                and next month's run re-bills the full amount to it.</div>
+        </div>
+    </div>
+
+    <!-- ================= TAB: MAPPING ================= -->
+    <div class="tab-pane fade" id="mapping">
+        <div class="panel-box">
+            <div class="dt-toolbar">
+                <h6 class="mb-0"><i class="fas fa-link"></i> Project ↔ PTA mapping</h6>
+                <div class="d-flex" style="gap:8px;">
+                    <input id="map-search" class="form-control form-control-sm dt-search" placeholder="Search projects / PTAs…">
+                    <button class="btn btn-rc-green btn-sm text-nowrap" onclick="openMapModal('')"><i class="fas fa-plus"></i> Assign PTA</button>
+                </div>
+            </div>
+            <div class="callout-warn mb-2">
+                <i class="fas fa-exclamation-triangle"></i> <b>PTA changes affect future runs only.</b> Already-generated
+                lines keep their snapshot PTA; open <b>rejected/hold</b> debt automatically re-bills to the project's
+                <i>current</i> PTA at the next monthly run — that's how a backcharge lands on a replacement PTA.
+                Mappings are created/updated automatically when a PI approves a request; edit here only to correct one.
+            </div>
+            <table class="table-rc" id="map-table">
+                <thead><tr>
+                    <th>Project</th><th>Current PTA</th><th>Since</th><th>Source</th>
+                    <th class="text-right">Open balance</th><th></th>
+                </tr></thead>
+                <tbody>
+                <tr>
+                    <td><b>CHOIR PRO Registry</b> <span class="small-muted">PID 21433</span></td>
+                    <td><code>1234567-100-ABCDE</code></td>
+                    <td>06/13/2026</td>
+                    <td><span class="small-muted"><i class="fas fa-envelope-open-text"></i> request approval (E. Chen)</span></td>
+                    <td class="text-money">$0</td>
+                    <td class="text-right">
+                        <button class="btn btn-xs btn-outline-secondary" onclick="openMapModal('CHOIR PRO Registry (PID 21433)')">Change…</button>
+                        <button class="btn btn-xs btn-outline-danger" onclick="mockToast('Mapping removed — future lines for PID 21433 will fall under Unmapped (hold) until a new PTA is set')">Remove</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td><b>CHOIR Satellite Sites</b> <span class="small-muted">PID 22871</span></td>
+                    <td><code>1234567-100-ABCDE</code></td>
+                    <td>06/13/2026</td>
+                    <td><span class="small-muted"><i class="fas fa-envelope-open-text"></i> request approval (E. Chen)</span></td>
+                    <td class="text-money">$0</td>
+                    <td class="text-right">
+                        <button class="btn btn-xs btn-outline-secondary" onclick="openMapModal('CHOIR Satellite Sites (PID 22871)')">Change…</button>
+                        <button class="btn btn-xs btn-outline-danger" onclick="mockToast('Mapping removed')">Remove</button>
+                    </td>
+                </tr>
+                <tr style="background:#fdf6dd;">
+                    <td><b>Pediatric Asthma Cohort</b> <span class="small-muted">PID 18092</span></td>
+                    <td><code>8891011-250-FGHIJ</code> <span class="b b-error" style="font-size:10px;"><i class="fas fa-ban"></i>expired</span></td>
+                    <td>04/02/2026</td>
+                    <td><span class="small-muted"><i class="fas fa-envelope-open-text"></i> request approval (M. Lee)</span></td>
+                    <td class="text-money text-danger"><b>$1,150</b></td>
+                    <td class="text-right">
+                        <button class="btn btn-xs btn-primary" onclick="openMapModal('Pediatric Asthma Cohort (PID 18092)')">Change…</button>
+                        <button class="btn btn-xs btn-outline-danger" onclick="mockToast('Mapping removed')">Remove</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td><b>CV Outcomes Biobank</b> <span class="small-muted">PID 19544</span></td>
+                    <td><code>5554443-300-KLMNO</code></td>
+                    <td>03/15/2026</td>
+                    <td><span class="small-muted"><i class="fas fa-user-shield"></i> manual (rssd_admin)</span></td>
+                    <td class="text-money">$0</td>
+                    <td class="text-right">
+                        <button class="btn btn-xs btn-outline-secondary" onclick="openMapModal('CV Outcomes Biobank (PID 19544)')">Change…</button>
+                        <button class="btn btn-xs btn-outline-danger" onclick="mockToast('Mapping removed')">Remove</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td><b>Neuro-Onc Tumor Board</b> <span class="small-muted">PID 20117</span></td>
+                    <td><code>5554443-300-KLMNO</code></td>
+                    <td>03/15/2026</td>
+                    <td><span class="small-muted"><i class="fas fa-user-shield"></i> manual (rssd_admin)</span></td>
+                    <td class="text-money">$0</td>
+                    <td class="text-right">
+                        <button class="btn btn-xs btn-outline-secondary" onclick="openMapModal('Neuro-Onc Tumor Board (PID 20117)')">Change…</button>
+                        <button class="btn btn-xs btn-outline-danger" onclick="mockToast('Mapping removed')">Remove</button>
+                    </td>
+                </tr>
+                <tr style="background:#fdf6dd;">
+                    <td><b>GI Fellows QI Tracker</b> <span class="small-muted">PID 23310</span></td>
+                    <td><span class="b b-hold"><i class="fas fa-exclamation-triangle"></i>Unmapped</span></td>
+                    <td>—</td>
+                    <td><span class="small-muted">never mapped — $150 accruing on hold</span></td>
+                    <td class="text-money text-danger"><b>$150</b></td>
+                    <td class="text-right">
+                        <button class="btn btn-xs btn-primary" onclick="openMapModal('GI Fellows QI Tracker (PID 23310)')">Assign PTA…</button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <div class="dt-info">Showing 6 entries</div>
+        </div>
+    </div>
+
+    </div><!-- /tab-content -->
+
+    <div id="legend"></div>
+</div>
+
+<!-- PTA add/edit modal -->
+<div class="modal fade" id="pta-modal" tabindex="-1">
+    <div class="modal-dialog"><div class="modal-content">
+        <div class="modal-header py-2">
+            <h5 class="modal-title" id="pta-modal-title">Add PTA account</h5>
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group mb-2">
+                <label class="mb-1"><b>PTA number</b> <span class="text-danger">*</span>
+                    <span class="small-muted">format: <code>#######-###-AAAAA</code></span></label>
+                <input id="pta-num" class="form-control form-control-sm" placeholder="e.g. 1234567-100-ABCDE">
+                <div class="invalid-feedback">PTA must match the format <code>#######-###-AAAAA</code> (7 digits – 3 digits – 5 letters).</div>
+            </div>
+            <div class="form-group mb-2">
+                <label class="mb-1"><b>Description</b></label>
+                <input id="pta-desc" class="form-control form-control-sm" placeholder="e.g. NIH R01 “CHOIR” (Chen)">
+            </div>
+            <div class="form-row mb-2">
+                <div class="col-6"><label class="mb-1"><b>Contact name</b></label>
+                    <input id="pta-cname" class="form-control form-control-sm" placeholder="e.g. Dr. Emily Chen"></div>
+                <div class="col-6"><label class="mb-1"><b>Contact email</b></label>
+                    <input id="pta-cemail" class="form-control form-control-sm" placeholder="e.g. echen@stanford.edu"></div>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="pta-active" checked>
+                <label class="form-check-label" for="pta-active">Active <span class="small-muted">— inactive PTAs
+                    can't be assigned to projects; existing debt still shows in Outstanding Balances</span></label>
+            </div>
+        </div>
+        <div class="modal-footer py-2">
+            <button class="btn btn-secondary btn-sm" data-dismiss="modal">Cancel</button>
+            <button id="pta-save" class="btn btn-primary btn-sm">Save PTA</button>
+        </div>
+    </div></div>
+</div>
+
+<!-- Assign/change mapping modal -->
+<div class="modal fade" id="map-modal" tabindex="-1">
+    <div class="modal-dialog"><div class="modal-content">
+        <div class="modal-header py-2">
+            <h5 class="modal-title">Assign PTA to project</h5>
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group mb-2">
+                <label class="mb-1"><b>Project</b> <span class="text-danger">*</span></label>
+                <select id="map-project" class="form-control form-control-sm">
+                    <option value="">— choose project —</option>
+                    <option>CHOIR PRO Registry (PID 21433)</option>
+                    <option>CHOIR Satellite Sites (PID 22871)</option>
+                    <option>Pediatric Asthma Cohort (PID 18092)</option>
+                    <option>CV Outcomes Biobank (PID 19544)</option>
+                    <option>Neuro-Onc Tumor Board (PID 20117)</option>
+                    <option>GI Fellows QI Tracker (PID 23310)</option>
+                </select>
+            </div>
+            <div class="form-group mb-2">
+                <label class="mb-1"><b>PTA account</b> <span class="text-danger">*</span></label>
+                <select id="map-pta" class="form-control form-control-sm">
+                    <option value="">— choose active PTA —</option>
+                    <option>1234567-100-ABCDE — NIH R01 “CHOIR” (Chen)</option>
+                    <option>5554443-300-KLMNO — Cancer Center Core</option>
+                    <option>7712345-110-PQRST — Dept. of Medicine gift funds</option>
+                </select>
+                <div class="small-muted mt-1">Expired/inactive PTAs are not offered. Add a new PTA on the PTA Accounts tab first if needed.</div>
+            </div>
+            <div class="callout-warn">
+                <i class="fas fa-exclamation-triangle"></i> Takes effect at the <b>next billing run</b>: new charges and
+                any open rejected/hold debt for this project will bill to the new PTA. Lines already generated keep
+                their snapshot PTA for audit.
+            </div>
+        </div>
+        <div class="modal-footer py-2">
+            <button class="btn btn-secondary btn-sm" data-dismiss="modal">Cancel</button>
+            <button id="map-save" class="btn btn-primary btn-sm">Save mapping</button>
+        </div>
+    </div></div>
+</div>
+
+<!-- Audited override modal (shared) -->
+<div class="modal fade" id="ovr-modal" tabindex="-1">
+    <div class="modal-dialog"><div class="modal-content">
+        <div class="modal-header py-2">
+            <h5 class="modal-title">Override status</h5>
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+        <div class="modal-body">
+            <p id="ovr-context" class="mb-2"></p>
+            <div class="form-group mb-2">
+                <label class="mb-1"><b>New status</b></label>
+                <select id="ovr-status" class="form-control form-control-sm">
+                    <option value="charged">charged</option>
+                    <option value="rejected">rejected</option>
+                    <option value="waived">waived</option>
+                    <option value="hold">hold</option>
+                </select>
+            </div>
+            <div class="form-group mb-2">
+                <label class="mb-1"><b>Note</b> <span class="text-danger">* required</span></label>
+                <textarea id="ovr-note" class="form-control form-control-sm" rows="2"
+                          placeholder="e.g. “Paid by journal transfer JT-88231 on 07/07/2026.”"></textarea>
+                <div class="invalid-feedback">A note is required for every manual status change.</div>
+            </div>
+            <div class="audit-warning">
+                <i class="fas fa-user-shield"></i> This change is <b>audited</b> (who / when / source = manual).
+                It is allowed even after the run is finalized — that's how settled backcharges get closed.
+            </div>
+        </div>
+        <div class="modal-footer py-2">
+            <button class="btn btn-secondary btn-sm" data-dismiss="modal">Cancel</button>
+            <button id="ovr-save" class="btn btn-primary btn-sm">Save status</button>
+        </div>
+    </div></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="mockup.js"></script>
+<script>
+$(document).on('click', '.ovr-line', function (e) {
+    e.stopPropagation();
+    var $row = $(this).closest('tr');
+    openOverrideModal({
+        title: $(this).data('paid') ? 'Mark line paid (manual override)' : 'Override line status',
+        context: 'Line: <b>' + $row.find('td:first').text().trim() + ' — ' +
+                 ($row.find('td').eq(1).text().trim() || '') + '</b>',
+        presetStatus: 'charged'
+    });
+});
+$(document).on('click', '.ovr-pta', function (e) {
+    e.stopPropagation();
+    openOverrideModal({
+        title: $(this).data('paid') ? 'Mark whole PTA paid (manual override)' : 'Set status for all lines on this PTA',
+        context: 'Applies to <b>every line</b> under PTA <b>' + $(this).data('pta') + '</b> in this run.',
+        presetStatus: 'charged'
+    });
+});
+$('#gen-btn').on('click', function () {
+    var m = $('#gen-month').val();
+    $('#gen-blocked,#gen-draft').addClass('d-none');
+    if (m === 'June 2026' || m === 'May 2026') $('#gen-blocked').removeClass('d-none').find('b').first()
+        .text('A finalized run already exists for ' + m + '.');
+    else $('#gen-draft').removeClass('d-none');
+});
+/* ---- PTA Accounts tab ---- */
+var PTA_DATA = {
+    '1234567-100-ABCDE': { desc: 'NIH R01 “CHOIR” (Chen)', cname: 'Dr. Emily Chen', cemail: 'echen@stanford.edu', active: true },
+    '8891011-250-FGHIJ': { desc: 'K23 “Peds Asthma” (Lee)', cname: 'Dr. Marcus Lee', cemail: 'mlee2@stanford.edu', active: false },
+    '5554443-300-KLMNO': { desc: 'Cancer Center Core', cname: 'Grants Mgmt', cemail: 'ccgrants@stanford.edu', active: true },
+    '7712345-110-PQRST': { desc: 'Dept. of Medicine gift funds', cname: 'Cheryl Alvarez', cemail: 'calvarez@stanford.edu', active: true }
+};
+function openPtaModal(num) {
+    var d = num ? PTA_DATA[num] : null;
+    $('#pta-modal-title').text(d ? 'Edit PTA account' : 'Add PTA account');
+    $('#pta-num').val(num || '').removeClass('is-invalid').prop('readonly', !!d);
+    $('#pta-desc').val(d ? d.desc : '');
+    $('#pta-cname').val(d ? d.cname : '');
+    $('#pta-cemail').val(d ? d.cemail : '');
+    $('#pta-active').prop('checked', d ? d.active : true);
+    $('#pta-modal').modal('show');
+}
+$('#pta-save').on('click', function () {
+    var num = $('#pta-num').val().trim();
+    if (!/^\d{7}-\d{3}-[A-Za-z]{5}$/.test(num)) { $('#pta-num').addClass('is-invalid'); return; }
+    $('#pta-modal').modal('hide');
+    mockToast('PTA ' + num + ' saved.');
+});
+
+/* ---- Mapping tab ---- */
+function openMapModal(project) {
+    $('#map-project').val(project || '');
+    $('#map-pta').val('');
+    $('#map-modal').modal('show');
+}
+$('#map-save').on('click', function () {
+    if (!$('#map-project').val() || !$('#map-pta').val()) { mockToast('Choose both a project and a PTA.'); return; }
+    $('#map-modal').modal('hide');
+    mockToast('Mapping saved — takes effect at the next billing run (open debt re-bills to the new PTA).');
+});
+
+bindTableFilter('#pta-search', '#pta-table');
+bindTableFilter('#map-search', '#map-table');
+renderLegend('#legend', ['billing', 'run']);
+</script>
+</body>
+</html>

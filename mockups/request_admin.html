@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Mockup 6 — Request Admin &amp; Reconciliation</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+<link rel="stylesheet" href="mockup.css">
+</head>
+<body>
+
+<div class="rc-topbar">
+    <span class="rc-brand"><span class="rc-cardinal">Stanford Medicine</span> · REDCap</span>
+    <span>Logged in as <b>rssd_admin</b> (SUPER USER) &nbsp;|&nbsp; Control Center</span>
+</div>
+<div class="rc-context">
+    <span class="text-muted">Control Center &raquo;</span> <span class="rc-project"><i class="fas fa-tasks"></i> EM Requests — Admin &amp; Reconciliation</span>
+</div>
+<div class="mock-caption">
+    <span class="mock-step">Screen 7 of 7 — RSSD super user.</span>
+    Oversight of the whole request pipeline: every request and its per-EM statuses, Jira tickets for modules that need
+    manual enabling, retryable enable errors, and the nightly reconciliation queue that catches EMs disabled outside
+    the workflow. The strip at the bottom shows the annotations we inject into REDCap's <i>native</i> EM manager page.
+    &nbsp;<a href="billing_admin.html">← Billing</a> &nbsp;|&nbsp; <a href="index.html">Flow overview</a>
+</div>
+
+<div class="page-wrap">
+
+    <!-- Grandfather seeding banner -->
+    <div class="callout-warn mb-3 d-flex justify-content-between align-items-center flex-wrap" id="seed-banner">
+        <span><i class="fas fa-seedling"></i> <b>One-time setup:</b> seed tracking records for every EM that is already
+        enabled today, so the nightly reconciliation has a complete baseline and doesn't flood this queue.</span>
+        <button class="btn btn-sm btn-primary" id="seed-btn"><i class="fas fa-play"></i> Seed grandfathered records</button>
+    </div>
+    <div class="alert alert-success py-2 d-none" id="seed-done" style="font-size:12.5px;">
+        <i class="fas fa-check-circle"></i> <b>Created 212 tracking records</b> for currently-enabled billable EMs across
+        147 projects (source = grandfathered, status = enabled). This action is now disabled.
+    </div>
+
+    <!-- All requests -->
+    <div class="panel-box">
+        <div class="dt-toolbar">
+            <h6 class="mb-0"><i class="fas fa-list-alt"></i> All EM requests</h6>
+            <input id="req-search" class="form-control form-control-sm dt-search" placeholder="Search requests…">
+        </div>
+        <table class="table-rc" id="req-table">
+            <thead><tr>
+                <th>Date</th><th>Project</th><th>Requester</th><th>PI / Approver</th><th>PTA</th>
+                <th>EM lines</th><th>Jira</th>
+            </tr></thead>
+            <tbody>
+            <tr>
+                <td>07/09/2026</td>
+                <td>CHOIR PRO Registry <span class="small-muted">(21433)</span></td>
+                <td>jsmith</td><td>E. Chen <span class="b b-approved"><i class="fas fa-check"></i>approved</span></td>
+                <td><code>1234567-100-ABCDE</code></td>
+                <td>
+                    Survey Dashboard <span class="b b-enabled"><i class="fas fa-check-circle"></i>enabled</span><br>
+                    Cross-Project Piping <span class="b b-awaiting"><i class="fas fa-ticket-alt"></i>awaiting_super_user</span>
+                </td>
+                <td><a href="#" class="jira-link" onclick="mockToast('Would open Jira RSSD-1304');return false;">RSSD-1304</a></td>
+            </tr>
+            <tr>
+                <td>07/07/2026</td>
+                <td>CV Outcomes Biobank <span class="small-muted">(19544)</span></td>
+                <td>mrodrig</td><td>A. Patel <span class="b b-approved"><i class="fas fa-check"></i>approved</span></td>
+                <td><code>5554443-300-KLMNO</code></td>
+                <td>
+                    Vizr Charts <span class="b b-error"><i class="fas fa-exclamation-triangle"></i>approval_error</span>
+                    <button class="btn btn-xs btn-outline-danger retry-btn"><i class="fas fa-redo"></i> Retry</button>
+                    <div class="small-muted">enable failed: module version v2.3 not installed on this server</div>
+                </td>
+                <td>—</td>
+            </tr>
+            <tr>
+                <td>07/02/2026</td>
+                <td>CHOIR PRO Registry <span class="small-muted">(21433)</span></td>
+                <td>jsmith</td><td>E. Chen <span class="b b-approved"><i class="fas fa-check"></i>approved</span></td>
+                <td><code>1234567-100-ABCDE</code></td>
+                <td>
+                    API Sync Pro <span class="b b-awaiting"><i class="fas fa-ticket-alt"></i>awaiting_super_user</span><br>
+                    Vizr Charts <span class="b b-enabled"><i class="fas fa-check-circle"></i>enabled</span>
+                </td>
+                <td><a href="#" class="jira-link" onclick="mockToast('Would open Jira RSSD-1287');return false;">RSSD-1287</a></td>
+            </tr>
+            <tr>
+                <td>06/30/2026</td>
+                <td>Pediatric Asthma Cohort <span class="small-muted">(18092)</span></td>
+                <td>tnguyen</td><td>M. Lee <span class="b b-pending"><i class="fas fa-clock"></i>pending</span></td>
+                <td><code>8891011-250-FGHIJ</code></td>
+                <td>Randomization Helper <span class="b b-pending"><i class="fas fa-clock"></i>pending</span>
+                    <div class="small-muted">awaiting PI decision since 06/30 — reminder sent 07/07</div></td>
+                <td>—</td>
+            </tr>
+            <tr>
+                <td>06/12/2026</td>
+                <td>Neuro-Onc Tumor Board <span class="small-muted">(20117)</span></td>
+                <td>kwong</td><td>S. Gupta <span class="b b-rejected"><i class="fas fa-times-circle"></i>rejected</span></td>
+                <td><code>7772221-400-PQRST</code></td>
+                <td>Custom Survey Landing <span class="b b-rejected"><i class="fas fa-times-circle"></i>rejected</span>
+                    <div class="small-muted">PI note: “Not budgeted this year.”</div></td>
+                <td>—</td>
+            </tr>
+            <tr>
+                <td>05/28/2026</td>
+                <td>GI Fellows QI Tracker <span class="small-muted">(23310)</span></td>
+                <td>bfoster</td><td>R. Kim <span class="b b-approved"><i class="fas fa-check"></i>approved</span></td>
+                <td><span class="text-danger small-muted"><i class="fas fa-exclamation-triangle"></i> no mapping</span></td>
+                <td>Image Map <span class="b b-deactivated"><i class="fas fa-ban"></i>deactivated</span>
+                    <div class="small-muted">deactivated by bfoster 07/01/2026 — “study closed”</div></td>
+                <td>—</td>
+            </tr>
+            </tbody>
+        </table>
+        <div class="dt-info">Showing 6 entries</div>
+    </div>
+
+    <!-- Acknowledgment queue -->
+    <div class="panel-box">
+        <h6><i class="fas fa-exclamation-circle"></i> Reconciliation — acknowledgment queue
+            <span class="badge badge-danger">2</span></h6>
+        <p class="small-muted mb-2">The nightly job compares actually-enabled EMs against tracking records. EMs disabled
+            <i>outside</i> this workflow land here for a super user to acknowledge (legitimate) or flag (investigate).
+            Self-service deactivations do <b>not</b> appear here.</p>
+        <table class="table-rc">
+            <thead><tr><th>Detected</th><th>Project</th><th>External Module</th><th>What happened</th><th style="width:220px;"></th></tr></thead>
+            <tbody>
+            <tr>
+                <td>07/08/2026 02:10</td>
+                <td>CHOIR Satellite Sites <span class="small-muted">(22871)</span></td>
+                <td>Text To Download <span class="small-muted">($75/mo)</span></td>
+                <td>Disabled directly in REDCap's EM manager — no deactivation record exists</td>
+                <td>
+                    <button class="btn btn-xs btn-rc-green ack-btn"><i class="fas fa-check"></i> Acknowledge</button>
+                    <button class="btn btn-xs btn-outline-danger flag-btn"><i class="fas fa-flag"></i> Flag for investigation</button>
+                </td>
+            </tr>
+            <tr>
+                <td>07/05/2026 02:10</td>
+                <td>CV Outcomes Biobank <span class="small-muted">(19544)</span></td>
+                <td>Survey PDF Snapshots <span class="small-muted">($125/mo)</span></td>
+                <td>Disabled directly in REDCap's EM manager — no deactivation record exists</td>
+                <td>
+                    <button class="btn btn-xs btn-rc-green ack-btn"><i class="fas fa-check"></i> Acknowledge</button>
+                    <button class="btn btn-xs btn-outline-danger flag-btn"><i class="fas fa-flag"></i> Flag for investigation</button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Bonus strip: injected native EM manager -->
+    <div class="panel-box">
+        <h6><i class="fas fa-puzzle-piece"></i> Bonus — REDCap's native External Modules page, with our injected annotations</h6>
+        <p class="small-muted mb-2">On every project's standard “External Modules” manager page we inject a billing
+            annotation per module row and a module-owned <b>Disable</b> button (self-service, no approval, audited).</p>
+
+        <div class="emman-row">
+            <span>
+                <span class="em-name">Survey Dashboard</span> <span class="em-ver">v3.2.1</span><br>
+                <span class="emman-inject"><i class="fas fa-file-invoice-dollar"></i> $150/mo · PTA
+                    <code>1234567-100-ABCDE</code> · status: <span class="b b-enabled"><i class="fas fa-check-circle"></i>enabled</span>
+                    · requested by jsmith, approved by E. Chen 07/09/2026</span>
+            </span>
+            <span>
+                <button class="btn btn-xs btn-outline-secondary" onclick="mockToast('Native REDCap “Configure” button')">Configure</button>
+                <button class="btn btn-xs btn-danger dis-btn" data-em="Survey Dashboard" data-fee="150"><i class="fas fa-power-off"></i> Disable</button>
+            </span>
+        </div>
+        <div class="emman-row">
+            <span>
+                <span class="em-name">Text To Download</span> <span class="em-ver">v1.8.0</span><br>
+                <span class="emman-inject"><i class="fas fa-file-invoice-dollar"></i> $75/mo · PTA
+                    <code>1234567-100-ABCDE</code> · status: <span class="b b-enabled"><i class="fas fa-check-circle"></i>enabled</span>
+                    · requested by jsmith, approved by E. Chen 06/13/2026</span>
+            </span>
+            <span>
+                <button class="btn btn-xs btn-outline-secondary">Configure</button>
+                <button class="btn btn-xs btn-danger dis-btn" data-em="Text To Download" data-fee="75"><i class="fas fa-power-off"></i> Disable</button>
+            </span>
+        </div>
+        <div class="emman-row">
+            <span>
+                <span class="em-name">emLogger</span> <span class="em-ver">v9.9.9</span><br>
+                <span class="small-muted">Free module — no billing annotation; REDCap's native enable/disable applies.</span>
+            </span>
+            <span><button class="btn btn-xs btn-outline-secondary">Configure</button></span>
+        </div>
+    </div>
+
+    <div id="legend"></div>
+</div>
+
+<!-- Disable confirm dialog -->
+<div class="modal fade" id="dis-modal" tabindex="-1">
+    <div class="modal-dialog"><div class="modal-content">
+        <div class="modal-header py-2">
+            <h5 class="modal-title text-danger"><i class="fas fa-power-off"></i> Disable <span id="dis-em"></span>?</h5>
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="audit-warning mb-2">
+                Billing for this module (<b id="dis-fee"></b>/mo) <b>stops next month</b> — but any charges already billed
+                and unpaid still carry forward until paid or waived. Re-enabling later requires a <b>new request with PI
+                approval</b>; there is no shortcut.
+            </div>
+            <div class="form-group mb-0">
+                <label class="mb-1"><b>Reason</b> <span class="text-danger">* required</span></label>
+                <textarea id="dis-reason" class="form-control form-control-sm" rows="2"
+                          placeholder="e.g. “Study closed to enrollment — module no longer needed.”"></textarea>
+                <div class="invalid-feedback">A reason is required; it is recorded with who/when for audit.</div>
+            </div>
+        </div>
+        <div class="modal-footer py-2">
+            <button class="btn btn-secondary btn-sm" data-dismiss="modal">Cancel</button>
+            <button id="dis-confirm" class="btn btn-danger btn-sm">Disable module</button>
+        </div>
+    </div></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="mockup.js"></script>
+<script>
+$('#seed-btn').on('click', function () {
+    $('#seed-banner').addClass('d-none');
+    $('#seed-done').removeClass('d-none');
+});
+$(document).on('click', '.retry-btn', function () {
+    var $b = $(this);
+    $b.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Retrying…');
+    setTimeout(function () {
+        $b.closest('td').html('Vizr Charts <span class="b b-enabled"><i class="fas fa-check-circle"></i>enabled</span>' +
+            '<div class="small-muted">retry succeeded 07/09/2026 (rssd_admin)</div>');
+        mockToast('Enable retried — Vizr Charts is now enabled on PID 19544.');
+    }, 1200);
+});
+$(document).on('click', '.ack-btn', function () {
+    $(this).closest('tr').fadeOut(300);
+    mockToast('Acknowledged — recorded as a legitimate deactivation (audited).');
+});
+$(document).on('click', '.flag-btn', function () {
+    $(this).closest('td').html('<span class="b b-error"><i class="fas fa-flag"></i>flagged</span> <span class="small-muted">in-app alert sent to admins</span>');
+    mockToast('Flagged for investigation.');
+});
+$(document).on('click', '.dis-btn', function () {
+    $('#dis-em').text($(this).data('em'));
+    $('#dis-fee').text('$' + $(this).data('fee'));
+    $('#dis-reason').val('').removeClass('is-invalid');
+    $('#dis-modal').modal('show');
+});
+$('#dis-confirm').on('click', function () {
+    if (!$('#dis-reason').val().trim()) { $('#dis-reason').addClass('is-invalid'); return; }
+    $('#dis-modal').modal('hide');
+    mockToast('Module disabled and recorded (who/when/reason). Billing stops with the next run.');
+});
+bindTableFilter('#req-search', '#req-table');
+renderLegend('#legend', ['request']);
+</script>
+</body>
+</html>

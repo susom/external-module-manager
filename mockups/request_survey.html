@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Mockup 2 — Request Form Survey (PI/Admin lookup)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+<link rel="stylesheet" href="mockup.css">
+<style>
+/* ---- Stanford person-lookup widget mock ---- */
+.pl-wrap { position: relative; max-width: 460px; }
+.pl-results { position: absolute; z-index: 50; left: 0; right: 0; top: 100%;
+    background: #fff; border: 1px solid #b9c2cc; border-top: none; box-shadow: 0 3px 8px rgba(0,0,0,.15);
+    max-height: 240px; overflow-y: auto; display: none; }
+.pl-item { padding: 7px 10px; cursor: pointer; border-bottom: 1px solid #f0f2f4; font-size: 12.5px; }
+.pl-item:hover { background: #eef5fb; }
+.pl-item .pl-name { font-weight: 700; color: #2e6da4; }
+.pl-item .pl-meta { color: #7a8694; font-size: 11.5px; }
+.pl-card { border: 1px solid #b7dfc6; background: #f2faf5; border-radius: 3px;
+    padding: 10px 12px; max-width: 460px; display: none; }
+.pl-card .pl-name { font-weight: 700; font-size: 13.5px; color: #14532d; }
+.pl-card .pl-meta { font-size: 12px; color: #446152; }
+</style>
+</head>
+<body class="survey-body">
+
+<div class="mock-caption" style="max-width:760px;margin:16px auto 0 auto;">
+    <span class="mock-step">Screen 2 of 7 — Requester (continues from Catalog checkout).</span>
+    Checkout already created the request record and redirected here — a short REDCap survey, pre-filled with the cart.
+    The requester confirms it and <b>looks up the PI/Admin who can approve</b> (Stanford person-lookup EM), then submits.
+    REDCap emails that person the approval survey.
+    &nbsp;<a href="em_catalog.html">← Catalog</a> &nbsp;|&nbsp; Next: <a href="pi_approval_survey.html">PI Approval Survey →</a>
+    <div class="mt-1">
+        <b>Demo:</b>
+        <button class="btn btn-xs btn-secondary" onclick="showState('form')">Survey form</button>
+        <button class="btn btn-xs btn-secondary" onclick="showState('submitted')">Submitted confirmation</button>
+        &nbsp;<span class="small-muted">Tip: type “che” or “lee” in the approver search.</span>
+    </div>
+</div>
+
+<!-- ============ STATE: FORM ============ -->
+<div class="survey-shell" id="state-form">
+    <div class="survey-band">Stanford Medicine &nbsp;|&nbsp; REDCap — Research Electronic Data Capture</div>
+    <div class="survey-title">
+        <h4>External Module Request Form</h4>
+        <p class="text-muted mb-2" style="font-size:12.5px;">
+            Please confirm your request below and identify the PI or administrator who is authorized to approve
+            billing to this PTA. They will receive an email with an approval link — nothing is enabled or billed
+            until they approve.
+        </p>
+    </div>
+
+    <div class="survey-q">
+        <div class="q-label">Your request <span class="small-muted">(from your cart — read-only)</span></div>
+        <table class="table-rc mb-2">
+            <tbody>
+            <tr><td style="width:170px;"><b>Project</b></td><td>CHOIR PRO Registry (PID 21433) · som-prod</td></tr>
+            <tr><td><b>Requested by</b></td><td>Jordan Smith (jsmith@stanford.edu) on 07/09/2026</td></tr>
+            <tr><td><b>PTA to be billed</b></td><td><code>1234567-100-ABCDE</code></td></tr>
+            </tbody>
+        </table>
+        <table class="table-rc">
+            <thead><tr><th>External Module</th><th>Enable path</th><th class="text-right">Monthly fee</th></tr></thead>
+            <tbody>
+            <tr><td>Survey Dashboard</td><td><span class="b-auto b">⚡ Auto-enables on approval</span></td><td class="text-money">$150</td></tr>
+            <tr><td>Cross-Project Piping</td><td><span class="b-jira b">🎫 Enabled by RSSD after approval</span></td><td class="text-money">$200</td></tr>
+            <tr style="background:#eef1f5;"><td colspan="2"><b>Monthly total</b></td><td class="text-money"><b>$350</b></td></tr>
+            </tbody>
+        </table>
+        <div class="small-muted mt-1">Wrong cart? <a href="em_catalog.html">Return to the catalog</a> and start over —
+            this request stays <span class="b b-pending" style="font-size:10px;"><i class="fas fa-clock"></i>pending</span> until submitted.</div>
+    </div>
+
+    <div class="survey-q">
+        <div class="q-label">Who can approve this request and PTA? <span class="req-star">* must provide value</span></div>
+        <p class="small-muted mb-2" style="margin-top:-2px;">Search the Stanford directory for the <b>PI or grant
+            administrator with authority over PTA <code>1234567-100-ABCDE</code></b>. Powered by the Stanford Person
+            Lookup module.</p>
+
+        <!-- lookup input -->
+        <div class="pl-wrap" id="pl-wrap">
+            <div class="input-group input-group-sm">
+                <div class="input-group-prepend"><span class="input-group-text"><i class="fas fa-search"></i></span></div>
+                <input id="pl-search" class="form-control" placeholder="Search by name, SUNet ID, or email…" autocomplete="off">
+            </div>
+            <div class="pl-results" id="pl-results"></div>
+            <div class="invalid-feedback d-block" id="pl-required" style="display:none!important;">
+                Please select an approver before submitting.</div>
+        </div>
+
+        <!-- selected person card -->
+        <div class="pl-card mt-2" id="pl-card">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <div class="pl-name"><i class="fas fa-user-check"></i> <span id="pl-sel-name"></span></div>
+                    <div class="pl-meta" id="pl-sel-meta"></div>
+                </div>
+                <a href="#" id="pl-change" class="small">Change</a>
+            </div>
+            <div class="small-muted mt-1"><i class="fas fa-envelope"></i> The approval email will be sent to
+                <b id="pl-sel-email"></b>.</div>
+        </div>
+    </div>
+
+    <div class="survey-q">
+        <div class="q-label">Note to your approver <span class="small-muted">(optional)</span></div>
+        <textarea class="form-control form-control-sm" rows="2"
+                  placeholder="e.g. “These are the two dashboard modules we discussed for the CHOIR renewal.”"></textarea>
+    </div>
+
+    <div class="survey-submit">
+        <button id="rq-submit" class="btn btn-primary px-4">Submit request</button>
+        <div class="small-muted mt-2">Submitting sends the approval email. You can track status any time on the
+            project's “Request External Modules” page.</div>
+    </div>
+</div>
+
+<!-- ============ STATE: SUBMITTED ============ -->
+<div class="survey-shell d-none" id="state-submitted">
+    <div class="survey-band">Stanford Medicine &nbsp;|&nbsp; REDCap — Research Electronic Data Capture</div>
+    <div class="p-4 text-center">
+        <i class="fas fa-paper-plane" style="font-size:44px;color:#2e6da4;"></i>
+        <h4 class="mt-3">Request submitted — approval email sent</h4>
+        <p style="font-size:13px;" class="text-muted mb-3">
+            Your request was recorded on 07/09/2026 and an approval email was sent to
+            <b id="conf-approver">Emily Chen, MD (echen@stanford.edu)</b>.
+        </p>
+        <table class="table-rc mx-auto" style="max-width:520px;">
+            <tbody>
+            <tr><td>Survey Dashboard</td>
+                <td><span class="b b-pending"><i class="fas fa-clock"></i>pending</span>
+                    <span class="small-muted">awaiting PI approval</span></td></tr>
+            <tr><td>Cross-Project Piping</td>
+                <td><span class="b b-pending"><i class="fas fa-clock"></i>pending</span>
+                    <span class="small-muted">awaiting PI approval</span></td></tr>
+            </tbody>
+        </table>
+        <div class="callout-info mx-auto text-left mt-3" style="max-width:520px;">
+            <b>What happens next:</b> once your approver decides, each module either enables automatically
+            (⚡), or an RSSD ticket is created and the REDCap team enables it (🎫). You'll see live statuses on the
+            project's <a href="em_catalog.html">“Request External Modules”</a> page — no further action needed from you.
+        </div>
+        <p class="small-muted mt-3 mb-0">Approver hasn't responded? The request stays pending — you can ask them to
+            check their email, or reject/resubmit with a different approver from the catalog page.</p>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="mockup.js"></script>
+<script>
+/* ---- Stanford person-lookup mock ---- */
+var PEOPLE = [
+    { name: 'Emily Chen, MD',    sunet: 'echen',   email: 'echen@stanford.edu',
+      title: 'Professor of Medicine (Immunology & Rheumatology)', dept: 'School of Medicine — PI, NIH R01 “CHOIR”' },
+    { name: 'Marcus Lee, MD',    sunet: 'mlee2',   email: 'mlee2@stanford.edu',
+      title: 'Assistant Professor of Pediatrics', dept: 'School of Medicine — PI, K23 “Peds Asthma”' },
+    { name: 'Cheryl Alvarez',    sunet: 'calvarez', email: 'calvarez@stanford.edu',
+      title: 'Research Finance Administrator', dept: 'SoM Research Management Group' },
+    { name: 'Nicholas Cheung',   sunet: 'ncheung', email: 'ncheung@stanford.edu',
+      title: 'Clinical Research Manager', dept: 'Department of Medicine — CHOIR program' }
+];
+var selected = null;
+
+function renderResults(q) {
+    var $r = $('#pl-results').empty();
+    if (q.length < 2) { $r.hide(); return; }
+    var hits = PEOPLE.filter(function (p) {
+        return (p.name + ' ' + p.sunet + ' ' + p.email).toLowerCase().indexOf(q.toLowerCase()) !== -1;
+    });
+    if (!hits.length) {
+        $r.append('<div class="pl-item text-muted">No Stanford directory match for “' + q + '”</div>').show();
+        return;
+    }
+    hits.forEach(function (p, i) {
+        $r.append('<div class="pl-item" data-i="' + PEOPLE.indexOf(p) + '">' +
+            '<div class="pl-name">' + p.name + ' <span class="small-muted">(' + p.sunet + ')</span></div>' +
+            '<div class="pl-meta">' + p.title + ' · ' + p.dept + '</div></div>');
+    });
+    $r.show();
+}
+
+$('#pl-search').on('input focus', function () { renderResults($(this).val().trim()); });
+$(document).on('click', '.pl-item[data-i]', function () {
+    selected = PEOPLE[$(this).data('i')];
+    $('#pl-results').hide();
+    $('#pl-wrap').hide();
+    $('#pl-required').hide();
+    $('#pl-sel-name').text(selected.name + ' (' + selected.sunet + ')');
+    $('#pl-sel-meta').text(selected.title + ' · ' + selected.dept);
+    $('#pl-sel-email').text(selected.email);
+    $('#pl-card').show();
+});
+$('#pl-change').on('click', function (e) {
+    e.preventDefault();
+    selected = null;
+    $('#pl-card').hide();
+    $('#pl-wrap').show();
+    $('#pl-search').val('').focus();
+});
+$(document).on('click', function (e) {
+    if (!$(e.target).closest('#pl-wrap').length) $('#pl-results').hide();
+});
+
+function showState(s) {
+    $('#state-form,#state-submitted').addClass('d-none');
+    $('#state-' + s).removeClass('d-none');
+    window.scrollTo(0, 0);
+}
+$('#rq-submit').on('click', function () {
+    if (!selected) {
+        $('#pl-required').css('display', 'block').attr('style', 'display:block!important;color:#dc3545;font-size:11.5px;');
+        mockToast('Please look up and select your PI/Admin approver first.');
+        return;
+    }
+    $('#conf-approver').text(selected.name + ' (' + selected.email + ')');
+    showState('submitted');
+});
+</script>
+</body>
+</html>

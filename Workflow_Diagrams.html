@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EM Billing – Workflow Diagrams</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: #f0f2f5;
+      color: #1e293b;
+      padding: 2rem;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 1.9rem;
+      font-weight: 700;
+      color: #1e40af;
+      margin-bottom: 0.3rem;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #64748b;
+      font-size: 0.95rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .diagram-card {
+      background: #fff;
+      border-radius: 14px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+      padding: 2rem 2.5rem;
+      margin-bottom: 2.5rem;
+      border-top: 5px solid;
+    }
+
+    .diagram-card.blue  { border-color: #2563eb; }
+    .diagram-card.green { border-color: #16a34a; }
+    .diagram-card.red   { border-color: #dc2626; }
+
+    .diagram-card h2 {
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 0.4rem;
+    }
+    .diagram-card.blue  h2 { color: #1d4ed8; }
+    .diagram-card.green h2 { color: #15803d; }
+    .diagram-card.red   h2 { color: #b91c1c; }
+
+    .diagram-card p.desc {
+      color: #475569;
+      font-size: 0.9rem;
+      margin-bottom: 1.5rem;
+      line-height: 1.6;
+    }
+
+    .diagram-wrap {
+      overflow-x: auto;
+      text-align: center;
+    }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem 1.5rem;
+      margin-top: 1.5rem;
+      padding-top: 1.2rem;
+      border-top: 1px solid #e2e8f0;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      font-size: 0.82rem;
+      color: #475569;
+    }
+
+    .legend-dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 3px;
+      flex-shrink: 0;
+    }
+
+    footer {
+      text-align: center;
+      color: #94a3b8;
+      font-size: 0.8rem;
+      margin-top: 1.5rem;
+    }
+  </style>
+</head>
+<body>
+
+<h1>External Module Manager — Workflow Diagrams</h1>
+<p class="subtitle">v2.0 &nbsp;·&nbsp; Generated June 29, 2026 · updated July 6, 2026 · <strong>revised July 10, 2026</strong> (request flow redesigned: cart → survey → PI approval; per-PTA finance CSV; PTA debt ledger) &nbsp;·&nbsp; stanford/external_module_manager</p>
+
+<!-- ═══════════════════════════════════════════════════════════
+     DIAGRAM 1 — EM Enable Request (cart → survey → PI approval)
+════════════════════════════════════════════════════════════ -->
+<div class="diagram-card blue">
+  <h2>📋 Diagram 1 — EM Enablement Request: Cart → Survey → PI Approval</h2>
+  <p class="desc">
+    <strong>Redesigned July 10, 2026 — replaces the super-user approval queue.</strong> A requester with the
+    project's "Design" right (som-prod, v1) opens the EM Catalog page in the project's EM menu, adds fee-bearing EMs
+    to a cart (catalog + fees + auto-enable flag come from the EM-records project, PID 16000), and checks out with a
+    regex-validated PTA. The module pre-creates a record in the <em>request-tracking REDCap project</em> and redirects
+    to its survey, where the requester picks the PI/Admin approver via the Stanford person-lookup EM. A REDCap Alert
+    emails the PI an approval survey — <strong>one Approve/Reject decision for the whole request</strong>. On approval,
+    the <code>redcap_save_record</code> hook syncs the PTA into the billing mapping, auto-enables flagged EMs
+    (failure → <code>approval_error</code>, retryable), and opens <strong>one RSSD Jira ticket per request</strong> for
+    the rest (<code>awaiting_super_user</code> until nightly reconciliation sees the manual enable). Re-enabling a
+    deactivated EM (Diagram 2) comes back through this same flow with no shortcut.
+  </p>
+
+  <div class="diagram-wrap">
+    <div class="mermaid">
+%%{init: {"theme": "base", "themeVariables": {"primaryColor":"#dbeafe","primaryTextColor":"#1e3a8a","primaryBorderColor":"#2563eb","lineColor":"#3b82f6","secondaryColor":"#eff6ff","tertiaryColor":"#fff"}}}%%
+flowchart TD
+
+  %% ─── ACTORS ───────────────────────────────────────────
+  subgraph REQ["👤  Requester (project Design right)"]
+    U1(["Start:<br/>Open EM Catalog page<br/>(project EM menu · som-prod)"])
+    U2["Browse catalog from PID 16000:<br/>fee · ⚡ auto-enable / 🎫 RSSD badge"]
+    U3["Add EM(s) to cart"]
+    U4["Checkout:<br/>enter PTA number"]
+    U6["Request survey: look up<br/>PI / Admin approver<br/>(Stanford person-lookup EM)<br/>and submit"]
+    U7["Track statuses in-app:<br/>catalog page + core<br/>EM manager annotations"]
+    U8(["End"])
+  end
+
+  subgraph SYS["⚙️  Module (System)"]
+    S1{"PTA format<br/>valid? (regex)"}
+    S2["Create record in request-tracking<br/>project: header + one EM line<br/>per cart item, status = pending"]
+    S3["Redirect requester to<br/>the record's survey"]
+    S4["REDCap Alert emails PI<br/>the approval survey link"]
+    H1["redcap_save_record hook<br/>fires on approval submit"]
+    H2["PTA sync: create/update<br/>pta_accounts +<br/>project_pta_mapping"]
+    H3{"EM line:<br/>auto-enable flag<br/>in PID 16000?"}
+    H4["Auto-enable EM in<br/>redcap_external_module_settings"]
+    H5{"Enable<br/>succeeded?"}
+    H6["Line status = enabled"]
+    H7["Line status = approval_error<br/>(surfaced · retryable<br/>on request-admin page)"]
+    H8["Create ONE RSSD Jira ticket<br/>per request (REST API) —<br/>lines = awaiting_super_user"]
+    H9["All lines = rejected<br/>(PI note shown to requester)"]
+    R1["Nightly reconciliation detects<br/>the manual enable →<br/>line = enabled"]
+  end
+
+  subgraph PI["🧑‍🔬  PI / Admin Approver"]
+    P1["Open approval survey<br/>from email"]
+    P2["Review: project · requester ·<br/>PTA · EMs + monthly total"]
+    P3{"Decision<br/>(whole request)"}
+  end
+
+  subgraph SU["🛡️  RSSD Super User"]
+    A1["Work Jira ticket:<br/>manually enable EM(s)"]
+  end
+
+  %% ─── FLOW ─────────────────────────────────────────────
+  U1 --> U2 --> U3 --> U4 --> S1
+  S1 -->|"No"| U4
+  S1 -->|"Yes"| S2 --> S3 --> U6 --> S4 --> P1 --> P2 --> P3
+  P3 -->|"Reject"| H9 --> U7
+  P3 -->|"Approve"| H1 --> H2 --> H3
+  H3 -->|"Yes"| H4 --> H5
+  H5 -->|"Yes"| H6 --> U7
+  H5 -->|"No"| H7 --> U7
+  H3 -->|"No"| H8 --> A1 --> R1 --> H6
+  U7 --> U8
+
+  %% ─── STYLES ───────────────────────────────────────────
+  style REQ fill:#eff6ff,stroke:#2563eb,color:#1e3a8a
+  style SYS fill:#f0fdf4,stroke:#16a34a,color:#14532d
+  style PI  fill:#fdf4ff,stroke:#9333ea,color:#581c87
+  style SU  fill:#fefce8,stroke:#ca8a04,color:#713f12
+
+  classDef sysNode  fill:#bbf7d0,stroke:#16a34a,color:#14532d,rx:6
+  classDef userNode fill:#bfdbfe,stroke:#2563eb,color:#1e3a8a,rx:6
+  classDef piNode   fill:#e9d5ff,stroke:#9333ea,color:#581c87,rx:6
+  classDef adminNode fill:#fde68a,stroke:#d97706,color:#78350f,rx:6
+  classDef decision  fill:#fde68a,stroke:#d97706,color:#78350f
+  classDef terminal  fill:#e0e7ff,stroke:#6366f1,color:#312e81,rx:99
+
+  class S2,S3,S4,H1,H2,H4,H6,H7,H8,H9,R1 sysNode
+  class U2,U3,U4,U6,U7 userNode
+  class P1,P2 piNode
+  class A1 adminNode
+  class S1,H3,H5,P3 decision
+  class U1,U8 terminal
+    </div>
+  </div>
+
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:#bfdbfe;border:1px solid #2563eb"></div> Requester action</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#bbf7d0;border:1px solid #16a34a"></div> System / automated action</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#e9d5ff;border:1px solid #9333ea"></div> PI / Admin approver (survey via email)</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#fde68a;border:1px solid #d97706"></div> RSSD super user (Jira) / decision</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#e0e7ff;border:1px solid #6366f1"></div> Start / End terminal</div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     DIAGRAM 2 — EM Deactivation & Reconciliation
+════════════════════════════════════════════════════════════ -->
+<div class="diagram-card red">
+  <h2>🛑 Diagram 2 — EM Deactivation &amp; Nightly Reconciliation</h2>
+  <p class="desc">
+    <strong>Revised July 10, 2026.</strong> Deactivation is self-service and immediate — via the module's own
+    <em>Disable</em> button injected into REDCap's <strong>core EM manager page</strong> (each EM row is annotated
+    with fee · PTA · request status). The confirm dialog requires a reason; the module disables the EM and records the
+    deactivation on the tracking record (who · when · reason). No approval gate, no billing step: the monthly run only
+    creates a line when the project is Production <em>and</em> the EM is enabled, so a deactivated EM stops generating
+    new lines on its own — already-open lines run their normal course. The nightly reconciliation cron does two jobs:
+    it files out-of-band disables as <code>auto_detected</code> records for super-user acknowledgment, and it flips
+    <code>awaiting_super_user</code> lines to <code>enabled</code> once the Jira-ticketed manual enable actually
+    happened. At go-live, a one-time seeding creates <em>grandfathered</em> tracking records for every currently
+    enabled billable EM so reconciliation starts from a complete baseline. Re-enabling requires the full Diagram 1
+    flow again.
+  </p>
+
+  <div class="diagram-wrap">
+    <div class="mermaid">
+%%{init: {"theme": "base", "themeVariables": {"primaryColor":"#fee2e2","primaryTextColor":"#7f1d1d","primaryBorderColor":"#dc2626","lineColor":"#ef4444","secondaryColor":"#fef2f2","tertiaryColor":"#fff"}}}%%
+flowchart TD
+
+  %% ─── ACTORS ───────────────────────────────────────────
+  subgraph USER["👤  Project Admin — self-service, no approval"]
+    U1(["Start:<br/>REDCap core EM manager page<br/>(module-injected UI)"])
+    U2["See per-EM annotations:<br/>fee · PTA · request status"]
+    U3["Click module Disable button"]
+    U4["Confirm dialog:<br/>required reason"]
+    U9(["End:<br/>EM disabled · recorded"])
+  end
+
+  subgraph SYS["⚙️  Module (System)"]
+    S1["Disable EM in<br/>redcap_external_module_settings"]
+    S2["Tracking EM line status =<br/>deactivated (who · when · reason,<br/>source = manual)"]
+    S3["Billing self-heals: next run creates<br/>no new line (Production + enabled<br/>check at generation time)"]
+    S9["Flag case for investigation<br/>— in-app alert to admins"]
+  end
+
+  subgraph DETECT["🔍  Nightly Reconciliation Cron"]
+    D1["Compare redcap_external_module_settings<br/>vs tracking-project EM lines"]
+    D2{"EM disabled out-of-band<br/>(tracked line still enabled)?"}
+    D3["Create EM line<br/>source = auto_detected<br/>status = pending acknowledgment"]
+    D4{"awaiting_super_user line<br/>now actually enabled?"}
+    D5["Flip line to enabled<br/>(Jira ticket was resolved)"]
+  end
+
+  subgraph ADMIN["🛡️  RSSD Super User — request-admin page"]
+    A1["Review acknowledgment queue:<br/>project · EM · detected date ·<br/>billing history"]
+    A2{"Acknowledge as<br/>legitimate?"}
+    A3["Acknowledge →<br/>line = deactivated"]
+    A4["Flag for investigation"]
+  end
+
+  %% ─── FLOW ─────────────────────────────────────────────
+  U1 --> U2 --> U3 --> U4 --> S1 --> S2 --> S3 --> U9
+
+  D1 --> D2
+  D2 -->|"Yes"| D3 --> A1 --> A2
+  D2 -->|"No"| D4
+  D4 -->|"Yes"| D5
+  A2 -->|"Yes"| A3
+  A2 -->|"No"| A4 --> S9
+
+  %% ─── STYLES ───────────────────────────────────────────
+  style USER   fill:#fef2f2,stroke:#dc2626,color:#7f1d1d
+  style DETECT fill:#f5f3ff,stroke:#7c3aed,color:#4c1d95
+  style SYS    fill:#fff7ed,stroke:#ea580c,color:#7c2d12
+  style ADMIN  fill:#fefce8,stroke:#ca8a04,color:#713f12
+
+  classDef sysNode    fill:#fed7aa,stroke:#ea580c,color:#7c2d12,rx:6
+  classDef userNode   fill:#fecaca,stroke:#dc2626,color:#7f1d1d,rx:6
+  classDef adminNode  fill:#fde68a,stroke:#d97706,color:#78350f,rx:6
+  classDef detectNode fill:#ddd6fe,stroke:#7c3aed,color:#4c1d95,rx:6
+  classDef decision   fill:#fde68a,stroke:#d97706,color:#78350f
+  classDef terminal   fill:#e0e7ff,stroke:#6366f1,color:#312e81,rx:99
+
+  class S1,S2,S3,S9 sysNode
+  class U2,U3,U4 userNode
+  class A1,A3,A4 adminNode
+  class D1,D3,D5 detectNode
+  class D2,D4,A2 decision
+  class U1,U9 terminal
+    </div>
+  </div>
+
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:#fecaca;border:1px solid #dc2626"></div> Project Admin action (no approval needed)</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#ddd6fe;border:1px solid #7c3aed"></div> Nightly reconciliation / auto-detection</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#fed7aa;border:1px solid #ea580c"></div> System / automated action</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#fde68a;border:1px solid #d97706"></div> RSSD super-user action / decision (auto-detected only)</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#e0e7ff;border:1px solid #6366f1"></div> Start / End terminal</div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     DIAGRAM 3 — Monthly Billing Run & Finance CSV Loop
+════════════════════════════════════════════════════════════ -->
+<div class="diagram-card green">
+  <h2>💰 Diagram 3 — Monthly Billing Run, Finance CSV Loop &amp; Debt Ledger</h2>
+  <p class="desc">
+    <strong>Revised July 10, 2026.</strong> Generation is admin-triggered (day 28/29 is guidance, not a gate). One run
+    per month: <code>finalized</code>/<code>exported</code> blocks regeneration, a <code>draft</code> regenerates in
+    place. New lines come from that month's <code>external_modules_charges</code> (som-prod, fee-bearing); open
+    rejected/hold lines from prior runs <strong>carry forward</strong> — same amount, attempt+1, billed to the
+    project's <em>current</em> PTA. Projects without a PTA mapping get lines at <code>hold</code> ("No PTA mapping")
+    under an <em>Unmapped</em> group — never dropped. Export produces two files: the <strong>editable summary CSV, one
+    row per PTA</strong> (finance rejects at the PTA level) and a read-only per-line detail CSV. Import is
+    all-or-nothing on validation, fans each PTA's status out to its still-pending lines (manually-resolved lines are
+    skipped and reported), and finalizes the run. Open rejected/hold lines feed the <strong>Outstanding Balances
+    ledger keyed by PTA</strong> — the backcharge tool; the super user can manually override any line or PTA group
+    (required, audited note) at any time, including after finalize.
+  </p>
+
+  <div class="diagram-wrap">
+    <div class="mermaid">
+%%{init: {"theme": "base", "themeVariables": {"primaryColor":"#dcfce7","primaryTextColor":"#14532d","primaryBorderColor":"#16a34a","lineColor":"#22c55e","secondaryColor":"#f0fdf4","tertiaryColor":"#fff"}}}%%
+flowchart TD
+
+  subgraph ADMIN2["🛡️  RSSD Super User"]
+    A1(["Start:<br/>Finance Reports page"])
+    A2["Click Generate Run for month<br/>(guidance: on/after day 28/29)"]
+    A7["Download Summary CSV (per PTA)<br/>+ Detail CSV (per line)"]
+    A8["Send Summary CSV to Finance"]
+    A9["Upload processed Summary CSV"]
+    A10["View result: charged · rejected ·<br/>waived · hold · skipped"]
+    A12["Anytime: manual override on a<br/>line or PTA group — required note,<br/>audited, allowed post-finalize"]
+    A11(["End"])
+  end
+
+  subgraph SYS2["⚙️  System"]
+    S1["Run exists for<br/>this month?"]
+    S2{"Existing run<br/>status?"}
+    S2X["Block: already generated<br/>and sent for this month"]
+    S3B["Regenerate draft in place<br/>(delete + rebuild lines)"]
+    S3["New lines from external_modules_charges<br/>(month · som-prod · fee &gt; 0)"]
+    S4["Carry forward open rejected/hold lines<br/>with no successor: same amount ·<br/>attempt+1 · project's CURRENT PTA"]
+    S5["Snapshot PTA per line;<br/>no mapping → status = hold ·<br/>'No PTA mapping' · Unmapped group"]
+    S7["Save finance_billing_run = draft<br/>+ lines · totals"]
+    S8["Export: summary row per PTA<br/>(editable status/note) +<br/>read-only line detail file"]
+    S15["Parse uploaded summary CSV"]
+    S16{"All rows valid?<br/>(PTA in run · valid status ·<br/>note when rejected)"}
+    S21["All-or-nothing: show error list,<br/>apply nothing"]
+    S17["Fan out each PTA status to its<br/>still-pending lines (skip manually<br/>resolved · report skips)"]
+    S19["Run status = finalized"]
+    S20["Statuses visible in-app"]
+  end
+
+  subgraph FIN["💼  Finance Team (offline)"]
+    F1["Receive summary CSV"]
+    F2["Charge each PTA<br/>(rejection is per PTA)"]
+    F3["Fill status + note<br/>per PTA row"]
+    F4["Return file"]
+  end
+
+  subgraph LEDGER["📒  Outstanding Balances Ledger (per PTA)"]
+    L1["Open rejected/hold lines grouped by<br/>project's current PTA = amount owed"]
+    L2["Backcharge settled → manual<br/>override marks lines charged"]
+  end
+
+  %% ─── FLOW ─────────────────────────────────────────────
+  A1 --> A2 --> S1 --> S2
+  S2 -->|"None"| S3
+  S2 -->|"Draft"| S3B --> S3
+  S2 -->|"Exported / Finalized"| S2X --> A2
+  S3 --> S4 --> S5 --> S7 --> S8 --> A7 --> A8
+  A8 --> F1 --> F2 --> F3 --> F4 --> A9
+  A9 --> S15 --> S16
+  S16 -->|"No"| S21 --> A9
+  S16 -->|"Yes"| S17 --> S19 --> S20 --> A10 --> A11
+  S17 -.->|"rejected / hold"| L1
+  L1 -.->|"next month generation"| S4
+  L1 --> L2
+  A12 -.-> L2
+
+  %% ─── STYLES ───────────────────────────────────────────
+  style ADMIN2 fill:#f0fdf4,stroke:#16a34a,color:#14532d
+  style SYS2   fill:#eff6ff,stroke:#2563eb,color:#1e3a8a
+  style FIN    fill:#fff7ed,stroke:#ea580c,color:#7c2d12
+  style LEDGER fill:#fdf4ff,stroke:#9333ea,color:#581c87
+
+  classDef sysNode2   fill:#bfdbfe,stroke:#2563eb,color:#1e3a8a,rx:6
+  classDef adminNode2 fill:#bbf7d0,stroke:#16a34a,color:#14532d,rx:6
+  classDef finNode    fill:#fed7aa,stroke:#ea580c,color:#7c2d12,rx:6
+  classDef ledgerNode fill:#e9d5ff,stroke:#9333ea,color:#581c87,rx:6
+  classDef decision2  fill:#fde68a,stroke:#d97706,color:#78350f
+  classDef terminal2  fill:#e0e7ff,stroke:#6366f1,color:#312e81,rx:99
+
+  class S1,S3B,S3,S4,S5,S7,S8,S15,S17,S19,S20,S21,S2X sysNode2
+  class A2,A7,A8,A9,A10,A12 adminNode2
+  class F1,F2,F3,F4 finNode
+  class L1,L2 ledgerNode
+  class S2,S16 decision2
+  class A1,A11 terminal2
+    </div>
+  </div>
+
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:#bbf7d0;border:1px solid #16a34a"></div> RSSD super-user action</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#bfdbfe;border:1px solid #2563eb"></div> System / automated action</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#fed7aa;border:1px solid #ea580c"></div> Finance team action (offline)</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#e9d5ff;border:1px solid #9333ea"></div> Outstanding Balances ledger / backcharge</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#fde68a;border:1px solid #d97706"></div> Decision / gate</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#e0e7ff;border:1px solid #6366f1"></div> Start / End terminal</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     CSV CONTRACT REFERENCE
+════════════════════════════════════════════════════════════ -->
+<div class="diagram-card" style="border-color:#6366f1;">
+  <h2 style="color:#4338ca;">📄 CSV Contract — Two Files (revised July 10, 2026)</h2>
+  <p class="desc">
+    Finance receives <strong>two files</strong>. They edit and return only the <strong>Summary CSV</strong> — one row
+    per PTA, because Finance charges/rejects whole PTAs. On import, each PTA row's status fans out to all of that
+    PTA's still-pending lines in the run. The <strong>Detail CSV</strong> (one row per project+EM line) is a read-only
+    reference and is never re-imported. Amounts are read-only everywhere (Migration Plan §5, decision #9).
+  </p>
+
+  <h3 style="color:#4338ca;font-size:1rem;margin:0.5rem 0;">File 1 — Summary CSV (editable, re-imported; one row per PTA)</h3>
+  <table style="width:100%;border-collapse:collapse;font-size:0.88rem;margin-top:0.5rem;">
+    <thead>
+      <tr style="background:#e0e7ff;color:#312e81;">
+        <th style="padding:0.55rem 0.75rem;text-align:left;border:1px solid #c7d2fe;">#</th>
+        <th style="padding:0.55rem 0.75rem;text-align:left;border:1px solid #c7d2fe;">Column</th>
+        <th style="padding:0.55rem 0.75rem;text-align:left;border:1px solid #c7d2fe;">Direction</th>
+        <th style="padding:0.55rem 0.75rem;text-align:left;border:1px solid #c7d2fe;">Description</th>
+        <th style="padding:0.55rem 0.75rem;text-align:left;border:1px solid #c7d2fe;">Valid values</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr style="background:#fff;"><td style="padding:0.5rem 0.75rem;border:1px solid #e2e8f0;">1</td><td style="padding:0.5rem 0.75rem;border:1px solid #e2e8f0;font-family:monospace;">billing_run_id</td><td style="padding:0.5rem 0.75rem;border:1px solid #e2e8f0;">Export only</td><td style="padding:0.5rem 0.75rem;border:1px solid #e2e8f0;">Month's billing run entity ID</td><td style="padding:0.5rem 0.75rem;border:1px solid #e2e8f0;">integer</td></tr>
+      <tr style="background:#f8fafc;"><td style="padding:0.5rem 0.75rem;border:1px solid #e2e8f0;">2</td><td style="padding:0.5rem 0.75rem;border:1px solid #e2e8f0;font-family:monospace;">billing_month</td><td style="padding:0.5rem 0.75rem;border:1px solid #e2e8f0;">Export only</td><td style="padding:0.5rem 0.75rem;border:1px solid #e2e8f0;">Month charged (YYYY-MM)</td><td style="padding:0.5rem 0.75rem;border:1px solid #e2e8f0;">2026-07</td></tr>
+      <tr style="background:#fff;"><td style="padding:0.5rem 0.75rem;border:1px solid #e2e8f0;">3</td><td style="padding:0.5rem 0.75rem;border:1px solid #e2e8f0;font-family:monospace;">pta_number</td><td style="padding:0.5rem 0.75rem;border:1px solid #e2e8f0;">Export only — <strong>re-import key</strong></td><td style="padding:0.5rem 0.75rem;border:1px solid #e2e8f0;">PTA to charge (one row per PTA)</td><td style="padding:0.5rem 0.75rem;border:1px solid #e2e8f0;">string</td></tr>
+      <tr style="background:#f8fafc;"><td style="padding:0.5rem 0.75rem;border:1px solid #e2e8f0;">4</td><td style="padding:0.5rem 0.75rem;border:1px solid #e2e8f0;font-family:monospace;">pta_description</td><td style="padding:0.5rem 0.75rem;border:1px solid #e2e8f0;">Export only</td><td style="padding:0.5rem 0.75rem;border:1px solid #e2e8f0;">PTA account description</td><td style="padding:0.5rem 0.75rem;border:1px solid #e2e8f0;">string</td></tr>
+      <tr style="background:#fff;"><td style="padding:0.5rem 0.75rem;border:1px solid #e2e8f0;">5</td><td style="padding:0.5rem 0.75rem;border:1px solid #e2e8f0;font-family:monospace;">contact_name</td><td style="padding:0.5rem 0.75rem;border:1px solid #e2e8f0;">Export only</td><td style="padding:0.5rem 0.75rem;border:1px solid #e2e8f0;">PTA contact</td><td style="padding:0.5rem 0.75rem;border:1px solid #e2e8f0;">string</td></tr>
+      <tr style="background:#f8fafc;"><td style="padding:0.5rem 0.75rem;border:1px solid #e2e8f0;">6</td><td style="padding:0.5rem 0.75rem;border:1px solid #e2e8f0;font-family:monospace;">project_count</td><td style="padding:0.5rem 0.75rem;border:1px solid #e2e8f0;">Export only</td><td style="padding:0.5rem 0.75rem;border:1px solid #e2e8f0;">Projects billed under this PTA</td><td style="padding:0.5rem 0.75rem;border:1px solid #e2e8f0;">integer</td></tr>
+      <tr style="background:#fff;"><td style="padding:0.5rem 0.75rem;border:1px solid #e2e8f0;">7</td><td style="padding:0.5rem 0.75rem;border:1px solid #e2e8f0;font-family:monospace;">line_count</td><td style="padding:0.5rem 0.75rem;border:1px solid #e2e8f0;">Export only</td><td style="padding:0.5rem 0.75rem;border:1px solid #e2e8f0;">EM lines under this PTA</td><td style="padding:0.5rem 0.75rem;border:1px solid #e2e8f0;">integer</td></tr>
+      <tr style="background:#f8fafc;"><td style="padding:0.5rem 0.75rem;border:1px solid #e2e8f0;">8</td><td style="padding:0.5rem 0.75rem;border:1px solid #e2e8f0;font-family:monospace;">new_amount</td><td style="padding:0.5rem 0.75rem;border:1px solid #e2e8f0;">Export only</td><td style="padding:0.5rem 0.75rem;border:1px solid #e2e8f0;">This month's new charges (USD)</td><td style="padding:0.5rem 0.75rem;border:1px solid #e2e8f0;">integer</td></tr>
+      <tr style="background:#fff;"><td style="padding:0.5rem 0.75rem;border:1px solid #e2e8f0;">9</td><td style="padding:0.5rem 0.75rem;border:1px solid #e2e8f0;font-family:monospace;">carried_amount</td><td style="padding:0.5rem 0.75rem;border:1px solid #e2e8f0;">Export only</td><td style="padding:0.5rem 0.75rem;border:1px solid #e2e8f0;">Carry-forward from prior months (USD)</td><td style="padding:0.5rem 0.75rem;border:1px solid #e2e8f0;">integer</td></tr>
+      <tr style="background:#f8fafc;"><td style="padding:0.5rem 0.75rem;border:1px solid #e2e8f0;">10</td><td style="padding:0.5rem 0.75rem;border:1px solid #e2e8f0;font-family:monospace;">total_amount</td><td style="padding:0.5rem 0.75rem;border:1px solid #e2e8f0;">Export only</td><td style="padding:0.5rem 0.75rem;border:1px solid #e2e8f0;">new + carried (USD)</td><td style="padding:0.5rem 0.75rem;border:1px solid #e2e8f0;">integer</td></tr>
+      <tr style="background:#fefce8;"><td style="padding:0.5rem 0.75rem;border:1px solid #e2e8f0;"><strong>11</strong></td><td style="padding:0.5rem 0.75rem;border:1px solid #e2e8f0;font-family:monospace;font-weight:700;">status</td><td style="padding:0.5rem 0.75rem;border:1px solid #e2e8f0;color:#b45309;font-weight:700;">✏️ Finance fills in</td><td style="padding:0.5rem 0.75rem;border:1px solid #e2e8f0;">Outcome for this PTA — fans out to all its pending lines</td><td style="padding:0.5rem 0.75rem;border:1px solid #e2e8f0;font-family:monospace;">charged · rejected · waived · hold</td></tr>
+      <tr style="background:#fefce8;"><td style="padding:0.5rem 0.75rem;border:1px solid #e2e8f0;"><strong>12</strong></td><td style="padding:0.5rem 0.75rem;border:1px solid #e2e8f0;font-family:monospace;font-weight:700;">finance_note</td><td style="padding:0.5rem 0.75rem;border:1px solid #e2e8f0;color:#b45309;font-weight:700;">✏️ Finance fills in</td><td style="padding:0.5rem 0.75rem;border:1px solid #e2e8f0;">Reason (required if rejected)</td><td style="padding:0.5rem 0.75rem;border:1px solid #e2e8f0;">free text</td></tr>
+    </tbody>
+  </table>
+
+  <h3 style="color:#4338ca;font-size:1rem;margin:1.25rem 0 0.5rem;">File 2 — Detail CSV (read-only reference; one row per project+EM line; never re-imported)</h3>
+  <p style="font-size:0.85rem;color:#475569;font-family:monospace;">
+    line_id · pta_number · project_id · project_title · module_prefix · amount · attempt_number · carried_from_line_id · status
+  </p>
+
+  <p style="margin-top:1rem;font-size:0.82rem;color:#64748b;">
+    🟡 Highlighted rows = columns Finance must fill in the Summary CSV before returning it. All other columns are
+    read-only (<code>pta_number</code> is the re-import key). Unmapped-project lines (status <code>hold</code>, no PTA)
+    are excluded from the Summary CSV and flagged at export time.
+  </p>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     ENTITY / STATUS REFERENCE
+════════════════════════════════════════════════════════════ -->
+<div class="diagram-card" style="border-color:#0891b2;">
+  <h2 style="color:#0e7490;">🗄️ Entity &amp; Status State Reference (revised July 10, 2026)</h2>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-top:0.75rem;">
+
+    <div>
+      <h3 style="font-size:1rem;color:#0e7490;margin-bottom:0.6rem;">Request-tracking project — EM line status flow <span class="muted" style="font-weight:400;">(REDCap records, not entities)</span></h3>
+      <div style="font-size:0.85rem;line-height:2;">
+        <span style="background:#fde68a;padding:2px 8px;border-radius:4px;border:1px solid #d97706;">pending</span>
+        &nbsp;→ <em>PI approves whole request</em> →&nbsp;
+        <span style="background:#ccfbf1;padding:2px 8px;border-radius:4px;border:1px solid #0d9488;">approved</span>
+        <br/>
+        <span style="background:#ccfbf1;padding:2px 8px;border-radius:4px;border:1px solid #0d9488;">approved</span>
+        &nbsp;→&nbsp;
+        <span style="background:#bbf7d0;padding:2px 8px;border-radius:4px;border:1px solid #16a34a;">enabled</span>
+        &nbsp;<em>(auto-enable flag set in PID 16000)</em>
+        <br/>
+        <span style="background:#ccfbf1;padding:2px 8px;border-radius:4px;border:1px solid #0d9488;">approved</span>
+        &nbsp;→&nbsp;
+        <span style="background:#e9d5ff;padding:2px 8px;border-radius:4px;border:1px solid #9333ea;">awaiting_super_user</span>
+        &nbsp;<em>(RSSD Jira)</em> →&nbsp;
+        <span style="background:#bbf7d0;padding:2px 8px;border-radius:4px;border:1px solid #16a34a;">enabled</span>
+        <br/>
+        <span style="background:#ccfbf1;padding:2px 8px;border-radius:4px;border:1px solid #0d9488;">approved</span>
+        &nbsp;→&nbsp;
+        <span style="background:#fecaca;padding:2px 8px;border-radius:4px;border:1px solid #dc2626;">approval_error</span>
+        &nbsp;<em>(enable failed — surfaced, retryable)</em>
+        <br/>
+        <span style="background:#fde68a;padding:2px 8px;border-radius:4px;border:1px solid #d97706;">pending</span>
+        &nbsp;→&nbsp;
+        <span style="background:#fecaca;padding:2px 8px;border-radius:4px;border:1px solid #dc2626;">rejected</span>
+        &nbsp;<em>(PI rejects — new request to retry)</em>
+        <br/>
+        <span style="background:#bbf7d0;padding:2px 8px;border-radius:4px;border:1px solid #16a34a;">enabled</span>
+        &nbsp;→&nbsp;
+        <span style="background:#e5e7eb;padding:2px 8px;border-radius:4px;border:1px solid #6b7280;">deactivated</span>
+        &nbsp;<em>(self-service or acknowledged auto-detect)</em>
+      </div>
+    </div>
+
+    <div>
+      <h3 style="font-size:1rem;color:#0e7490;margin-bottom:0.6rem;">Deactivation sources</h3>
+      <div style="font-size:0.85rem;line-height:2;">
+        <code>source = manual</code> — module Disable button on REDCap's core EM manager page; recorded
+        already-resolved as <span style="background:#e5e7eb;padding:2px 8px;border-radius:4px;border:1px solid #6b7280;">deactivated</span>, no queue entry (decision #13)
+        <br/>
+        <code>source = auto_detected</code> — nightly reconciliation finds an out-of-band disable:
+        <span style="background:#fde68a;padding:2px 8px;border-radius:4px;border:1px solid #d97706;">pending ack</span>
+        &nbsp;→&nbsp;
+        <span style="background:#e5e7eb;padding:2px 8px;border-radius:4px;border:1px solid #6b7280;">deactivated</span>
+        &nbsp;<em>(super-user acknowledges, decision #14)</em>
+        <br/>
+        <code>source = grandfathered</code> — one-time go-live seeding of already-enabled billable EMs, created as
+        <span style="background:#bbf7d0;padding:2px 8px;border-radius:4px;border:1px solid #16a34a;">enabled</span>
+      </div>
+    </div>
+
+    <div>
+      <h3 style="font-size:1rem;color:#0e7490;margin-bottom:0.6rem;">finance_billing_lines status flow</h3>
+      <div style="font-size:0.85rem;line-height:2;">
+        <span style="background:#e0e7ff;padding:2px 8px;border-radius:4px;border:1px solid #6366f1;">pending</span>
+        &nbsp;→&nbsp;
+        <span style="background:#bbf7d0;padding:2px 8px;border-radius:4px;border:1px solid #16a34a;">charged</span>
+        <br/>
+        <span style="background:#e0e7ff;padding:2px 8px;border-radius:4px;border:1px solid #6366f1;">pending</span>
+        &nbsp;→&nbsp;
+        <span style="background:#fecaca;padding:2px 8px;border-radius:4px;border:1px solid #dc2626;">rejected</span>
+        &nbsp;→ carry forward next month (current PTA · attempt+1)
+        <br/>
+        <span style="background:#e0e7ff;padding:2px 8px;border-radius:4px;border:1px solid #6366f1;">pending</span>
+        &nbsp;→&nbsp;
+        <span style="background:#d1fae5;padding:2px 8px;border-radius:4px;border:1px solid #059669;">waived</span>
+        &nbsp;(no carry forward)
+        <br/>
+        <span style="background:#e0e7ff;padding:2px 8px;border-radius:4px;border:1px solid #6366f1;">pending</span>
+        &nbsp;→&nbsp;
+        <span style="background:#f3f4f6;padding:2px 8px;border-radius:4px;border:1px solid #9ca3af;">hold</span>
+        &nbsp;→ carry forward next month <span class="muted">(same as rejected, decision #5; also the auto-status for unmapped projects)</span>
+        <br/>
+        <em>Any status may also be set manually by a super user (required note; <code>status_source = manual</code>; allowed post-finalize).</em>
+      </div>
+    </div>
+
+    <div>
+      <h3 style="font-size:1rem;color:#0e7490;margin-bottom:0.6rem;">finance_billing_runs status flow</h3>
+      <div style="font-size:0.85rem;line-height:2;">
+        <span style="background:#fde68a;padding:2px 8px;border-radius:4px;border:1px solid #d97706;">draft</span>
+        &nbsp;→&nbsp;
+        <span style="background:#bfdbfe;padding:2px 8px;border-radius:4px;border:1px solid #2563eb;">exported</span>
+        &nbsp;→&nbsp;
+        <span style="background:#bbf7d0;padding:2px 8px;border-radius:4px;border:1px solid #16a34a;">finalized</span>
+        <br/>
+        <span class="muted">One run per month. Draft regenerates in place; exported/finalized blocks regeneration (decision #12).</span>
+      </div>
+    </div>
+
+    <div>
+      <h3 style="font-size:1rem;color:#0e7490;margin-bottom:0.6rem;">Data stores (revised)</h3>
+      <ul style="font-size:0.85rem;line-height:2;padding-left:1.2rem;">
+        <li><strong>Request-tracking REDCap project</strong> — request header + approval instruments + repeating EM-line instrument (fee/auto-enable snapshots, line status, Jira key, source). <s><code>em_enable_requests</code> / <code>em_enable_request_items</code> entities</s> — superseded, not built.</li>
+        <li><code>finance_billing_runs</code> — month/year, status, totals, generated/exported/imported stamps.</li>
+        <li><code>finance_billing_lines</code> — run_id, project, module, amount, snapshot PTA, status, <code>status_source</code> (generation | csv_import | manual) + who/when, <code>attempt_number</code>, <code>carried_from_line_id</code>, charge-entity link.</li>
+        <li><s><code>monthly_pta_reports</code></s> — replaced by runs + lines (JSON snapshot cannot track per-line status).</li>
+        <li><em>Reuse:</em> <code>pta_accounts</code>, <code>project_pta_mapping</code> (kept up to date by approval-time PTA sync).</li>
+        <li><em>Extend:</em> <code>external_modules_charges</code> — add <code>source</code> (live | migrated_r2p2), <code>r2p2_charge_item_id</code>, <code>r2p2_invoice_item_id</code> for the historical migration (Migration Plan §8).</li>
+        <li><em>Catalog:</em> EM-records project (PID 16000) — existing fee fields + new <code>auto_enable</code> / <code>requestable</code> flags.</li>
+      </ul>
+    </div>
+
+  </div>
+</div>
+
+<footer>
+  stanford/external_module_manager_v9.9.9 &nbsp;·&nbsp; Internal planning document &nbsp;·&nbsp; v2.0 — July 10, 2026 &nbsp;·&nbsp; companion: EM_Billing_Implementation_Plan.html
+</footer>
+
+<script>
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'base',
+    flowchart: { useMaxWidth: true, htmlLabels: true, curve: 'basis' },
+    securityLevel: 'loose',
+  });
+</script>
+
+</body>
+</html>

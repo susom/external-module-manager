@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>EM Billing System — UI Mockups for Leadership Review</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+<link rel="stylesheet" href="mockup.css">
+<style>
+.flow-strip { display: flex; align-items: stretch; gap: 0; flex-wrap: wrap; }
+.flow-step { flex: 1 1 150px; background: #fff; border: 1px solid #d5dae0; border-radius: 3px;
+    padding: 10px 12px; text-align: center; position: relative; margin-right: 26px; min-width: 150px; }
+.flow-step:last-child { margin-right: 0; }
+.flow-step:not(:last-child):after {
+    content: "\2192"; position: absolute; right: -21px; top: 50%; transform: translateY(-50%);
+    color: #8a97a5; font-size: 18px; }
+.flow-step .fs-icon { font-size: 20px; color: #2e6da4; }
+.flow-step .fs-title { font-weight: 700; font-size: 12.5px; color: #34495e; margin-top: 4px; }
+.flow-step .fs-who { font-size: 10.5px; color: #8a97a5; text-transform: uppercase; letter-spacing: .04em; }
+.screen-card { background: #fff; border: 1px solid #d5dae0; border-radius: 3px; padding: 14px 16px;
+    height: 100%; }
+.screen-card h6 a { color: #2e6da4; }
+.screen-card .persona { font-size: 10.5px; text-transform: uppercase; letter-spacing: .05em;
+    color: #8a97a5; font-weight: 700; }
+</style>
+</head>
+<body>
+
+<div class="rc-topbar">
+    <span class="rc-brand"><span class="rc-cardinal">Stanford Medicine</span> · REDCap — Research IT (RSSD)</span>
+    <span>EM Billing System — proposal mockups · July 2026</span>
+</div>
+
+<div class="page-wrap">
+    <div class="panel-box">
+        <h4 class="page-title mb-2"><i class="fas fa-file-invoice-dollar"></i> External Module Billing — UI Mockups</h4>
+        <p class="mb-1" style="font-size:13px;">
+            Today, paid REDCap External Modules are billed through R2P2 with manual bookkeeping. This proposal moves the
+            whole lifecycle into REDCap itself: research teams <b>request</b> paid modules from a catalog, their
+            <b>PI approves</b> the request and the PTA by email, approved modules are <b>enabled automatically</b>
+            (or via an RSSD Jira ticket), a <b>monthly invoice grouped by PTA</b> goes to Finance as a CSV, Finance
+            returns per-PTA results, and every unpaid charge is <b>tracked as debt that re-bills automatically</b>
+            until it's paid or waived — so nothing falls through the cracks and backcharging is one click.
+        </p>
+        <p class="small-muted mb-0">All seven screens below are clickable mockups with sample data — no backend.
+            Tabs, carts, modals, lookups, validation states, and expand/collapse all work.</p>
+    </div>
+
+    <div class="panel-box">
+        <h6 class="mb-3"><i class="fas fa-route"></i> The monthly lifecycle at a glance</h6>
+        <div class="flow-strip">
+            <div class="flow-step"><div class="fs-icon"><i class="fas fa-cart-plus"></i></div>
+                <div class="fs-title">1 · Catalog &amp; Cart</div><div class="fs-who">Requester</div></div>
+            <div class="flow-step"><div class="fs-icon"><i class="fas fa-user-check"></i></div>
+                <div class="fs-title">2 · Request form + PI lookup</div><div class="fs-who">Requester</div></div>
+            <div class="flow-step"><div class="fs-icon"><i class="fas fa-envelope-open-text"></i></div>
+                <div class="fs-title">3 · PI approval survey</div><div class="fs-who">PI / Admin</div></div>
+            <div class="flow-step"><div class="fs-icon"><i class="fas fa-bolt"></i></div>
+                <div class="fs-title">4 · Auto-enable / Jira</div><div class="fs-who">System · RSSD</div></div>
+            <div class="flow-step"><div class="fs-icon"><i class="fas fa-cogs"></i></div>
+                <div class="fs-title">5 · Monthly billing run</div><div class="fs-who">Super user</div></div>
+            <div class="flow-step"><div class="fs-icon"><i class="fas fa-file-csv"></i></div>
+                <div class="fs-title">6 · Finance CSV loop</div><div class="fs-who">Finance (offline)</div></div>
+            <div class="flow-step"><div class="fs-icon"><i class="fas fa-balance-scale"></i></div>
+                <div class="fs-title">7 · Debt ledger &amp; backcharge</div><div class="fs-who">Super user</div></div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 col-lg-4 mb-3"><div class="screen-card">
+            <span class="persona">Requester · project page</span>
+            <h6 class="mt-1"><a href="em_catalog.html">1 — EM Catalog &amp; Cart <i class="fas fa-arrow-right"></i></a></h6>
+            <p class="small-muted mb-0">Browse paid modules with fees, add to cart, checkout with a validated PTA.
+                Shows which modules auto-enable vs. need RSSD, and the team's past requests with live statuses.</p>
+        </div></div>
+        <div class="col-md-6 col-lg-4 mb-3"><div class="screen-card">
+            <span class="persona">Requester · REDCap survey</span>
+            <h6 class="mt-1"><a href="request_survey.html">2 — Request Form + PI Lookup <i class="fas fa-arrow-right"></i></a></h6>
+            <p class="small-muted mb-0">The survey checkout lands on: cart summary pre-filled from the request record,
+                Stanford person-lookup to pick the PI/Admin approver, optional note, and the submitted confirmation
+                showing the approval email was sent.</p>
+        </div></div>
+        <div class="col-md-6 col-lg-4 mb-3"><div class="screen-card">
+            <span class="persona">PI / Admin · email link</span>
+            <h6 class="mt-1"><a href="pi_approval_survey.html">3 — PI Approval Survey <i class="fas fa-arrow-right"></i></a></h6>
+            <p class="small-muted mb-0">A plain REDCap survey: request summary, one approve/reject decision for the
+                whole request, required rejection reason, signature. Includes both post-submit confirmations.</p>
+        </div></div>
+        <div class="col-md-6 col-lg-4 mb-3"><div class="screen-card">
+            <span class="persona">Super user · Control Center</span>
+            <h6 class="mt-1"><a href="billing_admin.html#runs">4 — Billing Runs <i class="fas fa-arrow-right"></i></a></h6>
+            <p class="small-muted mb-0">Monthly runs (draft → exported → finalized), run detail grouped
+                PTA → project → EM line with carry-forward flags, audited manual overrides, the Generate tab
+                with duplicate-month guards, plus PTA Accounts and Project↔PTA Mapping.</p>
+        </div></div>
+        <div class="col-md-6 col-lg-4 mb-3"><div class="screen-card">
+            <span class="persona">Super user · Control Center</span>
+            <h6 class="mt-1"><a href="billing_admin.html#import">5 — Import Finance CSV <i class="fas fa-arrow-right"></i></a></h6>
+            <p class="small-muted mb-0">Upload the returned per-PTA CSV. All-or-nothing validation with a row-level
+                error report; on success, statuses fan out to every line and the run finalizes.</p>
+        </div></div>
+        <div class="col-md-6 col-lg-4 mb-3"><div class="screen-card">
+            <span class="persona">Super user · Control Center</span>
+            <h6 class="mt-1"><a href="billing_admin.html#balances">6 — Outstanding Balances <i class="fas fa-arrow-right"></i></a></h6>
+            <p class="small-muted mb-0">The backcharge ledger: what each PTA owes, expandable to project and line
+                detail with attempt counts and age. “Mark paid” closes debt settled outside the CSV cycle.</p>
+        </div></div>
+        <div class="col-md-6 col-lg-4 mb-3"><div class="screen-card">
+            <span class="persona">Super user · Control Center</span>
+            <h6 class="mt-1"><a href="request_admin.html">7 — Request Admin &amp; Reconciliation <i class="fas fa-arrow-right"></i></a></h6>
+            <p class="small-muted mb-0">All requests with per-EM statuses and Jira links, retryable enable errors,
+                the nightly reconciliation queue for out-of-band disables, grandfather seeding, and the annotations
+                injected into REDCap's native EM manager page.</p>
+        </div></div>
+    </div>
+
+    <div id="legend"></div>
+    <p class="small-muted mt-3 mb-0">Internal planning artifact · Stanford Research IT (RSSD) · July 2026 ·
+        generated from <code>EM_Billing_Mockup_Prompt.md</code></p>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="mockup.js"></script>
+<script>renderLegend('#legend');</script>
+</body>
+</html>

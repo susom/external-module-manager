@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Mockup 1 — EM Catalog &amp; Cart</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+<link rel="stylesheet" href="mockup.css">
+</head>
+<body>
+
+<div class="rc-topbar">
+    <span class="rc-brand"><span class="rc-cardinal">Stanford Medicine</span> · REDCap</span>
+    <span>Logged in as <b>jsmith</b> &nbsp;|&nbsp; My Projects &nbsp;|&nbsp; Help &amp; FAQ</span>
+</div>
+<div class="rc-context">
+    <span class="rc-project"><i class="fas fa-database"></i> CHOIR PRO Registry</span>
+    &nbsp;·&nbsp; PID 21433 &nbsp;·&nbsp; Production &nbsp;·&nbsp;
+    <span class="text-muted">Applications &raquo; <b>Request External Modules</b></span>
+</div>
+<div class="mock-caption">
+    <span class="mock-step">Screen 1 of 7 — Requester.</span>
+    A research-team member with the project's <b>Design</b> permission browses the paid-EM catalog, builds a cart,
+    and checks out with the grant's PTA. Checkout redirects to a REDCap survey where they look up their PI/Admin
+    approver, who then approves by email.
+    &nbsp;<a href="index.html">← Flow overview</a> &nbsp;|&nbsp; Next: <a href="request_survey.html">Request Form Survey →</a>
+</div>
+
+<div class="page-wrap">
+    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap">
+        <h4 class="page-title"><i class="fas fa-cart-plus"></i> Request External Modules</h4>
+        <span class="small-muted">Paid modules are billed monthly to your PTA after PI approval.</span>
+    </div>
+
+    <div class="row">
+        <!-- Catalog -->
+        <div class="col-lg-8">
+            <div class="panel-box">
+                <div class="dt-toolbar">
+                    <h6 class="mb-0"><i class="fas fa-th-list"></i> Available External Modules</h6>
+                    <input id="cat-search" class="form-control form-control-sm dt-search" placeholder="Search catalog…">
+                </div>
+                <table class="table-rc" id="catalog-table">
+                    <thead><tr>
+                        <th>Module</th><th>Description</th><th class="text-right">Monthly fee</th>
+                        <th>Enable path</th><th></th>
+                    </tr></thead>
+                    <tbody>
+                    <tr data-em="Survey Dashboard" data-fee="150">
+                        <td><b>Survey Dashboard</b></td>
+                        <td>At-a-glance grid of participant survey completion across events</td>
+                        <td class="text-money">$150</td>
+                        <td><span class="b-auto b">⚡ Auto-enables on approval</span></td>
+                        <td><button class="btn btn-primary btn-xs add-cart"><i class="fas fa-plus"></i> Add</button></td>
+                    </tr>
+                    <tr data-em="Text To Download" data-fee="75">
+                        <td><b>Text To Download</b></td>
+                        <td>Convert long-text fields into downloadable files for participants</td>
+                        <td class="text-money">$75</td>
+                        <td><span class="b-auto b">⚡ Auto-enables on approval</span></td>
+                        <td><button class="btn btn-primary btn-xs add-cart"><i class="fas fa-plus"></i> Add</button></td>
+                    </tr>
+                    <tr data-em="Vizr Charts" data-fee="100">
+                        <td><b>Vizr Charts</b></td>
+                        <td>Timeline charts of project activity for study dashboards</td>
+                        <td class="text-money">$100</td>
+                        <td><span class="b-auto b">⚡ Auto-enables on approval</span></td>
+                        <td><button class="btn btn-primary btn-xs add-cart"><i class="fas fa-plus"></i> Add</button></td>
+                    </tr>
+                    <tr data-em="Cross-Project Piping" data-fee="200">
+                        <td><b>Cross-Project Piping</b></td>
+                        <td>Pipe field values between related REDCap projects in real time</td>
+                        <td class="text-money">$200</td>
+                        <td><span class="b-jira b">🎫 Enabled by RSSD after approval</span></td>
+                        <td><button class="btn btn-primary btn-xs add-cart"><i class="fas fa-plus"></i> Add</button></td>
+                    </tr>
+                    <tr data-em="API Sync Pro" data-fee="250">
+                        <td><b>API Sync Pro</b></td>
+                        <td>Scheduled imports/exports with external systems (Epic, OnCore…)</td>
+                        <td class="text-money">$250</td>
+                        <td><span class="b-jira b">🎫 Enabled by RSSD after approval</span></td>
+                        <td><button class="btn btn-primary btn-xs add-cart"><i class="fas fa-plus"></i> Add</button></td>
+                    </tr>
+                    <tr data-em="Custom Survey Landing" data-fee="50">
+                        <td><b>Custom Survey Landing</b></td>
+                        <td>Branded landing &amp; thank-you pages for public surveys</td>
+                        <td class="text-money">$50</td>
+                        <td><span class="b-auto b">⚡ Auto-enables on approval</span></td>
+                        <td><button class="btn btn-primary btn-xs add-cart"><i class="fas fa-plus"></i> Add</button></td>
+                    </tr>
+                    <tr class="text-muted" style="background:#f6f7f9;">
+                        <td><b>Survey PDF Snapshots</b></td>
+                        <td>Archive completed surveys as PDFs to a vault</td>
+                        <td class="text-money">$125</td>
+                        <td><span class="b b-enabled"><i class="fas fa-check-circle"></i>Already enabled</span></td>
+                        <td><button class="btn btn-secondary btn-xs" disabled>Add</button></td>
+                    </tr>
+                    <tr class="text-muted" style="background:#f6f7f9;">
+                        <td><b>Image Map</b></td>
+                        <td>Clickable body-map images as survey inputs</td>
+                        <td class="text-money">$75</td>
+                        <td><span class="b b-enabled"><i class="fas fa-check-circle"></i>Already enabled</span></td>
+                        <td><button class="btn btn-secondary btn-xs" disabled>Add</button></td>
+                    </tr>
+                    </tbody>
+                </table>
+                <div class="dt-info">Showing 8 entries</div>
+            </div>
+
+            <!-- My requests -->
+            <div class="panel-box">
+                <h6><i class="fas fa-history"></i> My requests on this project</h6>
+                <table class="table-rc">
+                    <thead><tr>
+                        <th>Requested</th><th>External Modules</th><th>PTA</th><th>Approver</th><th>Jira</th>
+                    </tr></thead>
+                    <tbody>
+                    <tr>
+                        <td>07/08/2026</td>
+                        <td><b>Cross-Project Piping</b> <span class="b b-pending"><i class="fas fa-clock"></i>pending</span></td>
+                        <td><code>8891011-250-FGHIJ</code></td>
+                        <td>E. Chen <span class="small-muted">(awaiting approval)</span></td>
+                        <td>—</td>
+                    </tr>
+                    <tr>
+                        <td>07/02/2026</td>
+                        <td>
+                            <b>API Sync Pro</b> <span class="b b-awaiting"><i class="fas fa-ticket-alt"></i>awaiting_super_user</span><br>
+                            <b>Vizr Charts</b> <span class="b b-enabled"><i class="fas fa-check-circle"></i>enabled</span>
+                        </td>
+                        <td><code>1234567-100-ABCDE</code></td>
+                        <td>E. Chen <span class="small-muted">(approved 07/03)</span></td>
+                        <td><a href="#" class="jira-link" onclick="mockToast('Would open Jira RSSD-1287');return false;">RSSD-1287</a></td>
+                    </tr>
+                    <tr>
+                        <td>06/12/2026</td>
+                        <td>
+                            <b>Survey Dashboard</b> <span class="b b-enabled"><i class="fas fa-check-circle"></i>enabled</span><br>
+                            <b>Text To Download</b> <span class="b b-enabled"><i class="fas fa-check-circle"></i>enabled</span>
+                        </td>
+                        <td><code>1234567-100-ABCDE</code></td>
+                        <td>E. Chen <span class="small-muted">(approved 06/13)</span></td>
+                        <td>—</td>
+                    </tr>
+                    <tr>
+                        <td>05/20/2026</td>
+                        <td><b>Custom Survey Landing</b> <span class="b b-rejected"><i class="fas fa-times-circle"></i>rejected</span>
+                            <div class="small-muted">PI note: "Use the standard survey theme for this study."</div></td>
+                        <td><code>1234567-100-ABCDE</code></td>
+                        <td>E. Chen <span class="small-muted">(rejected 05/21)</span></td>
+                        <td>—</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Cart -->
+        <div class="col-lg-4">
+            <div class="panel-box" style="position:sticky; top:12px;">
+                <h6><i class="fas fa-shopping-cart"></i> Cart <span id="cart-count" class="badge badge-secondary">0</span></h6>
+                <table class="table-rc" id="cart-table">
+                    <tbody><tr id="cart-empty"><td class="text-center text-muted py-3">No modules selected yet</td></tr></tbody>
+                </table>
+                <div class="d-flex justify-content-between align-items-center mt-2">
+                    <b>Monthly total</b><b id="cart-total" class="text-money">$0</b>
+                </div>
+                <button id="btn-checkout" class="btn btn-rc-green btn-block btn-sm mt-3" disabled>
+                    <i class="fas fa-arrow-right"></i> Checkout — request approval
+                </button>
+                <div class="small-muted mt-2">Your PI/Admin must approve this request and the PTA before any module is enabled or billed.</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="legend"></div>
+</div>
+
+<!-- Checkout modal -->
+<div class="modal fade" id="checkout-modal" tabindex="-1">
+    <div class="modal-dialog"><div class="modal-content">
+        <div class="modal-header py-2">
+            <h5 class="modal-title"><i class="fas fa-file-invoice-dollar"></i> Checkout — billing account</h5>
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+        <div class="modal-body">
+            <p class="mb-2">You are requesting <b id="co-summary"></b> for project <b>CHOIR PRO Registry (PID 21433)</b>.</p>
+            <div class="form-group mb-2">
+                <label class="mb-1"><b>PTA number</b> <span class="text-danger">*</span>
+                    <span class="small-muted">format: <code>1234567-100-ABCDE</code></span></label>
+                <input id="co-pta" class="form-control form-control-sm" placeholder="e.g. 1234567-100-ABCDE">
+                <div class="invalid-feedback">PTA must match the format <code>#######-###-AAAAA</code> (7 digits – 3 digits – 5 letters).</div>
+            </div>
+            <div class="callout-info">
+                <i class="fas fa-info-circle"></i> Clicking <b>Continue</b> takes you to a short REDCap request form
+                (survey) where you'll confirm this cart and name the <b>PI/Admin</b> who must approve. They'll receive
+                an email with an approval link — nothing is enabled or billed until they approve.
+            </div>
+        </div>
+        <div class="modal-footer py-2">
+            <button class="btn btn-secondary btn-sm" data-dismiss="modal">Cancel</button>
+            <button id="co-continue" class="btn btn-primary btn-sm">Continue to request form <i class="fas fa-external-link-alt"></i></button>
+        </div>
+    </div></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="mockup.js"></script>
+<script>
+var cart = {};
+function refreshCart() {
+    var $tb = $('#cart-table tbody').empty(), total = 0, n = 0;
+    $.each(cart, function (name, fee) {
+        n++; total += fee;
+        $tb.append('<tr><td>' + name + '</td><td class="text-money">$' + fee +
+            '</td><td class="text-right"><a href="#" class="text-danger rm-cart" data-em="' + name +
+            '"><i class="fas fa-times"></i></a></td></tr>');
+    });
+    if (!n) $tb.append('<tr><td class="text-center text-muted py-3">No modules selected yet</td></tr>');
+    $('#cart-count').text(n);
+    $('#cart-total').text('$' + total);
+    $('#btn-checkout').prop('disabled', !n);
+}
+$(document).on('click', '.add-cart', function () {
+    var $tr = $(this).closest('tr');
+    cart[$tr.data('em')] = parseInt($tr.data('fee'), 10);
+    $(this).replaceWith('<span class="b b-approved"><i class="fas fa-check"></i>in cart</span>');
+    refreshCart();
+});
+$(document).on('click', '.rm-cart', function (e) {
+    e.preventDefault();
+    var em = $(this).data('em');
+    delete cart[em];
+    $('#catalog-table tr[data-em="' + em + '"] td:last')
+        .html('<button class="btn btn-primary btn-xs add-cart"><i class="fas fa-plus"></i> Add</button>');
+    refreshCart();
+});
+$('#btn-checkout').on('click', function () {
+    $('#co-summary').text(Object.keys(cart).join(', ') + ' — $' +
+        Object.values(cart).reduce(function (a, b) { return a + b; }, 0) + '/mo');
+    $('#co-pta').removeClass('is-invalid').val('');
+    $('#checkout-modal').modal('show');
+});
+$('#co-continue').on('click', function () {
+    var pta = $('#co-pta').val().trim();
+    if (!/^\d{7}-\d{3}-[A-Za-z]{5}$/.test(pta)) { $('#co-pta').addClass('is-invalid'); return; }
+    $('#checkout-modal').modal('hide');
+    mockToast('Request record created — redirecting to the REDCap request form…');
+    setTimeout(function () { location.href = 'request_survey.html'; }, 1400);
+});
+bindTableFilter('#cat-search', '#catalog-table');
+renderLegend('#legend', ['request']);
+</script>
+</body>
+</html>
