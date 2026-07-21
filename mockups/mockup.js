@@ -1,4 +1,5 @@
-/* Shared stubs for the EM Billing mockups — no backend, demo interactions only. */
+/* Shared stubs for the EM Billing mockups — no backend, demo interactions only.
+   Loaded after jQuery + Bootstrap 5 (bundle). */
 
 /* ---------- Badge legend footer ---------- */
 var LEGEND = {
@@ -6,6 +7,7 @@ var LEGEND = {
         ['b-pending', 'fa-clock', 'pending'],
         ['b-approved', 'fa-check', 'approved'],
         ['b-enabled', 'fa-check-circle', 'enabled'],
+        ['b-grace', 'fa-seedling', 'dev grace (free 90 days)'],
         ['b-awaiting', 'fa-ticket-alt', 'awaiting_super_user'],
         ['b-error', 'fa-exclamation-triangle', 'approval_error'],
         ['b-rejected', 'fa-times-circle', 'rejected'],
@@ -16,12 +18,18 @@ var LEGEND = {
         ['b-charged', 'fa-check', 'charged'],
         ['b-brejected', 'fa-times-circle', 'rejected'],
         ['b-waived', 'fa-hand-holding-usd', 'waived'],
-        ['b-hold', 'fa-pause-circle', 'hold']
+        ['b-hold', 'fa-pause-circle', 'hold'],
+        ['b-grace', 'fa-seedling', 'grace ($0 — dev 90 days)']
     ],
     run: [
         ['b-draft', 'fa-pencil-alt', 'draft'],
         ['b-exported', 'fa-file-export', 'exported'],
         ['b-finalized', 'fa-lock', 'finalized']
+    ],
+    pta: [
+        ['b-enabled', 'fa-check', 'active'],
+        ['b-expiring', 'fa-bell', 'expiring soon — alert sent'],
+        ['b-expired', 'fa-ban', 'expired — EMs disabled']
     ]
 };
 
@@ -30,7 +38,7 @@ function badgeHtml(cls, icon, label) {
 }
 
 function renderLegend(sel, kinds) {
-    var names = { request: 'Request line', billing: 'Billing line', run: 'Billing run' };
+    var names = { request: 'Request line', billing: 'Billing line', run: 'Billing run', pta: 'PTA account' };
     var html = '';
     (kinds || ['request', 'billing', 'run']).forEach(function (k) {
         html += '<div class="legend-row"><span class="legend-title">' + names[k] + ':</span>';
@@ -98,7 +106,7 @@ $(function () {
         var $tab = $('.nav-tabs a[href="' + location.hash + '"]');
         if ($tab.length) $tab.tab('show');
     }
-    $('.nav-tabs a').on('shown.bs.tab', function (e) {
+    $('.nav-tabs a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
         history.replaceState(null, '', e.target.hash);
     });
 

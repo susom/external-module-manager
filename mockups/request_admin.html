@@ -1,226 +1,695 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
+<html lang="en"><head>
+<meta name="googlebot" content="noindex, noarchive, nofollow, nosnippet">
+<meta name="robots" content="noindex, noarchive, nofollow">
+<meta name="slurp" content="noindex, noarchive, nofollow, noodp, noydir">
+<meta name="msnbot" content="noindex, noarchive, nofollow, noodp">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Cache-Control" content="no-cache">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="expires" content="0">
 <meta charset="utf-8">
-<title>Mockup 6 — Request Admin &amp; Reconciliation</title>
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+<title>EM Requests Admin | Control Center</title>
+<link rel="shortcut icon" href="redcap-assets/rc/Resources/images/favicon.ico">
+<link rel="apple-touch-icon-precomposed" href="redcap-assets/rc/Resources/images/apple-touch-icon.png">
+<link rel="stylesheet" type="text/css" media="screen,print" href="redcap-assets/rc/Resources/webpack/css/bundle.css">
+<link rel="stylesheet" type="text/css" media="screen,print" href="redcap-assets/rc/Resources/webpack/css/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" media="screen,print" href="redcap-assets/rc/Resources/webpack/css/datatables/jquery.dataTables.min.css">
+<link rel="stylesheet" type="text/css" media="screen,print" href="redcap-assets/rc/Resources/webpack/css/fontawesome/css/all.min.css">
+<link rel="stylesheet" type="text/css" media="screen,print" href="redcap-assets/rc/Resources/css/messenger.css">
+<link rel="stylesheet" type="text/css" media="screen,print" href="redcap-assets/rc/Resources/css/style.css">
+<link rel="stylesheet" type="text/css" media="screen,print" href="redcap-assets/rc/Resources/css/home.css">
+<style>:root{--swal2-outline: 0 0 0 3px rgba(100, 150, 200, 0.5);--swal2-container-padding: 0.625em;--swal2-backdrop: rgba(0, 0, 0, 0.4);--swal2-backdrop-transition: background-color 0.15s;--swal2-width: 32em;--swal2-padding: 0 0 1.25em;--swal2-border: none;--swal2-border-radius: 0.3125rem;--swal2-background: white;--swal2-color: #545454;--swal2-show-animation: swal2-show 0.3s;--swal2-hide-animation: swal2-hide 0.15s forwards;--swal2-icon-zoom: 1;--swal2-title-padding: 0.8em 1em 0;--swal2-html-container-padding: 1em 1.6em 0.3em;--swal2-input-border: 1px solid #d9d9d9;--swal2-input-border-radius: 0.1875em;--swal2-input-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.06), 0 0 0 3px transparent;--swal2-input-background: transparent;--swal2-input-transition: border-color 0.2s, box-shadow 0.2s;--swal2-input-hover-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.06), 0 0 0 3px transparent;--swal2-input-focus-border: 1px solid #b4dbed;--swal2-input-focus-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.06), 0 0 0 3px rgba(100, 150, 200, 0.5);--swal2-progress-step-background: #add8e6;--swal2-validation-message-background: #f0f0f0;--swal2-validation-message-color: #666;--swal2-footer-border-color: #eee;--swal2-footer-background: transparent;--swal2-footer-color: inherit;--swal2-timer-progress-bar-background: rgba(0, 0, 0, 0.3);--swal2-close-button-position: initial;--swal2-close-button-inset: auto;--swal2-close-button-font-size: 2.5em;--swal2-close-button-color: #ccc;--swal2-close-button-transition: color 0.2s, box-shadow 0.2s;--swal2-close-button-outline: initial;--swal2-close-button-box-shadow: inset 0 0 0 3px transparent;--swal2-close-button-focus-box-shadow: inset var(--swal2-outline);--swal2-close-button-hover-transform: none;--swal2-actions-justify-content: center;--swal2-actions-width: auto;--swal2-actions-margin: 1.25em auto 0;--swal2-actions-padding: 0;--swal2-actions-border-radius: 0;--swal2-actions-background: transparent;--swal2-action-button-transition: background-color 0.2s, box-shadow 0.2s;--swal2-action-button-hover: black 10%;--swal2-action-button-active: black 10%;--swal2-confirm-button-box-shadow: none;--swal2-confirm-button-border-radius: 0.25em;--swal2-confirm-button-background-color: #7066e0;--swal2-confirm-button-color: #fff;--swal2-deny-button-box-shadow: none;--swal2-deny-button-border-radius: 0.25em;--swal2-deny-button-background-color: #dc3741;--swal2-deny-button-color: #fff;--swal2-cancel-button-box-shadow: none;--swal2-cancel-button-border-radius: 0.25em;--swal2-cancel-button-background-color: #6e7881;--swal2-cancel-button-color: #fff;--swal2-toast-show-animation: swal2-toast-show 0.5s;--swal2-toast-hide-animation: swal2-toast-hide 0.1s forwards;--swal2-toast-border: none;--swal2-toast-box-shadow: 0 0 1px hsl(0deg 0% 0% / 0.075), 0 1px 2px hsl(0deg 0% 0% / 0.075), 1px 2px 4px hsl(0deg 0% 0% / 0.075), 1px 3px 8px hsl(0deg 0% 0% / 0.075), 2px 4px 16px hsl(0deg 0% 0% / 0.075)}[data-swal2-theme=dark]{--swal2-dark-theme-black: #19191a;--swal2-dark-theme-white: #e1e1e1;--swal2-background: var(--swal2-dark-theme-black);--swal2-color: var(--swal2-dark-theme-white);--swal2-footer-border-color: #555;--swal2-input-background: color-mix(in srgb, var(--swal2-dark-theme-black), var(--swal2-dark-theme-white) 10%);--swal2-validation-message-background: color-mix( in srgb, var(--swal2-dark-theme-black), var(--swal2-dark-theme-white) 10% );--swal2-validation-message-color: var(--swal2-dark-theme-white);--swal2-timer-progress-bar-background: rgba(255, 255, 255, 0.7)}@media(prefers-color-scheme: dark){[data-swal2-theme=auto]{--swal2-dark-theme-black: #19191a;--swal2-dark-theme-white: #e1e1e1;--swal2-background: var(--swal2-dark-theme-black);--swal2-color: var(--swal2-dark-theme-white);--swal2-footer-border-color: #555;--swal2-input-background: color-mix(in srgb, var(--swal2-dark-theme-black), var(--swal2-dark-theme-white) 10%);--swal2-validation-message-background: color-mix( in srgb, var(--swal2-dark-theme-black), var(--swal2-dark-theme-white) 10% );--swal2-validation-message-color: var(--swal2-dark-theme-white);--swal2-timer-progress-bar-background: rgba(255, 255, 255, 0.7)}}body.swal2-shown:not(.swal2-no-backdrop,.swal2-toast-shown){overflow:hidden}body.swal2-height-auto{height:auto !important}body.swal2-no-backdrop .swal2-container{background-color:rgba(0,0,0,0) !important;pointer-events:none}body.swal2-no-backdrop .swal2-container .swal2-popup{pointer-events:auto}body.swal2-no-backdrop .swal2-container .swal2-modal{box-shadow:0 0 10px var(--swal2-backdrop)}body.swal2-toast-shown .swal2-container{box-sizing:border-box;width:360px;max-width:100%;background-color:rgba(0,0,0,0);pointer-events:none}body.swal2-toast-shown .swal2-container.swal2-top{inset:0 auto auto 50%;transform:translateX(-50%)}body.swal2-toast-shown .swal2-container.swal2-top-end,body.swal2-toast-shown .swal2-container.swal2-top-right{inset:0 0 auto auto}body.swal2-toast-shown .swal2-container.swal2-top-start,body.swal2-toast-shown .swal2-container.swal2-top-left{inset:0 auto auto 0}body.swal2-toast-shown .swal2-container.swal2-center-start,body.swal2-toast-shown .swal2-container.swal2-center-left{inset:50% auto auto 0;transform:translateY(-50%)}body.swal2-toast-shown .swal2-container.swal2-center{inset:50% auto auto 50%;transform:translate(-50%, -50%)}body.swal2-toast-shown .swal2-container.swal2-center-end,body.swal2-toast-shown .swal2-container.swal2-center-right{inset:50% 0 auto auto;transform:translateY(-50%)}body.swal2-toast-shown .swal2-container.swal2-bottom-start,body.swal2-toast-shown .swal2-container.swal2-bottom-left{inset:auto auto 0 0}body.swal2-toast-shown .swal2-container.swal2-bottom{inset:auto auto 0 50%;transform:translateX(-50%)}body.swal2-toast-shown .swal2-container.swal2-bottom-end,body.swal2-toast-shown .swal2-container.swal2-bottom-right{inset:auto 0 0 auto}@media print{body.swal2-shown:not(.swal2-no-backdrop,.swal2-toast-shown){overflow-y:scroll !important}body.swal2-shown:not(.swal2-no-backdrop,.swal2-toast-shown)>[aria-hidden=true]{display:none}body.swal2-shown:not(.swal2-no-backdrop,.swal2-toast-shown) .swal2-container{position:static !important}}div:where(.swal2-container){display:grid;position:fixed;z-index:1060;inset:0;box-sizing:border-box;grid-template-areas:"top-start     top            top-end" "center-start  center         center-end" "bottom-start  bottom-center  bottom-end";grid-template-rows:minmax(min-content, auto) minmax(min-content, auto) minmax(min-content, auto);height:100%;padding:var(--swal2-container-padding);overflow-x:hidden;transition:var(--swal2-backdrop-transition);-webkit-overflow-scrolling:touch}div:where(.swal2-container).swal2-backdrop-show,div:where(.swal2-container).swal2-noanimation{background:var(--swal2-backdrop)}div:where(.swal2-container).swal2-backdrop-hide{background:rgba(0,0,0,0) !important}div:where(.swal2-container).swal2-top-start,div:where(.swal2-container).swal2-center-start,div:where(.swal2-container).swal2-bottom-start{grid-template-columns:minmax(0, 1fr) auto auto}div:where(.swal2-container).swal2-top,div:where(.swal2-container).swal2-center,div:where(.swal2-container).swal2-bottom{grid-template-columns:auto minmax(0, 1fr) auto}div:where(.swal2-container).swal2-top-end,div:where(.swal2-container).swal2-center-end,div:where(.swal2-container).swal2-bottom-end{grid-template-columns:auto auto minmax(0, 1fr)}div:where(.swal2-container).swal2-top-start>.swal2-popup{align-self:start}div:where(.swal2-container).swal2-top>.swal2-popup{grid-column:2;place-self:start center}div:where(.swal2-container).swal2-top-end>.swal2-popup,div:where(.swal2-container).swal2-top-right>.swal2-popup{grid-column:3;place-self:start end}div:where(.swal2-container).swal2-center-start>.swal2-popup,div:where(.swal2-container).swal2-center-left>.swal2-popup{grid-row:2;align-self:center}div:where(.swal2-container).swal2-center>.swal2-popup{grid-column:2;grid-row:2;place-self:center center}div:where(.swal2-container).swal2-center-end>.swal2-popup,div:where(.swal2-container).swal2-center-right>.swal2-popup{grid-column:3;grid-row:2;place-self:center end}div:where(.swal2-container).swal2-bottom-start>.swal2-popup,div:where(.swal2-container).swal2-bottom-left>.swal2-popup{grid-column:1;grid-row:3;align-self:end}div:where(.swal2-container).swal2-bottom>.swal2-popup{grid-column:2;grid-row:3;place-self:end center}div:where(.swal2-container).swal2-bottom-end>.swal2-popup,div:where(.swal2-container).swal2-bottom-right>.swal2-popup{grid-column:3;grid-row:3;place-self:end end}div:where(.swal2-container).swal2-grow-row>.swal2-popup,div:where(.swal2-container).swal2-grow-fullscreen>.swal2-popup{grid-column:1/4;width:100%}div:where(.swal2-container).swal2-grow-column>.swal2-popup,div:where(.swal2-container).swal2-grow-fullscreen>.swal2-popup{grid-row:1/4;align-self:stretch}div:where(.swal2-container).swal2-no-transition{transition:none !important}div:where(.swal2-container)[popover]{width:auto;border:0}div:where(.swal2-container) div:where(.swal2-popup){display:none;position:relative;box-sizing:border-box;grid-template-columns:minmax(0, 100%);width:var(--swal2-width);max-width:100%;padding:var(--swal2-padding);border:var(--swal2-border);border-radius:var(--swal2-border-radius);background:var(--swal2-background);color:var(--swal2-color);font-family:inherit;font-size:1rem}div:where(.swal2-container) div:where(.swal2-popup):focus{outline:none}div:where(.swal2-container) div:where(.swal2-popup).swal2-loading{overflow-y:hidden}div:where(.swal2-container) div:where(.swal2-popup).swal2-draggable{cursor:grab}div:where(.swal2-container) div:where(.swal2-popup).swal2-draggable div:where(.swal2-icon){cursor:grab}div:where(.swal2-container) div:where(.swal2-popup).swal2-dragging{cursor:grabbing}div:where(.swal2-container) div:where(.swal2-popup).swal2-dragging div:where(.swal2-icon){cursor:grabbing}div:where(.swal2-container) h2:where(.swal2-title){position:relative;max-width:100%;margin:0;padding:var(--swal2-title-padding);color:inherit;font-size:1.875em;font-weight:600;text-align:center;text-transform:none;overflow-wrap:break-word;cursor:initial}div:where(.swal2-container) div:where(.swal2-actions){display:flex;z-index:1;box-sizing:border-box;flex-wrap:wrap;align-items:center;justify-content:var(--swal2-actions-justify-content);width:var(--swal2-actions-width);margin:var(--swal2-actions-margin);padding:var(--swal2-actions-padding);border-radius:var(--swal2-actions-border-radius);background:var(--swal2-actions-background)}div:where(.swal2-container) div:where(.swal2-loader){display:none;align-items:center;justify-content:center;width:2.2em;height:2.2em;margin:0 1.875em;animation:swal2-rotate-loading 1.5s linear 0s infinite normal;border-width:.25em;border-style:solid;border-radius:100%;border-color:#2778c4 rgba(0,0,0,0) #2778c4 rgba(0,0,0,0)}div:where(.swal2-container) button:where(.swal2-styled){margin:.3125em;padding:.625em 1.1em;transition:var(--swal2-action-button-transition);border:none;box-shadow:0 0 0 3px rgba(0,0,0,0);font-weight:500}div:where(.swal2-container) button:where(.swal2-styled):not([disabled]){cursor:pointer}div:where(.swal2-container) button:where(.swal2-styled):where(.swal2-confirm){border-radius:var(--swal2-confirm-button-border-radius);background:initial;background-color:var(--swal2-confirm-button-background-color);box-shadow:var(--swal2-confirm-button-box-shadow);color:var(--swal2-confirm-button-color);font-size:1em}div:where(.swal2-container) button:where(.swal2-styled):where(.swal2-confirm):hover{background-color:color-mix(in srgb, var(--swal2-confirm-button-background-color), var(--swal2-action-button-hover))}div:where(.swal2-container) button:where(.swal2-styled):where(.swal2-confirm):active{background-color:color-mix(in srgb, var(--swal2-confirm-button-background-color), var(--swal2-action-button-active))}div:where(.swal2-container) button:where(.swal2-styled):where(.swal2-deny){border-radius:var(--swal2-deny-button-border-radius);background:initial;background-color:var(--swal2-deny-button-background-color);box-shadow:var(--swal2-deny-button-box-shadow);color:var(--swal2-deny-button-color);font-size:1em}div:where(.swal2-container) button:where(.swal2-styled):where(.swal2-deny):hover{background-color:color-mix(in srgb, var(--swal2-deny-button-background-color), var(--swal2-action-button-hover))}div:where(.swal2-container) button:where(.swal2-styled):where(.swal2-deny):active{background-color:color-mix(in srgb, var(--swal2-deny-button-background-color), var(--swal2-action-button-active))}div:where(.swal2-container) button:where(.swal2-styled):where(.swal2-cancel){border-radius:var(--swal2-cancel-button-border-radius);background:initial;background-color:var(--swal2-cancel-button-background-color);box-shadow:var(--swal2-cancel-button-box-shadow);color:var(--swal2-cancel-button-color);font-size:1em}div:where(.swal2-container) button:where(.swal2-styled):where(.swal2-cancel):hover{background-color:color-mix(in srgb, var(--swal2-cancel-button-background-color), var(--swal2-action-button-hover))}div:where(.swal2-container) button:where(.swal2-styled):where(.swal2-cancel):active{background-color:color-mix(in srgb, var(--swal2-cancel-button-background-color), var(--swal2-action-button-active))}div:where(.swal2-container) button:where(.swal2-styled):focus-visible{outline:none;box-shadow:var(--swal2-action-button-focus-box-shadow)}div:where(.swal2-container) button:where(.swal2-styled)[disabled]:not(.swal2-loading){opacity:.4}div:where(.swal2-container) button:where(.swal2-styled)::-moz-focus-inner{border:0}div:where(.swal2-container) div:where(.swal2-footer){margin:1em 0 0;padding:1em 1em 0;border-top:1px solid var(--swal2-footer-border-color);background:var(--swal2-footer-background);color:var(--swal2-footer-color);font-size:1em;text-align:center;cursor:initial}div:where(.swal2-container) .swal2-timer-progress-bar-container{position:absolute;right:0;bottom:0;left:0;grid-column:auto !important;overflow:hidden;border-bottom-right-radius:var(--swal2-border-radius);border-bottom-left-radius:var(--swal2-border-radius)}div:where(.swal2-container) div:where(.swal2-timer-progress-bar){width:100%;height:.25em;background:var(--swal2-timer-progress-bar-background)}div:where(.swal2-container) img:where(.swal2-image){max-width:100%;margin:2em auto 1em;cursor:initial}div:where(.swal2-container) button:where(.swal2-close){position:var(--swal2-close-button-position);inset:var(--swal2-close-button-inset);z-index:2;align-items:center;justify-content:center;width:1.2em;height:1.2em;margin-top:0;margin-right:0;margin-bottom:-1.2em;padding:0;overflow:hidden;transition:var(--swal2-close-button-transition);border:none;border-radius:var(--swal2-border-radius);outline:var(--swal2-close-button-outline);background:rgba(0,0,0,0);color:var(--swal2-close-button-color);font-family:monospace;font-size:var(--swal2-close-button-font-size);cursor:pointer;justify-self:end}div:where(.swal2-container) button:where(.swal2-close):hover{transform:var(--swal2-close-button-hover-transform);background:rgba(0,0,0,0);color:#f27474}div:where(.swal2-container) button:where(.swal2-close):focus-visible{outline:none;box-shadow:var(--swal2-close-button-focus-box-shadow)}div:where(.swal2-container) button:where(.swal2-close)::-moz-focus-inner{border:0}div:where(.swal2-container) div:where(.swal2-html-container){z-index:1;justify-content:center;margin:0;padding:var(--swal2-html-container-padding);overflow:auto;color:inherit;font-size:1.125em;font-weight:normal;line-height:normal;text-align:center;overflow-wrap:break-word;word-break:break-word;cursor:initial}div:where(.swal2-container) input:where(.swal2-input),div:where(.swal2-container) input:where(.swal2-file),div:where(.swal2-container) textarea:where(.swal2-textarea),div:where(.swal2-container) select:where(.swal2-select),div:where(.swal2-container) div:where(.swal2-radio),div:where(.swal2-container) label:where(.swal2-checkbox){margin:1em 2em 3px}div:where(.swal2-container) input:where(.swal2-input),div:where(.swal2-container) input:where(.swal2-file),div:where(.swal2-container) textarea:where(.swal2-textarea){box-sizing:border-box;width:auto;transition:var(--swal2-input-transition);border:var(--swal2-input-border);border-radius:var(--swal2-input-border-radius);background:var(--swal2-input-background);box-shadow:var(--swal2-input-box-shadow);color:inherit;font-size:1.125em}div:where(.swal2-container) input:where(.swal2-input).swal2-inputerror,div:where(.swal2-container) input:where(.swal2-file).swal2-inputerror,div:where(.swal2-container) textarea:where(.swal2-textarea).swal2-inputerror{border-color:#f27474 !important;box-shadow:0 0 2px #f27474 !important}div:where(.swal2-container) input:where(.swal2-input):hover,div:where(.swal2-container) input:where(.swal2-file):hover,div:where(.swal2-container) textarea:where(.swal2-textarea):hover{box-shadow:var(--swal2-input-hover-box-shadow)}div:where(.swal2-container) input:where(.swal2-input):focus,div:where(.swal2-container) input:where(.swal2-file):focus,div:where(.swal2-container) textarea:where(.swal2-textarea):focus{border:var(--swal2-input-focus-border);outline:none;box-shadow:var(--swal2-input-focus-box-shadow)}div:where(.swal2-container) input:where(.swal2-input)::placeholder,div:where(.swal2-container) input:where(.swal2-file)::placeholder,div:where(.swal2-container) textarea:where(.swal2-textarea)::placeholder{color:#ccc}div:where(.swal2-container) .swal2-range{margin:1em 2em 3px;background:var(--swal2-background)}div:where(.swal2-container) .swal2-range input{width:80%}div:where(.swal2-container) .swal2-range output{width:20%;color:inherit;font-weight:600;text-align:center}div:where(.swal2-container) .swal2-range input,div:where(.swal2-container) .swal2-range output{height:2.625em;padding:0;font-size:1.125em;line-height:2.625em}div:where(.swal2-container) .swal2-input{height:2.625em;padding:0 .75em}div:where(.swal2-container) .swal2-file{width:75%;margin-right:auto;margin-left:auto;background:var(--swal2-input-background);font-size:1.125em}div:where(.swal2-container) .swal2-textarea{height:6.75em;padding:.75em}div:where(.swal2-container) .swal2-select{min-width:50%;max-width:100%;padding:.375em .625em;background:var(--swal2-input-background);color:inherit;font-size:1.125em}div:where(.swal2-container) .swal2-radio,div:where(.swal2-container) .swal2-checkbox{align-items:center;justify-content:center;background:var(--swal2-background);color:inherit}div:where(.swal2-container) .swal2-radio label,div:where(.swal2-container) .swal2-checkbox label{margin:0 .6em;font-size:1.125em}div:where(.swal2-container) .swal2-radio input,div:where(.swal2-container) .swal2-checkbox input{flex-shrink:0;margin:0 .4em}div:where(.swal2-container) label:where(.swal2-input-label){display:flex;justify-content:center;margin:1em auto 0}div:where(.swal2-container) div:where(.swal2-validation-message){align-items:center;justify-content:center;margin:1em 0 0;padding:.625em;overflow:hidden;background:var(--swal2-validation-message-background);color:var(--swal2-validation-message-color);font-size:1em;font-weight:300}div:where(.swal2-container) div:where(.swal2-validation-message)::before{content:"!";display:inline-block;width:1.5em;min-width:1.5em;height:1.5em;margin:0 .625em;border-radius:50%;background-color:#f27474;color:#fff;font-weight:600;line-height:1.5em;text-align:center}div:where(.swal2-container) .swal2-progress-steps{flex-wrap:wrap;align-items:center;max-width:100%;margin:1.25em auto;padding:0;background:rgba(0,0,0,0);font-weight:600}div:where(.swal2-container) .swal2-progress-steps li{display:inline-block;position:relative}div:where(.swal2-container) .swal2-progress-steps .swal2-progress-step{z-index:20;flex-shrink:0;width:2em;height:2em;border-radius:2em;background:#2778c4;color:#fff;line-height:2em;text-align:center}div:where(.swal2-container) .swal2-progress-steps .swal2-progress-step.swal2-active-progress-step{background:#2778c4}div:where(.swal2-container) .swal2-progress-steps .swal2-progress-step.swal2-active-progress-step~.swal2-progress-step{background:var(--swal2-progress-step-background);color:#fff}div:where(.swal2-container) .swal2-progress-steps .swal2-progress-step.swal2-active-progress-step~.swal2-progress-step-line{background:var(--swal2-progress-step-background)}div:where(.swal2-container) .swal2-progress-steps .swal2-progress-step-line{z-index:10;flex-shrink:0;width:2.5em;height:.4em;margin:0 -1px;background:#2778c4}div:where(.swal2-icon){position:relative;box-sizing:content-box;justify-content:center;width:5em;height:5em;margin:2.5em auto .6em;zoom:var(--swal2-icon-zoom);border:.25em solid rgba(0,0,0,0);border-radius:50%;border-color:#000;font-family:inherit;line-height:5em;cursor:default;user-select:none}div:where(.swal2-icon) .swal2-icon-content{display:flex;align-items:center;font-size:3.75em}div:where(.swal2-icon).swal2-error{border-color:#f27474;color:#f27474}div:where(.swal2-icon).swal2-error .swal2-x-mark{position:relative;flex-grow:1}div:where(.swal2-icon).swal2-error [class^=swal2-x-mark-line]{display:block;position:absolute;top:2.3125em;width:2.9375em;height:.3125em;border-radius:.125em;background-color:#f27474}div:where(.swal2-icon).swal2-error [class^=swal2-x-mark-line][class$=left]{left:1.0625em;transform:rotate(45deg)}div:where(.swal2-icon).swal2-error [class^=swal2-x-mark-line][class$=right]{right:1em;transform:rotate(-45deg)}div:where(.swal2-icon).swal2-error.swal2-icon-show{animation:swal2-animate-error-icon .5s}div:where(.swal2-icon).swal2-error.swal2-icon-show .swal2-x-mark{animation:swal2-animate-error-x-mark .5s}div:where(.swal2-icon).swal2-warning{border-color:#f8bb86;color:#f8bb86}div:where(.swal2-icon).swal2-warning.swal2-icon-show{animation:swal2-animate-error-icon .5s}div:where(.swal2-icon).swal2-warning.swal2-icon-show .swal2-icon-content{animation:swal2-animate-i-mark .5s}div:where(.swal2-icon).swal2-info{border-color:#3fc3ee;color:#3fc3ee}div:where(.swal2-icon).swal2-info.swal2-icon-show{animation:swal2-animate-error-icon .5s}div:where(.swal2-icon).swal2-info.swal2-icon-show .swal2-icon-content{animation:swal2-animate-i-mark .8s}div:where(.swal2-icon).swal2-question{border-color:#87adbd;color:#87adbd}div:where(.swal2-icon).swal2-question.swal2-icon-show{animation:swal2-animate-error-icon .5s}div:where(.swal2-icon).swal2-question.swal2-icon-show .swal2-icon-content{animation:swal2-animate-question-mark .8s}div:where(.swal2-icon).swal2-success{border-color:#a5dc86;color:#a5dc86}div:where(.swal2-icon).swal2-success [class^=swal2-success-circular-line]{position:absolute;width:3.75em;height:7.5em;border-radius:50%}div:where(.swal2-icon).swal2-success [class^=swal2-success-circular-line][class$=left]{top:-0.4375em;left:-2.0635em;transform:rotate(-45deg);transform-origin:3.75em 3.75em;border-radius:7.5em 0 0 7.5em}div:where(.swal2-icon).swal2-success [class^=swal2-success-circular-line][class$=right]{top:-0.6875em;left:1.875em;transform:rotate(-45deg);transform-origin:0 3.75em;border-radius:0 7.5em 7.5em 0}div:where(.swal2-icon).swal2-success .swal2-success-ring{position:absolute;z-index:2;top:-0.25em;left:-0.25em;box-sizing:content-box;width:100%;height:100%;border:.25em solid rgba(165,220,134,.3);border-radius:50%}div:where(.swal2-icon).swal2-success .swal2-success-fix{position:absolute;z-index:1;top:.5em;left:1.625em;width:.4375em;height:5.625em;transform:rotate(-45deg)}div:where(.swal2-icon).swal2-success [class^=swal2-success-line]{display:block;position:absolute;z-index:2;height:.3125em;border-radius:.125em;background-color:#a5dc86}div:where(.swal2-icon).swal2-success [class^=swal2-success-line][class$=tip]{top:2.875em;left:.8125em;width:1.5625em;transform:rotate(45deg)}div:where(.swal2-icon).swal2-success [class^=swal2-success-line][class$=long]{top:2.375em;right:.5em;width:2.9375em;transform:rotate(-45deg)}div:where(.swal2-icon).swal2-success.swal2-icon-show .swal2-success-line-tip{animation:swal2-animate-success-line-tip .75s}div:where(.swal2-icon).swal2-success.swal2-icon-show .swal2-success-line-long{animation:swal2-animate-success-line-long .75s}div:where(.swal2-icon).swal2-success.swal2-icon-show .swal2-success-circular-line-right{animation:swal2-rotate-success-circular-line 4.25s ease-in}[class^=swal2]{-webkit-tap-highlight-color:rgba(0,0,0,0)}.swal2-show{animation:var(--swal2-show-animation)}.swal2-hide{animation:var(--swal2-hide-animation)}.swal2-noanimation{transition:none}.swal2-scrollbar-measure{position:absolute;top:-9999px;width:50px;height:50px;overflow:scroll}.swal2-rtl .swal2-close{margin-right:initial;margin-left:0}.swal2-rtl .swal2-timer-progress-bar{right:0;left:auto}.swal2-toast{box-sizing:border-box;grid-column:1/4 !important;grid-row:1/4 !important;grid-template-columns:min-content auto min-content;padding:1em;overflow-y:hidden;border:var(--swal2-toast-border);background:var(--swal2-background);box-shadow:var(--swal2-toast-box-shadow);pointer-events:auto}.swal2-toast>*{grid-column:2}.swal2-toast h2:where(.swal2-title){margin:.5em 1em;padding:0;font-size:1em;text-align:initial}.swal2-toast .swal2-loading{justify-content:center}.swal2-toast input:where(.swal2-input){height:2em;margin:.5em;font-size:1em}.swal2-toast .swal2-validation-message{font-size:1em}.swal2-toast div:where(.swal2-footer){margin:.5em 0 0;padding:.5em 0 0;font-size:.8em}.swal2-toast button:where(.swal2-close){grid-column:3/3;grid-row:1/99;align-self:center;width:.8em;height:.8em;margin:0;font-size:2em}.swal2-toast div:where(.swal2-html-container){margin:.5em 1em;padding:0;overflow:initial;font-size:1em;text-align:initial}.swal2-toast div:where(.swal2-html-container):empty{padding:0}.swal2-toast .swal2-loader{grid-column:1;grid-row:1/99;align-self:center;width:2em;height:2em;margin:.25em}.swal2-toast .swal2-icon{grid-column:1;grid-row:1/99;align-self:center;width:2em;min-width:2em;height:2em;margin:0 .5em 0 0}.swal2-toast .swal2-icon .swal2-icon-content{display:flex;align-items:center;font-size:1.8em;font-weight:bold}.swal2-toast .swal2-icon.swal2-success .swal2-success-ring{width:2em;height:2em}.swal2-toast .swal2-icon.swal2-error [class^=swal2-x-mark-line]{top:.875em;width:1.375em}.swal2-toast .swal2-icon.swal2-error [class^=swal2-x-mark-line][class$=left]{left:.3125em}.swal2-toast .swal2-icon.swal2-error [class^=swal2-x-mark-line][class$=right]{right:.3125em}.swal2-toast div:where(.swal2-actions){justify-content:flex-start;height:auto;margin:0;margin-top:.5em;padding:0 .5em}.swal2-toast button:where(.swal2-styled){margin:.25em .5em;padding:.4em .6em;font-size:1em}.swal2-toast .swal2-success{border-color:#a5dc86}.swal2-toast .swal2-success [class^=swal2-success-circular-line]{position:absolute;width:1.6em;height:3em;border-radius:50%}.swal2-toast .swal2-success [class^=swal2-success-circular-line][class$=left]{top:-0.8em;left:-0.5em;transform:rotate(-45deg);transform-origin:2em 2em;border-radius:4em 0 0 4em}.swal2-toast .swal2-success [class^=swal2-success-circular-line][class$=right]{top:-0.25em;left:.9375em;transform-origin:0 1.5em;border-radius:0 4em 4em 0}.swal2-toast .swal2-success .swal2-success-ring{width:2em;height:2em}.swal2-toast .swal2-success .swal2-success-fix{top:0;left:.4375em;width:.4375em;height:2.6875em}.swal2-toast .swal2-success [class^=swal2-success-line]{height:.3125em}.swal2-toast .swal2-success [class^=swal2-success-line][class$=tip]{top:1.125em;left:.1875em;width:.75em}.swal2-toast .swal2-success [class^=swal2-success-line][class$=long]{top:.9375em;right:.1875em;width:1.375em}.swal2-toast .swal2-success.swal2-icon-show .swal2-success-line-tip{animation:swal2-toast-animate-success-line-tip .75s}.swal2-toast .swal2-success.swal2-icon-show .swal2-success-line-long{animation:swal2-toast-animate-success-line-long .75s}.swal2-toast.swal2-show{animation:var(--swal2-toast-show-animation)}.swal2-toast.swal2-hide{animation:var(--swal2-toast-hide-animation)}@keyframes swal2-show{0%{transform:translate3d(0, -50px, 0) scale(0.9);opacity:0}100%{transform:translate3d(0, 0, 0) scale(1);opacity:1}}@keyframes swal2-hide{0%{transform:translate3d(0, 0, 0) scale(1);opacity:1}100%{transform:translate3d(0, -50px, 0) scale(0.9);opacity:0}}@keyframes swal2-animate-success-line-tip{0%{top:1.1875em;left:.0625em;width:0}54%{top:1.0625em;left:.125em;width:0}70%{top:2.1875em;left:-0.375em;width:3.125em}84%{top:3em;left:1.3125em;width:1.0625em}100%{top:2.8125em;left:.8125em;width:1.5625em}}@keyframes swal2-animate-success-line-long{0%{top:3.375em;right:2.875em;width:0}65%{top:3.375em;right:2.875em;width:0}84%{top:2.1875em;right:0;width:3.4375em}100%{top:2.375em;right:.5em;width:2.9375em}}@keyframes swal2-rotate-success-circular-line{0%{transform:rotate(-45deg)}5%{transform:rotate(-45deg)}12%{transform:rotate(-405deg)}100%{transform:rotate(-405deg)}}@keyframes swal2-animate-error-x-mark{0%{margin-top:1.625em;transform:scale(0.4);opacity:0}50%{margin-top:1.625em;transform:scale(0.4);opacity:0}80%{margin-top:-0.375em;transform:scale(1.15)}100%{margin-top:0;transform:scale(1);opacity:1}}@keyframes swal2-animate-error-icon{0%{transform:rotateX(100deg);opacity:0}100%{transform:rotateX(0deg);opacity:1}}@keyframes swal2-rotate-loading{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}@keyframes swal2-animate-question-mark{0%{transform:rotateY(-360deg)}100%{transform:rotateY(0)}}@keyframes swal2-animate-i-mark{0%{transform:rotateZ(45deg);opacity:0}25%{transform:rotateZ(-25deg);opacity:.4}50%{transform:rotateZ(15deg);opacity:.8}75%{transform:rotateZ(-5deg);opacity:1}100%{transform:rotateX(0);opacity:1}}@keyframes swal2-toast-show{0%{transform:translateY(-0.625em) rotateZ(2deg)}33%{transform:translateY(0) rotateZ(-2deg)}66%{transform:translateY(0.3125em) rotateZ(2deg)}100%{transform:translateY(0) rotateZ(0deg)}}@keyframes swal2-toast-hide{100%{transform:rotateZ(1deg);opacity:0}}@keyframes swal2-toast-animate-success-line-tip{0%{top:.5625em;left:.0625em;width:0}54%{top:.125em;left:.125em;width:0}70%{top:.625em;left:-0.25em;width:1.625em}84%{top:1.0625em;left:.75em;width:.5em}100%{top:1.125em;left:.1875em;width:.75em}}@keyframes swal2-toast-animate-success-line-long{0%{top:1.625em;right:1.375em;width:0}65%{top:1.25em;right:.9375em;width:0}84%{top:.9375em;right:0;width:1.125em}100%{top:.9375em;right:.1875em;width:1.375em}}</style>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 <link rel="stylesheet" href="mockup.css">
+
 </head>
 <body>
 
-<div class="rc-topbar">
-    <span class="rc-brand"><span class="rc-cardinal">Stanford Medicine</span> · REDCap</span>
-    <span>Logged in as <b>rssd_admin</b> (SUPER USER) &nbsp;|&nbsp; Control Center</span>
-</div>
-<div class="rc-context">
-    <span class="text-muted">Control Center &raquo;</span> <span class="rc-project"><i class="fas fa-tasks"></i> EM Requests — Admin &amp; Reconciliation</span>
-</div>
-<div class="mock-caption">
-    <span class="mock-step">Screen 7 of 7 — RSSD super user.</span>
+
+			
+			
+
+
+	
+	
+		
+
+	<!-- Add hidden text for slider accessiblity on surveys -->
+	
+	
+	
+
+	<!-- Text used for field validation errors -->
+	
+	<!-- Regex used for field validation -->
+	
+	
+	
+<header>
+    <a class="skip-to-main-content" href="#pagecontainer">Skip to main content</a>
+    <nav class="navbar navbar-expand-md navbar-light fixed-top" style="background-color:#f8f8f8;border-bottom:1px solid #e7e7e7;padding:0 10px 0 0;" role="navigation">
+        <a class="navbar-brand" style="padding:8px 0px 5px 10px;" href="#"><img alt="REDCap" style="width:120px;height:36px;" src="redcap-assets/rc/Resources/images/redcap-logo-medium.png"></a>
+        <a class="d-inline d-md-none navbar-brand" style="font-size:13px;padding-left:0;" href="#"><kbd>Control Center</kbd></a>        <button type="button" class="navbar-toggler collapsed" data-toggle="collapse" aria-expanded="false" data-bs-toggle="collapse">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        
+
+<ul class="nav navbar-nav ml-auto"><li class="nav-item"><span style="color:#000;margin-top:4px;white-space:nowrap;" class="nav-link">
+			<i id="goto-page-help" class="fas fa-sign-in-alt" style="cursor:help;margin-right:5px;vertical-align:middle;font-size:12px;"></i>
+			<form id="goto-page-form" action="#" style="display:inline-block;"><input type="text" id="goto-page-input" class="x-form-text x-form-field fs11" style="width:46px;" autocomplete="off" placeholder="PID" aria-label="Enter PID to go to project" data-bs-original-title="Enter PID to go to project"><input type="hidden" name="redcap_csrf_token" value="c9b2ad88230bcc4c137b2a00984ffd86ac12d5eddc14f32ef47b250e36f0f2a9bc4052ae60b9e3fa46b434df44b90dc42ce1b2aa9a678228517ac82126f16f45"></form>
+		</span></li></ul>
+<style>
+	.goto-page-popover {
+		--bs-popover-max-width: 700px;
+		top: .5em !important;
+	}
+	.goto-page-popover .popover-arrow {
+		translate: 0 -.5em;
+	}
+	.goto-page-popover .popover-header {
+		background-color: var(--bs-gray-700);
+		color: white;
+	}
+	.goto-page-popover p {
+		margin: 0;
+	}
+	.goto-page-popover p.target {
+		font-size: .8em;
+		margin-bottom: 2px;
+	}
+	.goto-page-popover p.target a {
+		font-size: inherit;
+		cursor: pointer;
+		font-family: inherit !important;
+	}
+	.goto-page-popover p.target a.no-link,
+	.goto-page-popover p.target a.no-link:hover {
+		cursor: default;
+		text-decoration:none;
+		color: var(--bs-gray-600);
+	}
+	.goto-page-popover p.target a:hover {
+		text-decoration: underline;
+		outline:none;
+		color: red;
+		font-family: inherit;
+		font-size: inherit;
+	}
+	.goto-page-popover h4 {
+		font-size: .9em;
+		font-weight: 500;
+		margin: 5px -5px;
+		padding: 3px 8px;
+		background-color: var(--bs-gray-200);
+	}
+	.goto-page-popover div.goto-table {
+		display: flex;
+		gap: 10px;
+	}
+	.goto-page-popover code {
+		border: 2px lightgray solid;
+		border-radius: 0.4em;
+		line-height: normal;
+		padding: 0.15em;
+		margin: 0 0.1em;
+	}
+	.goto-page-popover div.goto-col {
+		display: flex;
+		flex-direction: column;
+		padding: 5px;
+	}
+	#goto-page-input.invalid-target {
+		outline: 2px red solid;
+	}
+</style>
+
+
+        <div class="collapse navbar-collapse" id="redcap-home-navbar-collapse">
+            <ul class="nav navbar-nav">
+                <li id="nav-tab-home" class="nav-item"><a class="nav-link" style="color:#333;padding:15px 8px;" href="#">Home</a></li>
+                <li class="nav-item"><a class="nav-link" style="color:#000;padding:15px 8px;" href="#"><i class="far fa-list-alt"></i> My Projects</a></li>
+                <li class="nav-item"><a class="nav-link" style="color:#007500;padding:15px 8px;" href="#"><i class="fas fa-plus"></i> New Project</a></li>                <li id="nav-tab-help" class="nav-item"><a class="nav-link" style="color:#3A699C;padding:15px 8px;" href="#"><i class="fas fa-question-circle"></i> Help &amp; FAQ</a></li>
+                <li id="nav-tab-training" class="nav-item class=" d-none="" d-md-block""=""><a class="nav-link" style="color:#725627;padding:15px 8px;" href="#"><i class="fas fa-film"></i> Training Videos</a></li>
+                 <li id="nav-tab-sendit" class="nav-item d-sm-block d-md-none d-lg-block"><a class="nav-link" style="color:#660303;padding:15px 8px;" href="#"><i class="fas fa-envelope"></i> Send-It</a></li>                                    <li class="nav-item"><a class="nav-link navbar-user-messaging newmsgs">
+      <i class="fas fa-comment-alt"></i>
+      Messenger
+      <span class="badgerc new-message-total-badge new-message-total-badge-show">!</span></a></li>
+                                <li class="nav-item active"><a class="nav-link" style="color:#000;padding:15px 8px;" href="#"><i class="fas fa-cog"></i> Control Center</a></li>                            </ul>
+
+            <ul class="nav navbar-nav ml-auto">
+                <li class="nav-item d-none d-sm-block nohighlighthover loggedInUsername"><a class="nav-link" href="#" style="cursor:default;color:#000;padding:10px 10px;font-size:11px;line-height:14px;">Logged in as<br><p id="username-reference" class="my-proj-username">rssd_admin</p>
+<b>rssd_admin</b></a></li>
+                <li id="nav-tab-profile" class="nav-item d-block d-sm-none d-lg-block"><a class="nav-link" style="color:#3c5ca3;padding:15px 8px;" href="#"><i class="fas fa-user-circle"></i> Profile</a></li>
+                <li id="nav-tab-logout" class="nav-item d-block d-sm-none d-lg-block"><a class="nav-link" style="color:#555;padding:15px 8px;" href="#"><i class="fas fa-sign-out-alt"></i> Log out<span class="d-block d-sm-none" style="margin-left:20px;">(Logged in as&nbsp;<b>rssd_admin</b>)</span></a></li>
+
+                <li class="nav-item dropdown d-none d-sm-block d-md-block d-lg-none" style="display: list-item;">
+                    <a class="nav-link" href="#" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" data-bs-toggle="dropdown">More <i class="fas fa-caret-down"></i></a>
+                    <ul class="dropdown-menu dropdown-menu-right">
+                        <li id="nav-tab-help2" class="nav-item" style="display: none;"><a class="nav-link" style="color:#3E72A8;padding:5px 20px;" href="#"><i class="fas fa-question-circle"></i> Help &amp; FAQ</a></li>
+                        <li id="nav-tab-training2" class="nav-item" style="display: none;"><a class="nav-link" style="color:#725627;padding:5px 20px;" href="#"><i class="fas fa-film"></i> Training Videos</a></li>
+                         <li id="nav-tab-sendit2" style="display: none;"><a class="nav-link" style="color:#660303;padding:5px 20px;" href="#"><i class="fas fa-envelope"></i> Send-It</a></li>                        <li id="nav-tab-profile2" class="nav-item" style="display: none;"><a class="nav-link" style="color:#3c5ca3;padding:5px 20px;" href="#"><i class="fas fa-user-circle"></i> Profile</a></li>
+                        <li role="separator" class="nav-item divider"></li>
+                        <li id="nav-tab-logout2" class="nav-item" style="display: none;"><a class="nav-link" style="color:#555;padding:0px 20px 5px;" href="#"><i class="fas fa-sign-out-alt"></i> Log out<span class="d-block d-sm-none" style="margin-left:20px;">(Logged in as&nbsp;<b>rssd_admin</b>)</span></a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </nav>
+</header><div id="pagecontainer" class="container-fluid" role="main"><div id="container"><div id="pagecontent">
+
+
+
+
+
+<style type="text/css">
+.cc_label {
+	padding: 10px; font-weight: bold; vertical-align: top; line-height: 16px; width: 40%;
+}
+.cc_data {
+	padding: 10px; width: 60%; vertical-align: top; line-height: 16px;
+}
+.labelrc, .data {
+	background:#F0F0F0 url('redcap-assets/rc/Resources/images/label-bg.gif') repeat-x scroll 0 0;
+	border:1px solid #CCCCCC;
+	font-size:12px;
+	font-weight:bold;
+	
+	padding:5px 10px;
+}
+.labelrc a:link, .labelrc a:visited, .labelrc a:active, .labelrc a:hover { font-size:12px; font-family: "Open Sans",Helvetica,Arial,sans-serif; }
+.notesbox {
+	width: 100%;
+}
+.form_border { width: 100%;	}
+#sub-nav { font-size:60%;margin-top:8px !important; }
+#pagecontainer { max-width: 1200px;  }
+h3, h4 { font-weight:bold; }
+h4 {font-size: 1.4em;}
+.cc_menu_header { font-weight:bold;padding:0px; }
+.cc_menu_item, .cc_menu_section { font-weight:normal;padding:0px; }
+.cc_menu_item { text-indent: -1.8em; margin-left: 1.8em; }
+.cc_menu_divider { font-weight:normal;clear: both;padding-bottom:6px;margin:0 -6px 3px;border-bottom:1px solid #ddd; }
+.cc_menu_item .glyphicon, .cc_menu_item span { text-indent:0;margin:0; }
+.cc_menu_item i.fa-fw { min-width:1.25em;text-align:center; }
+hr { border-top: 1px solid #777; }
+</style>
+
+<div class="row mb-5">
+
+	
+	<div id="control_center_menu" class="d-none d-md-block col-md-4 col-lg-3 gray2" role="navigation">
+    
+		<!-- REDCap Home Page and My Projects links (mobile view only) -->
+		<div class="cc_menu_section d-block d-sm-none col-12">
+			<div class="cc_menu_item"><i class="fas fa-home" aria-hidden="true"></i> <a href="#">REDCap Home Page</a></div>
+			<div class="cc_menu_item"><i class="far fa-list-alt" aria-hidden="true"></i> <a href="#">My Projects</a></div>
+            <div class="cc_menu_divider"></div>
+        </div>
+		
+		<!-- Control Center Home -->
+		<div class="cc_menu_section">
+			<div class="cc_menu_header">Control Center Home</div>
+            			    <div class="cc_menu_item"><i class="fas fa-fw fa-info-circle" aria-hidden="true"></i> <a href="#">Notifications &amp; Reporting</a></div>
+                                        <div class="cc_menu_item"><i class="fas fa-fw fa-tasks" aria-hidden="true"></i> <a href="#">To-Do List <span class="badgerc">1</span></a></div>
+                                        <div class="cc_menu_item"><i class="fas fa-fw fa-plus" style="color:#cf357c;" aria-hidden="true"></i> <a style="color:#cf357c;" href="#">REDCap Plus</a><code class="ml-2 fs11 border-0" style="border:1px solid #cf357c66;background-color:#cf357c0f;border-radius:5px;opacity:0.9;padding:1px 5px;">Not Active</code></div>
+                    </div>
+		
+		<!-- Admin Resources -->
+                    <div class="cc_menu_divider"></div>
+            <div class="cc_menu_section">
+                <div class="cc_menu_header">Administrator Resources</div>
+                <div class="cc_menu_item"><img src="redcap-assets/rc/Resources/images/redcap_community.png" style="width:1.25em;text-align:center;" aria-hidden="true"> <a target="_blank" href="#" rel="noopener noreferrer">REDCap Community</a></div>
+                <div class="cc_menu_item"><i class="fas fa-fw fa-info-circle" aria-hidden="true"></i> <a target="_blank" href="#" rel="noopener noreferrer">Project REDCap website</a></div>
+                <div class="cc_menu_item"><i class="fa-brands fa-fw fa-youtube" style="position: relative; left: 10px;"></i> <a target="_blank" href="#" rel="noopener noreferrer">REDCap Administrator Videos</a></div>
+                <div class="cc_menu_item"><i class="fas fa-fw fa-user-graduate" aria-hidden="true"></i> <a target="_blank" href="#" rel="noopener noreferrer">REDCap Training Materials</a></div>
+                <div class="cc_menu_item"><i class="fas fa-fw fa-book" aria-hidden="true"></i> <a target="_blank" href="#" rel="noopener noreferrer">REDCap Language Library</a></div>
+                <div class="cc_menu_item"><i class="fas fa-fw fa-book-reader" aria-hidden="true"></i> <a target="_blank" href="#">Language File Updater</a></div>
+                <div class="cc_menu_item"><i class="fas fa-fw fa-laptop-code" aria-hidden="true"></i> <a href="#">API Documentation</a></div>
+                <div class="cc_menu_item"><i class="fas fa-fw fa-plug" aria-hidden="true"></i> <a href="#">Plugin, Hook, &amp; External Module Documentation</a></div>
+                <div class="cc_menu_item"><i class="fas fa-fw fa-link" aria-hidden="true"></i> <a href="#">URL Shortener</a></div>
+            </div>
+        		
+		<!-- Dashboard -->
+                <div class="cc_menu_divider"></div>
+		<div class="cc_menu_section">
+                            <div class="cc_menu_header">Dashboards &amp; Activity</div>
+                <div class="cc_menu_item"><i class="fas fa-fw fa-table" aria-hidden="true"></i> <a href="#">System Statistics</a></div>
+				                <div class="cc_menu_item"><i class="fas fa-fw fa-receipt" aria-hidden="true"></i> <a href="#">User Activity Log</a></div>
+                <div class="cc_menu_item"><i class="fas fa-fw fa-chart-bar" aria-hidden="true"></i> <a href="#">User Activity Graphs</a></div>
+                <div class="cc_menu_item"><i class="fas fa-fw fa-map-marker-alt" aria-hidden="true"></i> <a href="#">Map of Users</a></div>
+                <div class="cc_menu_item"><i class="fas fa-fw fa-chart-line" aria-hidden="true"></i> <a href="#">Top Usage Report</a></div>
+                        <div class="cc_menu_item"><i class="fas fa-fw fa-server" aria-hidden="true"></i> <a href="#">Database Activity Monitor</a></div>                                <div class="cc_menu_item"><i class="fas fa-fw fa-database" aria-hidden="true"></i> <a href="#">Database Query Tool</a></div>
+                    <div class="cc_menu_item"><i class="fas fa-fw fa-exclamation-triangle" aria-hidden="true"></i> <a href="#">Recent Errors</a></div>
+                    </div>
+				
+		<!-- Projects -->
+        <div class="cc_menu_divider"></div>
+		<div class="cc_menu_section">
+			<div class="cc_menu_header">Projects</div>
+            <div class="cc_menu_item"><i class="fas fa-fw fa-layer-group" aria-hidden="true"></i> <a href="#">Browse Projects</a></div>
+			                <div class="cc_menu_item"><i class="fas fa-fw fa-edit" aria-hidden="true"></i> <a href="#">Edit Project Settings</a></div>
+            			                <div class="cc_menu_item"><i class="fas fa-fw fa-link" aria-hidden="true"></i> <a href="#"><span data-rc-lang="control_center_4952">Link Lookup</span></a></div>
+            			                <div class="cc_menu_item"><span class="redcap-plus-disabled"><i class="fas fa-fw fa-truck-arrow-right" aria-hidden="true"></i> <a href="#">Project Migration Dashboard</a></span><code class="redcap-plus-badge" data-bs-toggle="tooltip" title="What is REDCap+?" style="margin-left:3px;border:0;font-size:11px;padding:2px 6px;">REDCap+</code></div>
+                    </div>
+		
+		<!-- Users -->
+		        <div class="cc_menu_divider"></div>
+		<div class="cc_menu_section">
+			<div class="cc_menu_header">Users</div>
+			                <div class="cc_menu_item"><i class="fas fa-fw fa-user-friends" aria-hidden="true"></i> <a href="#">Browse Users</a></div>
+                                    <div class="cc_menu_item"><i class="fas fa-fw fa-user-plus" aria-hidden="true"></i> <a href="#">Add Users (Table-based Only)</a></div>
+                                <div class="cc_menu_item"><i class="fas fa-fw fa-user-check" aria-hidden="true"></i> <a href="#">User Allowlist</a></div>
+                <div class="cc_menu_item"><i class="fas fa-fw fa-envelope" aria-hidden="true"></i> <a href="#">Email Users</a></div>
+									    <div class="cc_menu_item"><i class="fas fa-fw fa-coins" aria-hidden="true"></i> <a href="#">API Tokens</a></div>
+						                <div class="cc_menu_item"><i class="far fa-fw fa-eye-slash" aria-hidden="true"></i> <a href="#">Banned IP Addresses</a></div>
+                                        <div class="cc_menu_item"><i class="fas fa-fw fa-user-shield" aria-hidden="true"></i> <a href="#">Administrator Privileges</a></div>
+                <div class="cc_menu_item"><span class="redcap-plus-disabled"><i class="fas fa-fw fa-people-roof" aria-hidden="true"></i> <a href="#">Project Administrator Groups</a></span><code class="redcap-plus-badge" data-bs-toggle="tooltip" title="What is REDCap+?" style="margin-left:3px;border:0;font-size:11px;padding:2px 6px;">REDCap+</code></div>
+                <div class="cc_menu_item"><i class="fas fa-fw fa-users-between-lines" aria-hidden="true"></i> <a href="#">Access Control Groups</a></div>
+                    </div>
+		
+                    <!-- Misc modules -->
+            <div class="cc_menu_divider"></div>
+            <div class="cc_menu_section">
+              <div class="cc_menu_header">Miscellaneous Modules</div>
+              <div class="cc_menu_item"><i class="fas fa-fw fa-globe" aria-hidden="true"></i> <a href="#"><span data-rc-lang="multilang_01">Multi-Language Management</span></a></div>
+              <div class="cc_menu_item"><i class="fas fa-fw fa-fire" aria-hidden="true"></i> <a href="#">Clinical Data Interoperability Services</a></div>
+                          <div class="cc_menu_item nowrap"><i class="fas fa-fw fa-database" aria-hidden="true"></i> <a href="#">Dynamic Data Pull (DDP) - Custom</a></div>
+              <div class="cc_menu_item"><i class="fas fa-fw fa-bookmark" aria-hidden="true"></i> <a href="#">Custom Application Links</a></div>
+              <div class="cc_menu_item"><i class="far fa-fw fa-newspaper" aria-hidden="true"></i> <a href="#">Publication Matching</a></div>
+            </div>
+            <!-- System Configuration -->
+            <div class="cc_menu_divider"></div>
+            <div class="cc_menu_section">
+                <div class="cc_menu_header">System Configuration</div>
+                <div class="cc_menu_item"><i class="fas fa-fw fa-clipboard-check" aria-hidden="true"></i> <a href="#">Configuration Check</a></div>
+                                    <div class="cc_menu_item"><i class="fas fa-fw fa-mobile-alt" aria-hidden="true"></i> <a href="#">MyCap Configuration Check</a></div>
+                                <div class="cc_menu_item"><i class="fas fa-fw fa-sliders-h" aria-hidden="true"></i> <a href="#">General Configuration</a></div>
+                <div class="cc_menu_item"><i class="fas fa-fw fa-shield-alt" aria-hidden="true"></i> <a href="#">Security &amp; Authentication</a></div>
+                <div class="cc_menu_item"><i class="fas fa-fw fa-user-cog" aria-hidden="true"></i> <a href="#">User Settings</a></div>
+                <div class="cc_menu_item"><i class="fas fa-fw fa-file-upload" aria-hidden="true"></i> <a href="#">File Upload Settings</a></div>
+                <div class="cc_menu_item"><i class="fas fa-fw fa-cubes" aria-hidden="true"></i> <a href="#">Modules/Services Configuration</a></div>
+                <div class="cc_menu_item"><i class="fas fa-fw fa-wand-sparkles" aria-hidden="true"></i> <a href="#">AI Configuration Settings</a></div>
+                <div class="cc_menu_item"><i class="fas fa-fw fa-check-square" aria-hidden="true"></i> <a href="#">Field Validation Types</a></div>
+                <div class="cc_menu_item"><i class="fas fa-fw fa-home" aria-hidden="true"></i> <a href="#">Home Page Settings</a></div>
+                <div class="cc_menu_item"><i class="fas fa-fw fa-star" aria-hidden="true"></i> <a href="#">Project Templates</a></div>
+                <div class="cc_menu_item"><i class="fas fa-fw fa-pen-square" aria-hidden="true"></i> <a href="#">Default Project Settings</a></div>
+                <div class="cc_menu_item"><i class="fas fa-fw fa-level-down-alt" aria-hidden="true"></i> <a href="#">Footer Settings (All Projects)</a></div>
+                <div class="cc_menu_item"><i class="fas fa-fw fa-clock" aria-hidden="true"></i> <a href="#">Cron Jobs</a></div>
+                            </div>
+
+            <!-- Misc modules -->
+            <div class="cc_menu_divider"></div>
+            <div class="cc_menu_section cc_menu_section-external_modules">
+                <div class="cc_menu_header">External Modules			<div class="opacity65" style="float: right;margin-left: 10px; margin-top: -1px; display: inline">				<i class="fas fa-list-ul fs10" style="color:#000066;" aria-hidden="true"></i>				<a href="#" style="font-size:11px;text-decoration:underline;color:#000066;font-weight:normal;">View Logs</a>			</div>					<div class="opacity65" style="float: right;margin-left: 10px; margin-top: -1px; display: inline">				<i class="fas fa-cube fs10" style="color:#000066;" aria-hidden="true"></i>				<a href="#" style="font-size:11px;text-decoration:underline;color:#000066;font-weight:normal;">Manage</a>			</div>		</div>
+            
+			<div>
+				<i class="fas fa-clock" style="width: 16px; height: 16px; text-align: center;"></i>
+				<a href="#" target="" data-link-key="alert_datediff_cron-link_control-center_1">AlertNotification DateDiff Checker</a>
+			</div>
+		
+			<div>
+				<i class="brick" style="width: 16px; height: 16px; text-align: center;"></i>
+				<a href="#" target="" data-link-key="compare_ldap_elastic_cache-link_control-center_1">Compare LDAP and Elastic Cache Users</a>
+			</div>
+		
+			<div>
+				<i class="fas fa-check-circle" style="width: 16px; height: 16px; text-align: center;"></i>
+				<a href="#" target="" data-link-key="epic_authenticator-link_control-center_1">Generate Epic JWKS</a>
+			</div>
+		
+			<div>
+				<i class="fas fa-file-invoice-dollar" style="width: 16px; height: 16px; text-align: center;"></i>
+				<a href="#" target="" data-link-key="external_module_manager-link_control-center_1">Finance Reports – EM Charges by PTA</a>
+			</div>
+		
+			<div>
+				<i class="fas fa-clone" style="width: 16px; height: 16px; text-align: center;"></i>
+				<a href="#" target="" data-link-key="external_module_templater-link_control-center_1">Generate External Module Template</a>
+			</div>
+		
+			<div>
+				<i class="gear" style="width: 16px; height: 16px; text-align: center;"></i>
+				<a href="#" target="" data-link-key="intake_dashboard-link_control-center_1">Intake Dashboard</a>
+			</div>
+		
+			<div>
+				<i class="gear" style="width: 16px; height: 16px; text-align: center;"></i>
+				<a href="#" target="" data-link-key="intake_dashboard-link_control-center_2">Splash</a>
+			</div>
+		
+			<div>
+				<i class="fas fa-check-circle" style="width: 16px; height: 16px; text-align: center;"></i>
+				<a href="#" target="" data-link-key="irb_lookup-link_control-center_1">Test IRB Lookup</a>
+			</div>
+		
+			<div>
+				<i class="fas fa-sliders-h" style="width: 16px; height: 16px; text-align: center;"></i>
+				<a href="#" target="" data-link-key="oncore_integration-link_control-center_1">OnCore Demographic Options</a>
+			</div>
+		
+			<div>
+				<i class="fas fa-database" style="width: 16px; height: 16px; text-align: center;"></i>
+				<a href="#" target="" data-link-key="oncore_integration-link_control-center_2">OnCore Logs Entity table</a>
+			</div>
+		
+			<div>
+				<i class="fas fa-database" style="width: 16px; height: 16px; text-align: center;"></i>
+				<a href="#" target="" data-link-key="oncore_integration-link_control-center_3">OnCore Protocols table</a>
+			</div>
+		
+			<div>
+				<i class="fas fa-database" style="width: 16px; height: 16px; text-align: center;"></i>
+				<a href="#" target="" data-link-key="oncore_integration-link_control-center_4">OnCore Subjects table</a>
+			</div>
+		
+			<div>
+				<i class="fas fa-database" style="width: 16px; height: 16px; text-align: center;"></i>
+				<a href="#" target="" data-link-key="oncore_integration-link_control-center_5">REDCap OnCore Linked Records</a>
+			</div>
+		
+			<div>
+				<i class="fas fa-chart-bar" style="width: 16px; height: 16px; text-align: center;"></i>
+				<a href="#" target="" data-link-key="oncore_integration-link_control-center_6">OnCore Summary Page</a>
+			</div>
+		
+			<div>
+				<i class="fas fa-exchange-alt" style="width: 16px; height: 16px; text-align: center;"></i>
+				<a href="#" target="" data-link-key="oncore_integration-link_control-center_7">OnCore Site Migration</a>
+			</div>
+		
+			<div>
+				<i class="fas fa-info-circle" style="width: 16px; height: 16px; text-align: center;"></i>
+				<a href="#" target="" data-link-key="redcap_chatbot-link_control-center_1">Cappy/RAG : EM Project Check (all time)</a>
+			</div>
+		
+			<div>
+				<i class="fas fa-info-circle" style="width: 16px; height: 16px; text-align: center;"></i>
+				<a href="#" target="" data-link-key="redcap_chatbot-link_control-center_2">Cappy/RAG : Current JQL</a>
+			</div>
+		
+			<div>
+				<i class="fas fa-info-circle" style="width: 16px; height: 16px; text-align: center;"></i>
+				<a href="#" target="" data-link-key="redcap_chatbot-link_control-center_3">Cappy/RAG : MedWiki Scrape (all time)</a>
+			</div>
+		
+			<div>
+				<i class="fas fa-info-circle" style="width: 16px; height: 16px; text-align: center;"></i>
+				<a href="#" target="" data-link-key="redcap_chatbot-link_control-center_4">Cappy/RAG : Community Portal Scrape (all time)</a>
+			</div>
+		
+			<div>
+				<img src="redcap-assets/rc/Resources/images/database_table.png" style="width: 16px; height: 16px; text-align: center;">
+				<a href="#" target="" data-link-key="redcap_entity-link_control-center_1">Entity DB Manager</a>
+			</div>
+		
+			<div>
+				<i class="fas fa-chart-line" style="width: 16px; height: 16px; text-align: center;"></i>
+				<a href="#" target="" data-link-key="redcap_leadership_insights_-link_control-center_1">Leadership Insights</a>
+			</div>
+		
+			<div>
+				<i class="pencil" style="width: 16px; height: 16px; text-align: center;"></i>
+				<a href="#" target="" data-link-key="redcap_notifications_api-link_control-center_1">Test Page</a>
+			</div>
+		
+			<div>
+				<i class="pencil" style="width: 16px; height: 16px; text-align: center;"></i>
+				<a href="#" target="" data-link-key="redcap_notifications_api-link_control-center_2">DemoNote</a>
+			</div>
+		
+			<div>
+				<i class="gear" style="width: 16px; height: 16px; text-align: center;"></i>
+				<a href="#" target="" data-link-key="redcap_to_starr_link-link_control-center_1">Run REDCap to STARR link as Cron</a>
+			</div>
+		
+			<div>
+				<i class="gear" style="width: 16px; height: 16px; text-align: center;"></i>
+				<a href="#" target="" data-link-key="redcap_to_starr_link-link_control-center_2">Test Memory Limits</a>
+			</div>
+		
+			<div>
+				<i class="fa-solid fa-chart-simple" style="width: 16px; height: 16px; text-align: center;"></i>
+				<a href="#" target="" data-link-key="secure_chat_ai-link_control-center_1">SecureChat Log Visualization</a>
+			</div>
+		
+			<div>
+				<i class="fa-solid fa-gear" style="width: 16px; height: 16px; text-align: center;"></i>
+				<a href="#" target="" data-link-key="secure_chat_ai-link_control-center_2">SecureChatAI AI Model Smoke Tests</a>
+			</div>
+		
+			<div>
+				<i class="gear" style="width: 16px; height: 16px; text-align: center;"></i>
+				<a href="#" target="" data-link-key="twilio_enhancements-link_control-center_1">Twilio Administration</a>
+			</div>
+		
+			<div>
+				<img src="redcap-assets/rc/Resources/images/gear.png" style="width: 16px; height: 16px; text-align: center;">
+				<a href="#" target="" data-link-key="vertx_token_manager-link_control-center_1">Vertx Token Setup</a>
+			</div>
+		
+			<div>
+				<i class="fab fa-whatsapp" style="width: 16px; height: 16px; text-align: center;"></i>
+				<a href="#" target="" data-link-key="whats_up_alerts-link_control-center_1">What's App Information</a>
+			</div>
+		</div>
+        	</div>
+
+	<div id="control_center_window" style="padding-left:20px;" class="col-12 col-md-8"><div><div class="mock-caption">
+    <span class="mock-step">Screen 8 of 8 — RSSD super user (Control Center).</span>
     Oversight of the whole request pipeline: every request and its per-EM statuses, Jira tickets for modules that need
     manual enabling, retryable enable errors, and the nightly reconciliation queue that catches EMs disabled outside
     the workflow. The strip at the bottom shows the annotations we inject into REDCap's <i>native</i> EM manager page.
     &nbsp;<a href="billing_admin.html">← Billing</a> &nbsp;|&nbsp; <a href="index.html">Flow overview</a>
 </div>
 
-<div class="page-wrap">
+<h4 style="font-weight:bold;"><i class="fas fa-tasks" style="color:#000066;"></i> EM Requests — Admin &amp; Reconciliation</h4>
 
-    <!-- Grandfather seeding banner -->
-    <div class="callout-warn mb-3 d-flex justify-content-between align-items-center flex-wrap" id="seed-banner">
-        <span><i class="fas fa-seedling"></i> <b>One-time setup:</b> seed tracking records for every EM that is already
-        enabled today, so the nightly reconciliation has a complete baseline and doesn't flood this queue.</span>
-        <button class="btn btn-sm btn-primary" id="seed-btn"><i class="fas fa-play"></i> Seed grandfathered records</button>
-    </div>
-    <div class="alert alert-success py-2 d-none" id="seed-done" style="font-size:12.5px;">
-        <i class="fas fa-check-circle"></i> <b>Created 212 tracking records</b> for currently-enabled billable EMs across
-        147 projects (source = grandfathered, status = enabled). This action is now disabled.
-    </div>
-
-    <!-- All requests -->
-    <div class="panel-box">
-        <div class="dt-toolbar">
-            <h6 class="mb-0"><i class="fas fa-list-alt"></i> All EM requests</h6>
-            <input id="req-search" class="form-control form-control-sm dt-search" placeholder="Search requests…">
-        </div>
-        <table class="table-rc" id="req-table">
-            <thead><tr>
-                <th>Date</th><th>Project</th><th>Requester</th><th>PI / Approver</th><th>PTA</th>
-                <th>EM lines</th><th>Jira</th>
-            </tr></thead>
-            <tbody>
-            <tr>
-                <td>07/09/2026</td>
-                <td>CHOIR PRO Registry <span class="small-muted">(21433)</span></td>
-                <td>jsmith</td><td>E. Chen <span class="b b-approved"><i class="fas fa-check"></i>approved</span></td>
-                <td><code>1234567-100-ABCDE</code></td>
-                <td>
-                    Survey Dashboard <span class="b b-enabled"><i class="fas fa-check-circle"></i>enabled</span><br>
-                    Cross-Project Piping <span class="b b-awaiting"><i class="fas fa-ticket-alt"></i>awaiting_super_user</span>
-                </td>
-                <td><a href="#" class="jira-link" onclick="mockToast('Would open Jira RSSD-1304');return false;">RSSD-1304</a></td>
-            </tr>
-            <tr>
-                <td>07/07/2026</td>
-                <td>CV Outcomes Biobank <span class="small-muted">(19544)</span></td>
-                <td>mrodrig</td><td>A. Patel <span class="b b-approved"><i class="fas fa-check"></i>approved</span></td>
-                <td><code>5554443-300-KLMNO</code></td>
-                <td>
-                    Vizr Charts <span class="b b-error"><i class="fas fa-exclamation-triangle"></i>approval_error</span>
-                    <button class="btn btn-xs btn-outline-danger retry-btn"><i class="fas fa-redo"></i> Retry</button>
-                    <div class="small-muted">enable failed: module version v2.3 not installed on this server</div>
-                </td>
-                <td>—</td>
-            </tr>
-            <tr>
-                <td>07/02/2026</td>
-                <td>CHOIR PRO Registry <span class="small-muted">(21433)</span></td>
-                <td>jsmith</td><td>E. Chen <span class="b b-approved"><i class="fas fa-check"></i>approved</span></td>
-                <td><code>1234567-100-ABCDE</code></td>
-                <td>
-                    API Sync Pro <span class="b b-awaiting"><i class="fas fa-ticket-alt"></i>awaiting_super_user</span><br>
-                    Vizr Charts <span class="b b-enabled"><i class="fas fa-check-circle"></i>enabled</span>
-                </td>
-                <td><a href="#" class="jira-link" onclick="mockToast('Would open Jira RSSD-1287');return false;">RSSD-1287</a></td>
-            </tr>
-            <tr>
-                <td>06/30/2026</td>
-                <td>Pediatric Asthma Cohort <span class="small-muted">(18092)</span></td>
-                <td>tnguyen</td><td>M. Lee <span class="b b-pending"><i class="fas fa-clock"></i>pending</span></td>
-                <td><code>8891011-250-FGHIJ</code></td>
-                <td>Randomization Helper <span class="b b-pending"><i class="fas fa-clock"></i>pending</span>
-                    <div class="small-muted">awaiting PI decision since 06/30 — reminder sent 07/07</div></td>
-                <td>—</td>
-            </tr>
-            <tr>
-                <td>06/12/2026</td>
-                <td>Neuro-Onc Tumor Board <span class="small-muted">(20117)</span></td>
-                <td>kwong</td><td>S. Gupta <span class="b b-rejected"><i class="fas fa-times-circle"></i>rejected</span></td>
-                <td><code>7772221-400-PQRST</code></td>
-                <td>Custom Survey Landing <span class="b b-rejected"><i class="fas fa-times-circle"></i>rejected</span>
-                    <div class="small-muted">PI note: “Not budgeted this year.”</div></td>
-                <td>—</td>
-            </tr>
-            <tr>
-                <td>05/28/2026</td>
-                <td>GI Fellows QI Tracker <span class="small-muted">(23310)</span></td>
-                <td>bfoster</td><td>R. Kim <span class="b b-approved"><i class="fas fa-check"></i>approved</span></td>
-                <td><span class="text-danger small-muted"><i class="fas fa-exclamation-triangle"></i> no mapping</span></td>
-                <td>Image Map <span class="b b-deactivated"><i class="fas fa-ban"></i>deactivated</span>
-                    <div class="small-muted">deactivated by bfoster 07/01/2026 — “study closed”</div></td>
-                <td>—</td>
-            </tr>
-            </tbody>
-        </table>
-        <div class="dt-info">Showing 6 entries</div>
-    </div>
-
-    <!-- Acknowledgment queue -->
-    <div class="panel-box">
-        <h6><i class="fas fa-exclamation-circle"></i> Reconciliation — acknowledgment queue
-            <span class="badge badge-danger">2</span></h6>
-        <p class="small-muted mb-2">The nightly job compares actually-enabled EMs against tracking records. EMs disabled
-            <i>outside</i> this workflow land here for a super user to acknowledge (legitimate) or flag (investigate).
-            Self-service deactivations do <b>not</b> appear here.</p>
-        <table class="table-rc">
-            <thead><tr><th>Detected</th><th>Project</th><th>External Module</th><th>What happened</th><th style="width:220px;"></th></tr></thead>
-            <tbody>
-            <tr>
-                <td>07/08/2026 02:10</td>
-                <td>CHOIR Satellite Sites <span class="small-muted">(22871)</span></td>
-                <td>Text To Download <span class="small-muted">($75/mo)</span></td>
-                <td>Disabled directly in REDCap's EM manager — no deactivation record exists</td>
-                <td>
-                    <button class="btn btn-xs btn-rc-green ack-btn"><i class="fas fa-check"></i> Acknowledge</button>
-                    <button class="btn btn-xs btn-outline-danger flag-btn"><i class="fas fa-flag"></i> Flag for investigation</button>
-                </td>
-            </tr>
-            <tr>
-                <td>07/05/2026 02:10</td>
-                <td>CV Outcomes Biobank <span class="small-muted">(19544)</span></td>
-                <td>Survey PDF Snapshots <span class="small-muted">($125/mo)</span></td>
-                <td>Disabled directly in REDCap's EM manager — no deactivation record exists</td>
-                <td>
-                    <button class="btn btn-xs btn-rc-green ack-btn"><i class="fas fa-check"></i> Acknowledge</button>
-                    <button class="btn btn-xs btn-outline-danger flag-btn"><i class="fas fa-flag"></i> Flag for investigation</button>
-                </td>
-            </tr>
-            </tbody>
-        </table>
-    </div>
-
-    <!-- Bonus strip: injected native EM manager -->
-    <div class="panel-box">
-        <h6><i class="fas fa-puzzle-piece"></i> Bonus — REDCap's native External Modules page, with our injected annotations</h6>
-        <p class="small-muted mb-2">On every project's standard “External Modules” manager page we inject a billing
-            annotation per module row and a module-owned <b>Disable</b> button (self-service, no approval, audited).</p>
-
-        <div class="emman-row">
-            <span>
-                <span class="em-name">Survey Dashboard</span> <span class="em-ver">v3.2.1</span><br>
-                <span class="emman-inject"><i class="fas fa-file-invoice-dollar"></i> $150/mo · PTA
-                    <code>1234567-100-ABCDE</code> · status: <span class="b b-enabled"><i class="fas fa-check-circle"></i>enabled</span>
-                    · requested by jsmith, approved by E. Chen 07/09/2026</span>
-            </span>
-            <span>
-                <button class="btn btn-xs btn-outline-secondary" onclick="mockToast('Native REDCap “Configure” button')">Configure</button>
-                <button class="btn btn-xs btn-danger dis-btn" data-em="Survey Dashboard" data-fee="150"><i class="fas fa-power-off"></i> Disable</button>
-            </span>
-        </div>
-        <div class="emman-row">
-            <span>
-                <span class="em-name">Text To Download</span> <span class="em-ver">v1.8.0</span><br>
-                <span class="emman-inject"><i class="fas fa-file-invoice-dollar"></i> $75/mo · PTA
-                    <code>1234567-100-ABCDE</code> · status: <span class="b b-enabled"><i class="fas fa-check-circle"></i>enabled</span>
-                    · requested by jsmith, approved by E. Chen 06/13/2026</span>
-            </span>
-            <span>
-                <button class="btn btn-xs btn-outline-secondary">Configure</button>
-                <button class="btn btn-xs btn-danger dis-btn" data-em="Text To Download" data-fee="75"><i class="fas fa-power-off"></i> Disable</button>
-            </span>
-        </div>
-        <div class="emman-row">
-            <span>
-                <span class="em-name">emLogger</span> <span class="em-ver">v9.9.9</span><br>
-                <span class="small-muted">Free module — no billing annotation; REDCap's native enable/disable applies.</span>
-            </span>
-            <span><button class="btn btn-xs btn-outline-secondary">Configure</button></span>
-        </div>
-    </div>
-
-    <div id="legend"></div>
+<!-- Grandfather seeding banner -->
+<div class="callout-warn my-3 d-flex justify-content-between align-items-center flex-wrap" id="seed-banner" style="gap:8px;">
+    <span><i class="fas fa-seedling"></i> <b>One-time setup:</b> seed tracking records for every EM that is already
+    enabled today, so the nightly reconciliation has a complete baseline and doesn't flood this queue.</span>
+    <button class="btn btn-sm btn-primaryrc" id="seed-btn"><i class="fas fa-play"></i> Seed grandfathered records</button>
 </div>
+<div class="alert alert-success py-2 d-none" id="seed-done" style="font-size:12.5px;">
+    <i class="fas fa-check-circle"></i> <b>Created 212 tracking records</b> for currently-enabled billable EMs across
+    147 projects (source = grandfathered, status = enabled). This action is now disabled.
+</div>
+
+<!-- All requests -->
+<div class="panel-box">
+    <div class="dt-toolbar">
+        <h6 class="mb-0"><i class="fas fa-list-alt"></i> All EM requests</h6>
+        <input id="req-search" class="form-control form-control-sm dt-search" placeholder="Search requests…">
+    </div>
+    <table class="table-rc" id="req-table">
+        <thead><tr>
+            <th>Date</th><th>Project</th><th>Requester</th><th>PI / Approver</th><th>PTA</th>
+            <th>EM lines</th><th>Jira</th>
+        </tr></thead>
+        <tbody>
+        <tr>
+            <td>07/09/2026</td>
+            <td>CHOIR PRO Registry <span class="small-muted">(21433)</span></td>
+            <td>jsmith</td><td>E. Chen <span class="b b-approved"><i class="fas fa-check"></i>approved</span></td>
+            <td><code>1234567-100-ABCDE</code></td>
+            <td>
+                Survey Dashboard <span class="b b-enabled"><i class="fas fa-check-circle"></i>enabled</span><br>
+                Cross-Project Piping <span class="b b-awaiting"><i class="fas fa-ticket-alt"></i>awaiting_super_user</span>
+            </td>
+            <td><a href="#" class="jira-link" onclick="mockToast('Would open Jira RSSD-1304');return false;">RSSD-1304</a></td>
+        </tr>
+        <tr>
+            <td>07/08/2026</td>
+            <td>CHOIR Dev Sandbox <span class="small-muted">(23901)</span>
+                <span class="b b-grace" style="font-size:10px;"><i class="fas fa-seedling"></i>Development</span></td>
+            <td>jsmith</td><td>E. Chen <span class="b b-approved"><i class="fas fa-check"></i>approved</span></td>
+            <td><code>1234567-100-ABCDE</code></td>
+            <td>
+                Survey Dashboard <span class="b b-enabled"><i class="fas fa-check-circle"></i>enabled</span>
+                <div class="small-muted"><i class="fas fa-seedling"></i> 90-day dev grace — $0 until 10/06/2026, then
+                    billed regardless of status (immediately if moved to Production)</div>
+            </td>
+            <td>—</td>
+        </tr>
+        <tr>
+            <td>07/07/2026</td>
+            <td>CV Outcomes Biobank <span class="small-muted">(19544)</span></td>
+            <td>mrodrig</td><td>A. Patel <span class="b b-approved"><i class="fas fa-check"></i>approved</span></td>
+            <td><code>5554443-300-KLMNO</code></td>
+            <td>
+                Vizr Charts <span class="b b-error"><i class="fas fa-exclamation-triangle"></i>approval_error</span>
+                <button class="btn btn-xs btn-outline-danger retry-btn"><i class="fas fa-redo"></i> Retry</button>
+                <div class="small-muted">enable failed: module version v2.3 not installed on this server</div>
+            </td>
+            <td>—</td>
+        </tr>
+        <tr>
+            <td>07/02/2026</td>
+            <td>CHOIR PRO Registry <span class="small-muted">(21433)</span></td>
+            <td>jsmith</td><td>E. Chen <span class="b b-approved"><i class="fas fa-check"></i>approved</span></td>
+            <td><code>1234567-100-ABCDE</code></td>
+            <td>
+                API Sync Pro <span class="b b-awaiting"><i class="fas fa-ticket-alt"></i>awaiting_super_user</span><br>
+                Vizr Charts <span class="b b-enabled"><i class="fas fa-check-circle"></i>enabled</span>
+            </td>
+            <td><a href="#" class="jira-link" onclick="mockToast('Would open Jira RSSD-1287');return false;">RSSD-1287</a></td>
+        </tr>
+        <tr>
+            <td>06/30/2026</td>
+            <td>Pediatric Asthma Cohort <span class="small-muted">(18092)</span></td>
+            <td>tnguyen</td><td>M. Lee <span class="b b-pending"><i class="fas fa-clock"></i>pending</span></td>
+            <td><code>8891011-250-FGHIJ</code></td>
+            <td>Randomization Helper <span class="b b-pending"><i class="fas fa-clock"></i>pending</span>
+                <div class="small-muted">awaiting PI decision since 06/30 — reminder sent 07/07</div></td>
+            <td>—</td>
+        </tr>
+        <tr>
+            <td>06/12/2026</td>
+            <td>Neuro-Onc Tumor Board <span class="small-muted">(20117)</span></td>
+            <td>kwong</td><td>S. Gupta <span class="b b-rejected"><i class="fas fa-times-circle"></i>rejected</span></td>
+            <td><code>7772221-400-PQRST</code></td>
+            <td>Custom Survey Landing <span class="b b-rejected"><i class="fas fa-times-circle"></i>rejected</span>
+                <div class="small-muted">PI note: “Not budgeted this year.”</div></td>
+            <td>—</td>
+        </tr>
+        <tr>
+            <td>05/28/2026</td>
+            <td>GI Fellows QI Tracker <span class="small-muted">(23310)</span></td>
+            <td>bfoster</td><td>R. Kim <span class="b b-approved"><i class="fas fa-check"></i>approved</span></td>
+            <td><span class="text-danger small-muted"><i class="fas fa-exclamation-triangle"></i> no mapping</span></td>
+            <td>Image Map <span class="b b-deactivated"><i class="fas fa-ban"></i>deactivated</span>
+                <div class="small-muted">deactivated by bfoster 07/01/2026 — “study closed”</div></td>
+            <td>—</td>
+        </tr>
+        </tbody>
+    </table>
+    <div class="dt-info">Showing 7 entries</div>
+</div>
+
+<!-- Acknowledgment queue -->
+<div class="panel-box">
+    <h6><i class="fas fa-exclamation-circle"></i> Reconciliation — acknowledgment queue
+        <span class="badge text-bg-danger">2</span></h6>
+    <p class="small-muted mb-2">The nightly job compares actually-enabled EMs against tracking records. EMs disabled
+        <i>outside</i> this workflow land here for a super user to acknowledge (legitimate) or flag (investigate).
+        Self-service deactivations do <b>not</b> appear here.</p>
+    <table class="table-rc">
+        <thead><tr><th>Detected</th><th>Project</th><th>External Module</th><th>What happened</th><th style="width:220px;"></th></tr></thead>
+        <tbody>
+        <tr>
+            <td>07/08/2026 02:10</td>
+            <td>CHOIR Satellite Sites <span class="small-muted">(22871)</span></td>
+            <td>Text To Download <span class="small-muted">($75/mo)</span></td>
+            <td>Disabled directly in REDCap's EM manager — no deactivation record exists</td>
+            <td>
+                <button class="btn btn-xs btn-success ack-btn"><i class="fas fa-check"></i> Acknowledge</button>
+                <button class="btn btn-xs btn-outline-danger flag-btn"><i class="fas fa-flag"></i> Flag for investigation</button>
+            </td>
+        </tr>
+        <tr>
+            <td>07/05/2026 02:10</td>
+            <td>CV Outcomes Biobank <span class="small-muted">(19544)</span></td>
+            <td>Survey PDF Snapshots <span class="small-muted">($125/mo)</span></td>
+            <td>Disabled directly in REDCap's EM manager — no deactivation record exists</td>
+            <td>
+                <button class="btn btn-xs btn-success ack-btn"><i class="fas fa-check"></i> Acknowledge</button>
+                <button class="btn btn-xs btn-outline-danger flag-btn"><i class="fas fa-flag"></i> Flag for investigation</button>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- Bonus strip: injected native EM manager -->
+<div class="panel-box">
+    <h6><i class="fas fa-puzzle-piece"></i> REDCap's native External Modules page, with our injected annotations</h6>
+    <p class="small-muted mb-2">On every project's standard “External Modules” manager page we inject a billing
+        annotation per module row and a module-owned <b>Disable</b> button (self-service, no approval, audited).
+        See the full replica on <a href="em_manager.html">the EM manager mockup</a>.</p>
+
+    <div class="d-flex justify-content-between align-items-center py-2 border-bottom flex-wrap" style="gap:10px;">
+        <span>
+            <span style="font-weight:700;color:#2e6da4;">Survey Dashboard</span> <span class="small-muted">v3.2.1</span><br>
+            <span class="emman-inject"><i class="fas fa-file-invoice-dollar"></i> $150/mo · PTA
+                <code>1234567-100-ABCDE</code> (expires 03/31/2027) · status: <span class="b b-enabled"><i class="fas fa-check-circle"></i>enabled</span>
+                · requested by jsmith, approved by E. Chen 07/09/2026</span>
+        </span>
+        <span class="text-nowrap">
+            <button class="btn btn-xs btn-outline-secondary" onclick="mockToast('Native REDCap “Configure” button')">Configure</button>
+            <button class="btn btn-xs btn-danger dis-btn" data-em="Survey Dashboard" data-fee="150"><i class="fas fa-power-off"></i> Disable</button>
+        </span>
+    </div>
+    <div class="d-flex justify-content-between align-items-center py-2 border-bottom flex-wrap" style="gap:10px;">
+        <span>
+            <span style="font-weight:700;color:#2e6da4;">Text To Download</span> <span class="small-muted">v1.8.0</span><br>
+            <span class="emman-inject"><i class="fas fa-file-invoice-dollar"></i> $75/mo · PTA
+                <code>1234567-100-ABCDE</code> (expires 03/31/2027) · status: <span class="b b-enabled"><i class="fas fa-check-circle"></i>enabled</span>
+                · requested by jsmith, approved by E. Chen 06/13/2026</span>
+        </span>
+        <span class="text-nowrap">
+            <button class="btn btn-xs btn-outline-secondary">Configure</button>
+            <button class="btn btn-xs btn-danger dis-btn" data-em="Text To Download" data-fee="75"><i class="fas fa-power-off"></i> Disable</button>
+        </span>
+    </div>
+    <div class="d-flex justify-content-between align-items-center py-2 flex-wrap" style="gap:10px;">
+        <span>
+            <span style="font-weight:700;color:#2e6da4;">emLogger</span> <span class="small-muted">v9.9.9</span><br>
+            <span class="small-muted">Free module — no billing annotation; REDCap's native enable/disable applies.</span>
+        </span>
+        <span><button class="btn btn-xs btn-outline-secondary">Configure</button></span>
+    </div>
+</div>
+
+<div id="legend"></div>
 
 <!-- Disable confirm dialog -->
 <div class="modal fade" id="dis-modal" tabindex="-1">
     <div class="modal-dialog"><div class="modal-content">
         <div class="modal-header py-2">
-            <h5 class="modal-title text-danger"><i class="fas fa-power-off"></i> Disable <span id="dis-em"></span>?</h5>
-            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h5 class="modal-title text-danger" style="font-size:15px;font-weight:700;"><i class="fas fa-power-off"></i> Disable <span id="dis-em"></span>?</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        <div class="modal-body">
+        <div class="modal-body" style="font-size:12.5px;">
             <div class="audit-warning mb-2">
                 Billing for this module (<b id="dis-fee"></b>/mo) <b>stops next month</b> — but any charges already billed
                 and unpaid still carry forward until paid or waived. Re-enabling later requires a <b>new request with PI
                 approval</b>; there is no shortcut.
             </div>
-            <div class="form-group mb-0">
+            <div class="mb-0">
                 <label class="mb-1"><b>Reason</b> <span class="text-danger">* required</span></label>
-                <textarea id="dis-reason" class="form-control form-control-sm" rows="2"
-                          placeholder="e.g. “Study closed to enrollment — module no longer needed.”"></textarea>
+                <textarea id="dis-reason" class="form-control form-control-sm" rows="2" placeholder="e.g. “Study closed to enrollment — module no longer needed.”"></textarea>
                 <div class="invalid-feedback">A reason is required; it is recorded with who/when for audit.</div>
             </div>
         </div>
         <div class="modal-footer py-2">
-            <button class="btn btn-secondary btn-sm" data-dismiss="modal">Cancel</button>
+            <button class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
             <button id="dis-confirm" class="btn btn-danger btn-sm">Disable module</button>
         </div>
     </div></div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="mockup.js"></script>
 <script>
 $('#seed-btn').on('click', function () {
@@ -258,5 +727,12 @@ $('#dis-confirm').on('click', function () {
 bindTableFilter('#req-search', '#req-table');
 renderLegend('#legend', ['request']);
 </script>
-</body>
-</html>
+</div></div>
+</div>
+
+    
+    </div></div><div id="footer" class="d-none d-sm-block col-md-12"><a href="#" tabindex="-1" target="_blank" rel="noopener noreferrer">REDCap 17.2.3</a><span class="mx-2">-</span>© 2026 Vanderbilt University<span class="mx-2">-</span><a href="#"><span data-rc-lang="global_304">Cookie policy</span></a></div></div>
+
+
+
+</body></html>

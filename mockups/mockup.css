@@ -1,36 +1,11 @@
 /* ============================================================
    EM Billing System — Leadership Mockups
-   Shared REDCap-admin-flavored styles (Bootstrap 4 overrides)
+   Mockup-specific styles layered ON TOP of REDCap's real CSS
+   (redcap-assets/rc/… mirrored from REDCap 17.2.3, Bootstrap 5).
+   Only classes that don't exist in REDCap core live here.
    ============================================================ */
 
-body {
-    background: #f0f1f3;
-    font-family: "Open Sans", Arial, Helvetica, sans-serif;
-    font-size: 13px;
-    color: #212529;
-}
-
-/* ---------- Fake REDCap chrome ---------- */
-.rc-topbar {
-    background: #263646;
-    color: #d8dee6;
-    font-size: 12px;
-    padding: 6px 16px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-.rc-topbar .rc-brand { font-weight: 700; color: #fff; letter-spacing: .3px; }
-.rc-topbar .rc-brand .rc-cardinal { color: #f8d6d6; }
-.rc-context {
-    background: #fff;
-    border-bottom: 1px solid #d5dae0;
-    padding: 8px 16px;
-    font-size: 12px;
-    color: #5a6572;
-}
-.rc-context .rc-project { font-weight: 700; color: #2e6da4; font-size: 13px; }
-
+/* ---------- Mockup annotation banner (not part of the product UI) ---------- */
 .mock-caption {
     background: #fff8e1;
     border: 1px solid #ecd98a;
@@ -38,34 +13,14 @@ body {
     color: #6b5810;
     font-size: 12px;
     padding: 8px 12px;
-    margin: 12px 16px 0 16px;
+    margin: 10px 0 14px 0;
     border-radius: 3px;
 }
 .mock-caption .mock-step { font-weight: 700; }
-
-.page-wrap { padding: 16px; max-width: 1200px; margin: 0 auto; }
-.panel-box {
-    background: #fff;
-    border: 1px solid #d5dae0;
-    border-radius: 3px;
-    padding: 14px 16px;
-    margin-bottom: 16px;
-}
-.panel-box h5, .panel-box h6 { font-weight: 700; color: #34495e; }
-h4.page-title { font-size: 18px; font-weight: 700; color: #34495e; margin: 0; }
-h4.page-title .fa, h4.page-title .fas { color: #2e6da4; }
-
-/* ---------- REDCap-ish buttons ---------- */
-.btn { font-size: 12.5px; }
-.btn-sm { font-size: 12px; padding: .15rem .5rem; }
-.btn-xs { font-size: 11px; padding: 1px 7px; line-height: 1.6; border-radius: 2px; }
-.btn-primary { background: #2e6da4; border-color: #2a6293; }
-.btn-primary:hover { background: #275d8c; border-color: #235381; }
-.btn-rc-green { background: #1e7e34; border-color: #1c7430; color: #fff; }
-.btn-rc-green:hover { background: #1a6e2e; color: #fff; }
+.mock-caption a { color: #2e6da4; text-decoration: underline; }
 
 /* ---------- Dense DataTables-style tables ---------- */
-.table-rc { width: 100%; font-size: 12.5px; border: 1px solid #d5dae0; background: #fff; }
+.table-rc { width: 100%; font-size: 12.5px; border: 1px solid #d5dae0; background: #fff; border-collapse: collapse; }
 .table-rc thead th {
     background: #eef1f5;
     border-bottom: 2px solid #c9d1da;
@@ -76,13 +31,24 @@ h4.page-title .fa, h4.page-title .fas { color: #2e6da4; }
     letter-spacing: .03em;
     padding: 6px 8px;
     white-space: nowrap;
+    text-align: left;
 }
 .table-rc td { padding: 5px 8px; border-top: 1px solid #e4e8ed; vertical-align: middle; }
 .table-rc tbody tr:nth-child(even) { background: #fafbfc; }
 .table-rc tbody tr:hover { background: #eef5fb; }
-.dt-toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.dt-toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; gap: 8px; flex-wrap: wrap; }
 .dt-search { max-width: 240px; font-size: 12.5px; }
 .dt-info { color: #7a8694; font-size: 11.5px; margin-top: 6px; }
+
+/* ---------- Panel boxes ---------- */
+.panel-box {
+    background: #fff;
+    border: 1px solid #d5dae0;
+    border-radius: 3px;
+    padding: 14px 16px;
+    margin-bottom: 16px;
+}
+.panel-box h6 { font-weight: 700; color: #34495e; font-size: 13.5px; }
 
 /* ---------- Status badge system (label + icon always; never color alone) ---------- */
 .b { display: inline-block; padding: 2px 8px 2px 6px; border-radius: 10px;
@@ -104,11 +70,16 @@ h4.page-title .fa, h4.page-title .fas { color: #2e6da4; }
 .b-brejected    { background: #b02a37; }
 .b-waived       { background: #0f766e; }
 .b-hold         { background: #6c757d; }
+.b-grace        { background: #fde68a; color: #713f12; }
 
 /* billing-run statuses */
 .b-draft        { background: #ffc107; color: #4a3b00; }
 .b-exported     { background: #0a58ca; }
 .b-finalized    { background: #1e7e34; }
+
+/* PTA expiration statuses */
+.b-expiring     { background: #d97706; }
+.b-expired      { background: #b02a37; }
 
 /* catalog enable-path badges */
 .b-auto  { background: #e7f3ec; color: #14532d; border: 1px solid #b7dfc6; }
@@ -128,7 +99,7 @@ h4.page-title .fa, h4.page-title .fas { color: #2e6da4; }
 .legend-row { margin-bottom: 4px; }
 .legend-row:last-child { margin-bottom: 0; }
 
-/* ---------- Stat tiles (hero numbers wear ink, accents wear status color) ---------- */
+/* ---------- Stat tiles ---------- */
 .stat-row { display: flex; flex-wrap: wrap; gap: 12px; }
 .stat-tile {
     flex: 1 1 140px; min-width: 140px;
@@ -163,22 +134,10 @@ h4.page-title .fa, h4.page-title .fas { color: #2e6da4; }
 .proj-head { padding: 6px 12px 6px 26px; background: #fafbfc; font-weight: 600; color: #34495e;
     cursor: pointer; display: flex; justify-content: space-between; }
 .proj-head:hover { background: #f0f4f8; }
-.line-table { margin: 0 0 0 26px; width: calc(100% - 26px); font-size: 12px; }
-.line-table td { padding: 4px 8px; border-top: 1px solid #eef1f4; }
+.line-table { margin: 0 0 0 26px; width: calc(100% - 26px); font-size: 12px; border-collapse: collapse; }
+.line-table td, .line-table th { padding: 4px 8px; border-top: 1px solid #eef1f4; text-align: left; }
 .caret-i { transition: transform .15s; display: inline-block; width: 14px; color: #7a8694; }
 .collapsed-caret .caret-i { transform: rotate(-90deg); }
-
-/* ---------- Survey look (screen 2) ---------- */
-body.survey-body { background: #e8e8e8; }
-.survey-shell { max-width: 760px; margin: 24px auto; background: #fff;
-    border: 1px solid #ccc; box-shadow: 0 1px 4px rgba(0,0,0,.12); }
-.survey-band { background: #8c1515; color: #fff; padding: 10px 20px; font-size: 13px; font-weight: 600; }
-.survey-title { padding: 18px 26px 6px 26px; border-bottom: 2px solid #eee; }
-.survey-title h4 { font-weight: 700; color: #333; }
-.survey-q { padding: 14px 26px; border-bottom: 1px solid #f0f0f0; }
-.survey-q .q-label { font-weight: 700; color: #333; margin-bottom: 6px; }
-.survey-q .req-star { color: #c00; }
-.survey-submit { padding: 18px 26px; text-align: center; }
 
 /* ---------- Dropzone (import) ---------- */
 .dropzone {
@@ -186,9 +145,9 @@ body.survey-body { background: #e8e8e8; }
     padding: 28px; text-align: center; color: #6b7684; cursor: pointer;
 }
 .dropzone:hover { background: #eef5fb; border-color: #2e6da4; }
-.dropzone .fa { font-size: 26px; color: #8a97a5; }
+.dropzone .fa, .dropzone .fas { font-size: 26px; color: #8a97a5; }
 
-/* ---------- Misc ---------- */
+/* ---------- Callouts ---------- */
 .callout-info {
     background: #eaf3fb; border: 1px solid #bcd8ef; border-left: 4px solid #2e6da4;
     padding: 10px 12px; border-radius: 3px; font-size: 12px; color: #274a63;
@@ -199,25 +158,48 @@ body.survey-body { background: #e8e8e8; }
 }
 .text-money { font-variant-numeric: tabular-nums; text-align: right; white-space: nowrap; }
 .small-muted { font-size: 11px; color: #8a97a5; }
-.nav-tabs .nav-link { font-size: 12.5px; padding: .4rem .8rem; color: #44515f; }
-.nav-tabs .nav-link.active { font-weight: 700; color: #2e6da4; }
-.modal-title { font-size: 15px; font-weight: 700; }
-.modal-body { font-size: 12.5px; }
 .audit-warning { background: #fdf0f1; border: 1px solid #efc4c8; color: #7a2730;
     font-size: 11.5px; padding: 7px 10px; border-radius: 3px; }
 
+.btn-xs { font-size: 11px !important; padding: 1px 7px !important; line-height: 1.6 !important; border-radius: 2px !important; }
+
 /* toast */
 #mock-toast {
-    position: fixed; bottom: 18px; right: 18px; z-index: 2000; display: none;
+    position: fixed; bottom: 18px; right: 18px; z-index: 3000; display: none;
     background: #263646; color: #fff; padding: 10px 16px; border-radius: 4px;
     font-size: 12.5px; box-shadow: 0 2px 8px rgba(0,0,0,.3);
 }
 
-/* fake native REDCap EM-manager rows (screen 6 bonus strip) */
-.emman-row { border: 1px solid #d5dae0; border-radius: 3px; padding: 8px 12px;
-    margin-bottom: 6px; background: #fff; display: flex; justify-content: space-between;
-    align-items: center; gap: 10px; flex-wrap: wrap; }
-.emman-row .em-name { font-weight: 700; color: #2e6da4; }
-.emman-row .em-ver { color: #8a97a5; font-size: 11px; }
+/* billing annotation injected into REDCap's native EM manager rows */
 .emman-inject { background: #f3f7fb; border: 1px dashed #9db8d2; border-radius: 3px;
-    font-size: 11.5px; color: #274a63; padding: 3px 8px; }
+    font-size: 11.5px; color: #274a63; padding: 3px 8px; display: inline-block; margin-top: 5px; }
+
+/* ---------- Stanford person-lookup widget mock (request survey) ---------- */
+.pl-wrap { position: relative; max-width: 460px; }
+.pl-results { position: absolute; z-index: 50; left: 0; right: 0; top: 100%;
+    background: #fff; border: 1px solid #b9c2cc; border-top: none; box-shadow: 0 3px 8px rgba(0,0,0,.15);
+    max-height: 240px; overflow-y: auto; display: none; }
+.pl-item { padding: 7px 10px; cursor: pointer; border-bottom: 1px solid #f0f2f4; font-size: 12.5px; }
+.pl-item:hover { background: #eef5fb; }
+.pl-item .pl-name { font-weight: 700; color: #2e6da4; }
+.pl-item .pl-meta { color: #7a8694; font-size: 11.5px; }
+.pl-card { border: 1px solid #b7dfc6; background: #f2faf5; border-radius: 3px;
+    padding: 10px 12px; max-width: 460px; display: none; }
+.pl-card .pl-name { font-weight: 700; font-size: 13.5px; color: #14532d; }
+.pl-card .pl-meta { font-size: 12px; color: #446152; }
+
+/* ---------- Flow overview (index) ---------- */
+.flow-strip { display: flex; align-items: stretch; gap: 0; flex-wrap: wrap; }
+.flow-step { flex: 1 1 140px; background: #fff; border: 1px solid #d5dae0; border-radius: 3px;
+    padding: 10px 12px; text-align: center; position: relative; margin-right: 26px; min-width: 140px; margin-bottom: 8px; }
+.flow-step:last-child { margin-right: 0; }
+.flow-step:not(:last-child):after {
+    content: "\2192"; position: absolute; right: -21px; top: 50%; transform: translateY(-50%);
+    color: #8a97a5; font-size: 18px; }
+.flow-step .fs-icon { font-size: 20px; color: #2e6da4; }
+.flow-step .fs-title { font-weight: 700; font-size: 12.5px; color: #34495e; margin-top: 4px; }
+.flow-step .fs-who { font-size: 10.5px; color: #8a97a5; text-transform: uppercase; letter-spacing: .04em; }
+.screen-card { background: #fff; border: 1px solid #d5dae0; border-radius: 3px; padding: 14px 16px; height: 100%; }
+.screen-card h6 a { color: #2e6da4; font-weight: 700; }
+.screen-card .persona { font-size: 10.5px; text-transform: uppercase; letter-spacing: .05em;
+    color: #8a97a5; font-weight: 700; }
