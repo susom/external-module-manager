@@ -654,7 +654,6 @@ GROUP BY rems.external_module_id ", []);
      * @param string $prefix
      * @return bool
      * @throws \Exception
-     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function createExternalModuleREDCapRecord($externalModuleId, $prefix)
     {
@@ -1049,16 +1048,11 @@ GROUP BY rems.external_module_id ", []);
 
     public function getInstanceEMBody($name, $url)
     {
-        $response = $this->getClient()->getGuzzleClient()->post($url, [
-            'headers' => [
-                'Accept' => 'application/json',
-            ],
-            'form_params' => [
-                'secret_token' => $this->getSystemSetting('api-token'),
-                'request' => htmlentities($name)
-            ]
-        ]);
-        return json_decode($response->getBody(), true);
+        $body = $this->getClient()->post($url, [
+            'secret_token' => $this->getSystemSetting('api-token'),
+            'request' => htmlentities($name)
+        ], ['Accept: application/json']);
+        return json_decode($body, true);
     }
 
     public function processEMUtilization()
@@ -1084,21 +1078,21 @@ GROUP BY rems.external_module_id ", []);
     public function projectEMUsageTriggerCron()
     {
         $url = $this->getUrl("ajax/cron.php", true, true) . '&pid=' . $this->getSystemSetting('em-project-id');
-        $this->getClient()->getGuzzleClient()->request('GET', $url, array(\GuzzleHttp\RequestOptions::SYNCHRONOUS => true));
+        $this->getClient()->get($url);
         $this->emDebug("running cron for $url on project " . $this->getSystemSetting('em-project-id'));
     }
 
     public function generateProjectEMCharges()
     {
         $url = $this->getUrl("ajax/em_charges_cron.php", true, true) . '&pid=' . $this->getSystemSetting('em-project-id');
-        $this->getClient()->getGuzzleClient()->request('GET', $url, array(\GuzzleHttp\RequestOptions::SYNCHRONOUS => true));
+        $this->getClient()->get($url);
         $this->emDebug("running cron for $url on project " . $this->getSystemSetting('em-project-id'));
     }
 
     public function eMUtilizationTriggerCron()
     {
         $url = $this->getUrl("ajax/cron_em_util.php", true, true) . '&pid=' . $this->getSystemSetting('em-project-id');
-        $this->getClient()->getGuzzleClient()->request('GET', $url, array(\GuzzleHttp\RequestOptions::SYNCHRONOUS => true));
+        $this->getClient()->get($url);
         $this->emDebug("running cron for $url on project " . $this->getSystemSetting('em-project-id'));
     }
 
