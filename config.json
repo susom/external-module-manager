@@ -64,7 +64,6 @@
         ]
     },
     "no-auth-pages": [
-        "pages/test_auth",
         "pages/services",
         "ajax/refresh_project_em_util",
         "ajax/em_charges_cron"

@@ -1008,13 +1008,12 @@ GROUP BY rems.external_module_id ", []);
             throw new \LogicException("request parameter is missing");
         }
 
-        $token = filter_var($_POST['secret_token'], FILTER_SANITIZE_STRING);
-        if (!$this->verifyToken($token)) {
+        if (!$this->isValidServiceToken($_POST['secret_token'])) {
             throw new \LogicException("wrong token provided");
         }
 
-        // set request
-        $this->setRequest(filter_var($_POST['request'], FILTER_SANITIZE_STRING));
+        // set request (only compared against the request names below, never output)
+        $this->setRequest(is_string($_POST['request']) ? $_POST['request'] : '');
 
         if ($this->getRequest() == 'em_utilization') {
             $this->createExternalModuleUtilizationLogs($this->getFirstEventId());
@@ -1084,8 +1083,12 @@ GROUP BY rems.external_module_id ", []);
 
     public function generateProjectEMCharges()
     {
+        // This stays an HTTP self-call on purpose: REDCapEntity can't validate 'project' properties inside a cron
+        // (cron defines USERID but not SUPER_USER, so Entity.php throws "Undefined constant"). The NOAUTH page runs
+        // the work in a web request instead, and only accepts the call with the shared api-token, sent in the POST
+        // body so it never lands in a URL or access log.
         $url = $this->getUrl("ajax/em_charges_cron.php", true, true) . '&pid=' . $this->getSystemSetting('em-project-id');
-        $this->getClient()->get($url);
+        $this->getClient()->post($url, ['secret_token' => (string)$this->getSystemSetting('api-token')]);
         $this->emDebug("running cron for $url on project " . $this->getSystemSetting('em-project-id'));
     }
 
@@ -1266,11 +1269,12 @@ id ,instance, module_prefix, version, FROM_UNIXTIME(`date`, '%Y-%m-%d') as `date
 
     public function refreshProjectEMUsage($projectId = '')
     {
-        if ($projectId != '') {
-            $this->setRefreshProjectId(filter_var($projectId, FILTER_SANITIZE_STRING));
-        } else {
-            $this->setRefreshProjectId(filter_var($_GET['project_id'], FILTER_SANITIZE_STRING));
+        $rawProjectId = $projectId != '' ? $projectId : ($_GET['project_id'] ?? '');
+        $refreshProjectId = filter_var($rawProjectId, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+        if ($refreshProjectId === false) {
+            throw new \InvalidArgumentException("A valid REDCap project id is required.");
         }
+        $this->setRefreshProjectId($refreshProjectId);
 
         $instanceName = $this->findCurrentInstanceName();
         $result = [];
@@ -1294,13 +1298,26 @@ id ,instance, module_prefix, version, FROM_UNIXTIME(`date`, '%Y-%m-%d') as `date
     }
 
     /**
-     * check if provided token is correct or not
-     * @param $token
+     * Checks the shared api-token that server-to-server calls send: hub -> spoke (pages/services), the charge cron's
+     * self-call (ajax/em_charges_cron) and rit_dashboard's usage refresh (ajax/refresh_project_em_util).
+     * Fails closed when no token is configured, and compares in constant time.
+     * @param mixed $token
      * @return bool
      */
-    private function verifyToken($token)
+    public function isValidServiceToken($token): bool
     {
-        return $token == $this->getClient()->getToken();
+        $expected = (string)$this->getSystemSetting('api-token');
+        return $expected !== '' && is_string($token) && hash_equals($expected, $token);
+    }
+
+    /**
+     * Gate for NOAUTH pages that do work: only a POST carrying the shared api-token gets through.
+     * @return bool
+     */
+    public function isAuthorizedServiceRequest(): bool
+    {
+        return ($_SERVER['REQUEST_METHOD'] ?? '') === 'POST'
+            && $this->isValidServiceToken($_POST['secret_token'] ?? null);
     }
 
     /**
